@@ -1148,6 +1148,18 @@ body.editing .edit-hint{display:flex}
 .w-bal-exp-label{font-size:8px;color:var(--ink3);font-weight:600;letter-spacing:.5px;}
 .w-bal-exp-val{font-size:11px;font-weight:700;color:var(--red);font-family:'Playfair Display',serif;}
 
+
+.w-total-exp-box{
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,#fff0f0,#ffe0e0);
+  border:1.5px solid #ffb3b3;border-radius:var(--r-sm);
+  padding:10px 14px;margin-bottom:10px;
+}
+.w-total-exp-label{font-size:12px;font-weight:700;color:var(--red);}
+.w-total-exp-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+.w-total-exp-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--red);line-height:1;}
+.w-total-exp-krw{font-size:10px;color:var(--ink3);font-weight:600;}
+
 </style>
 </head>
 <body>
@@ -3911,6 +3923,14 @@ function updateBalances() {
     if(elK && _rateKRW>0) elK.textContent = '≈ ₩' + Math.round(bal*_rateKRW).toLocaleString();
     if(elE) elE.textContent = '-' + sym + exp.toLocaleString();
   });
+
+  // 전체 총지출 (현금+카드+IC+사전예매)
+  var totalExp = _walletItems.filter(function(i){ return i.type==='expense'; })
+                             .reduce(function(s,i){ return s+i.amount; }, 0);
+  var elTotal = document.getElementById('wTotalExpAll');
+  var elTotalKrw = document.getElementById('wTotalExpAllKrw');
+  if(elTotal) elTotal.textContent = sym + totalExp.toLocaleString();
+  if(elTotalKrw && _rateKRW>0) elTotalKrw.textContent = '≈ ₩' + Math.round(totalExp*_rateKRW).toLocaleString();
 }
 
 function renderWallet() {
@@ -5202,6 +5222,15 @@ function applyCurrency(countryName) {
             <span class="w-bal-exp-label">지출</span>
             <span class="w-bal-exp-val" id="wExpIC">¥0</span>
           </div>
+        </div>
+      </div>
+
+      <!-- 총지출 합산 -->
+      <div class="w-total-exp-box">
+        <span class="w-total-exp-label">💸 총 지출 합계</span>
+        <div class="w-total-exp-right">
+          <span class="w-total-exp-val" id="wTotalExpAll">¥0</span>
+          <span class="w-total-exp-krw" id="wTotalExpAllKrw"></span>
         </div>
       </div>
 

@@ -1139,6 +1139,15 @@ body.editing .edit-hint{display:flex}
 .air-en{ font-size:10px; color:var(--ink3); margin-top:2px; }
 .air-check{ font-size:14px; font-weight:700; color:#E8602A; flex-shrink:0; }
 
+
+.w-bal-exp-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:7px;padding-top:6px;
+  border-top:1px dashed var(--divider);
+}
+.w-bal-exp-label{font-size:8px;color:var(--ink3);font-weight:600;letter-spacing:.5px;}
+.w-bal-exp-val{font-size:11px;font-weight:700;color:var(--red);font-family:'Playfair Display',serif;}
+
 </style>
 </head>
 <body>
@@ -2942,16 +2951,18 @@ function drawAllMaps() {
 var _rateKRW = 0;
 function fetchRate() {
   document.getElementById('rateVal').innerHTML = '<span class="rate-loading">로딩 중...</span>';
+  var code = CURRENT_CURRENCY ? CURRENT_CURRENCY.code : 'JPY';
   var xhr = new XMLHttpRequest();
-  xhr.open('GET','https://open.er-api.com/v6/latest/JPY',true);
+  xhr.open('GET','https://open.er-api.com/v6/latest/'+code,true);
   xhr.timeout = 6000;
-  xhr.onload = function(){ if(xhr.status===200){try{applyRate(JSON.parse(xhr.responseText).rates.KRW);return;}catch(e){}} tryRate2(); };
-  xhr.onerror = xhr.ontimeout = tryRate2;
+  xhr.onload = function(){ if(xhr.status===200){try{applyRate(JSON.parse(xhr.responseText).rates.KRW);return;}catch(e){}} tryRate2(code); };
+  xhr.onerror = xhr.ontimeout = function(){ tryRate2(code); };
   xhr.send();
 }
 function tryRate2() {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET','https://api.frankfurter.app/latest?from=JPY&to=KRW',true);
+  var code2 = CURRENT_CURRENCY ? CURRENT_CURRENCY.code : 'JPY';
+  xhr.open('GET','https://api.frankfurter.app/latest?from='+code2+'&to=KRW',true);
   xhr.timeout = 6000;
   xhr.onload = function(){ if(xhr.status===200){try{applyRate(JSON.parse(xhr.responseText).rates.KRW);return;}catch(e){}} document.getElementById('rateVal').innerHTML='<span class="rate-loading">연결 실패 ↻</span>'; };
   xhr.onerror = xhr.ontimeout = function(){ document.getElementById('rateVal').innerHTML='<span class="rate-loading">연결 실패 ↻</span>'; };
@@ -2959,14 +2970,18 @@ function tryRate2() {
 }
 function applyRate(krw) {
   _rateKRW = krw;
-  document.getElementById('rateVal').innerHTML = '<b>'+krw.toFixed(2)+'</b><span>원 / ¥1</span>';
+  var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+  var nm  = CURRENT_CURRENCY ? CURRENT_CURRENCY.name : '엔';
+  document.getElementById('rateVal').innerHTML = '<b>'+krw.toFixed(2)+'</b><span>원 / '+sym+'1</span>';
+  var label = document.querySelector('.rate-label');
+  if(label) label.textContent = '실시간 '+nm+' 환율';
   var now = new Date();
   document.getElementById('rateUpdated').textContent = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준';
   calcRate();
 }
 function calcRate() {
-  var yen = parseFloat(document.getElementById('yenInput').value)||0;
-  if (_rateKRW>0) document.getElementById('wonResult').textContent = '₩'+Math.round(yen*_rateKRW).toLocaleString();
+  var amt = parseFloat(document.getElementById('yenInput').value)||0;
+  if (_rateKRW>0) document.getElementById('wonResult').textContent = '₩'+Math.round(amt*_rateKRW).toLocaleString();
 }
 
 /* ══════════════════════════════════════
@@ -3877,18 +3892,25 @@ function deleteWalletItem(id) {
 
 function updateBalances() {
   var wallets = ['cash','card','ic'];
+  var balIds = [['wBalCash','wBalCashKrw','wExpCash'],
+                ['wBalCard','wBalCardKrw','wExpCard'],
+                ['wBalIC',  'wBalICKrw',  'wExpIC'  ]];
+  var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+
   wallets.forEach(function(w, wi){
     var inc = _walletItems.filter(function(i){ return i.wallet===w && i.type==='income'; }).reduce(function(s,i){ return s+i.amount; },0);
     var exp = _walletItems.filter(function(i){ return i.wallet===w && i.type==='expense'; }).reduce(function(s,i){ return s+i.amount; },0);
     var bal = inc - exp;
-    var ids = [['wBalCash','wBalCashKrw'],['wBalCard','wBalCardKrw'],['wBalIC','wBalICKrw']][wi];
-    var el = document.getElementById(ids[0]);
+    var ids = balIds[wi];
+
+    var el  = document.getElementById(ids[0]);
     var elK = document.getElementById(ids[1]);
-    if(el) el.textContent = '¥' + bal.toLocaleString();
+    var elE = document.getElementById(ids[2]);
+
+    if(el)  el.textContent  = sym + bal.toLocaleString();
     if(elK && _rateKRW>0) elK.textContent = '≈ ₩' + Math.round(bal*_rateKRW).toLocaleString();
+    if(elE) elE.textContent = '-' + sym + exp.toLocaleString();
   });
-  // 사전예매 총합
-  var prepayTotal = _walletItems.filter(function(i){ return i.wallet==='prepay'; }).reduce(function(s,i){ return s+i.amount; },0);
 }
 
 function renderWallet() {
@@ -3976,7 +3998,8 @@ function showSyncToast(msg){
 
 /* ══ 도시 설정 ══ */
 var COUNTRY_DATA = [
-  {flag:'🇯🇵',name:'일본',en:'Japan',cities:[
+  /* ── 아시아 ── */
+  {flag:'🇯🇵', name:'일본', en:'Japan', region:'아시아', cities:[
     {name:'오사카',en:'Osaka',lat:34.6937,lng:135.5023},
     {name:'도쿄',en:'Tokyo',lat:35.6762,lng:139.6503},
     {name:'교토',en:'Kyoto',lat:35.0116,lng:135.7681},
@@ -3988,44 +4011,59 @@ var COUNTRY_DATA = [
     {name:'오키나와',en:'Okinawa',lat:26.2124,lng:127.6809},
     {name:'히로시마',en:'Hiroshima',lat:34.3853,lng:132.4553}
   ]},
-  {flag:'🇹🇭',name:'태국',en:'Thailand',cities:[
+  {flag:'🇻🇳', name:'베트남', en:'Vietnam', region:'아시아', cities:[
+    {name:'다낭',en:'Da Nang',lat:16.0544,lng:108.2022},
+    {name:'하노이',en:'Hanoi',lat:21.0278,lng:105.8342},
+    {name:'호치민',en:'Ho Chi Minh',lat:10.8231,lng:106.6297},
+    {name:'호이안',en:'Hoi An',lat:15.8801,lng:108.3380},
+    {name:'냐짱',en:'Nha Trang',lat:12.2388,lng:109.1967},
+    {name:'푸꾸옥',en:'Phu Quoc',lat:10.2897,lng:103.9840}
+  ]},
+  {flag:'🇹🇭', name:'태국', en:'Thailand', region:'아시아', cities:[
     {name:'방콕',en:'Bangkok',lat:13.7563,lng:100.5018},
     {name:'치앙마이',en:'Chiang Mai',lat:18.7883,lng:98.9853},
     {name:'푸켓',en:'Phuket',lat:7.8804,lng:98.3923},
     {name:'파타야',en:'Pattaya',lat:12.9236,lng:100.8825},
     {name:'크라비',en:'Krabi',lat:8.0863,lng:98.9063}
   ]},
-  {flag:'🇹🇼',name:'대만',en:'Taiwan',cities:[
-    {name:'타이베이',en:'Taipei',lat:25.0330,lng:121.5654},
-    {name:'타이중',en:'Taichung',lat:24.1477,lng:120.6736},
-    {name:'가오슝',en:'Kaohsiung',lat:22.6273,lng:120.3014},
-    {name:'화롄',en:'Hualien',lat:23.9871,lng:121.6015}
-  ]},
-  {flag:'🇻🇳',name:'베트남',en:'Vietnam',cities:[
-    {name:'다낭',en:'Da Nang',lat:16.0544,lng:108.2022},
-    {name:'하노이',en:'Hanoi',lat:21.0278,lng:105.8342},
-    {name:'호치민',en:'Ho Chi Minh',lat:10.8231,lng:106.6297},
-    {name:'호이안',en:'Hoi An',lat:15.8801,lng:108.3380},
-    {name:'냐짱',en:'Nha Trang',lat:12.2388,lng:109.1967}
-  ]},
-  {flag:'🇵🇭',name:'필리핀',en:'Philippines',cities:[
+  {flag:'🇵🇭', name:'필리핀', en:'Philippines', region:'아시아', cities:[
     {name:'세부',en:'Cebu',lat:10.3157,lng:123.8854},
     {name:'마닐라',en:'Manila',lat:14.5995,lng:120.9842},
     {name:'보라카이',en:'Boracay',lat:11.9674,lng:121.9248},
-    {name:'팔라완',en:'Palawan',lat:9.8349,lng:118.7384}
+    {name:'팔라완',en:'Palawan',lat:9.8349,lng:118.7384},
+    {name:'다바오',en:'Davao',lat:7.1907,lng:125.4553}
   ]},
-  {flag:'🇸🇬',name:'싱가포르',en:'Singapore',cities:[
-    {name:'싱가포르',en:'Singapore',lat:1.3521,lng:103.8198}
+  /* ── 유럽 ── */
+  {flag:'🇫🇷', name:'프랑스', en:'France', region:'유럽', cities:[
+    {name:'파리',en:'Paris',lat:48.8566,lng:2.3522},
+    {name:'니스',en:'Nice',lat:43.7102,lng:7.2620},
+    {name:'리옹',en:'Lyon',lat:45.7640,lng:4.8357},
+    {name:'보르도',en:'Bordeaux',lat:44.8378,lng:-0.5792},
+    {name:'마르세유',en:'Marseille',lat:43.2965,lng:5.3698}
   ]},
-  {flag:'🇭🇰',name:'홍콩',en:'Hong Kong',cities:[
-    {name:'홍콩',en:'Hong Kong',lat:22.3193,lng:114.1694},
-    {name:'구룡',en:'Kowloon',lat:22.3182,lng:114.1747}
+  {flag:'🇬🇧', name:'영국', en:'United Kingdom', region:'유럽', cities:[
+    {name:'런던',en:'London',lat:51.5074,lng:-0.1278},
+    {name:'에든버러',en:'Edinburgh',lat:55.9533,lng:-3.1883},
+    {name:'맨체스터',en:'Manchester',lat:53.4808,lng:-2.2426},
+    {name:'옥스퍼드',en:'Oxford',lat:51.7520,lng:-1.2577},
+    {name:'리버풀',en:'Liverpool',lat:53.4084,lng:-2.9916}
   ]},
-  {flag:'🇲🇾',name:'말레이시아',en:'Malaysia',cities:[
-    {name:'쿠알라룸푸르',en:'Kuala Lumpur',lat:3.1390,lng:101.6869},
-    {name:'코타키나발루',en:'Kota Kinabalu',lat:5.9788,lng:116.0753},
-    {name:'페낭',en:'Penang',lat:5.4141,lng:100.3288},
-    {name:'랑카위',en:'Langkawi',lat:6.3500,lng:99.8000}
+  /* ── 북미 ── */
+  {flag:'🇺🇸', name:'미국', en:'United States', region:'북미', cities:[
+    {name:'뉴욕',en:'New York',lat:40.7128,lng:-74.0060},
+    {name:'로스앤젤레스',en:'Los Angeles',lat:34.0522,lng:-118.2437},
+    {name:'라스베이거스',en:'Las Vegas',lat:36.1699,lng:-115.1398},
+    {name:'하와이',en:'Hawaii',lat:21.3069,lng:-157.8583},
+    {name:'샌프란시스코',en:'San Francisco',lat:37.7749,lng:-122.4194},
+    {name:'시카고',en:'Chicago',lat:41.8781,lng:-87.6298},
+    {name:'괌',en:'Guam',lat:13.4443,lng:144.7937}
+  ]},
+  {flag:'🇨🇦', name:'캐나다', en:'Canada', region:'북미', cities:[
+    {name:'밴쿠버',en:'Vancouver',lat:49.2827,lng:-123.1207},
+    {name:'토론토',en:'Toronto',lat:43.6532,lng:-79.3832},
+    {name:'몬트리올',en:'Montreal',lat:45.5017,lng:-73.5673},
+    {name:'캘거리',en:'Calgary',lat:51.0447,lng:-114.0719},
+    {name:'퀘벡시티',en:'Quebec City',lat:46.8139,lng:-71.2080}
   ]}
 ];
 
@@ -4039,14 +4077,23 @@ function showCountryStep(){
   document.getElementById('cityStep2').style.display='none';
   document.getElementById('cityModalTitle').textContent='🗺 여행 나라 선택';
   var grid=document.getElementById('countryGrid');
-  grid.innerHTML=COUNTRY_DATA.map(function(c,i){
-    return '<button class="city-btn" onclick="showCityStep(&quot;'+c.name+'&quot;)">'+
-      '<div style="font-size:24px;margin-bottom:4px;">'+c.flag+'</div>'+
-      '<div class="city-btn-name">'+c.name+'</div>'+
-      '<div class="city-btn-en">'+c.en+'</div>'+
-      '<div style="font-size:9px;color:var(--gold);margin-top:2px;">도시 '+c.cities.length+'개</div>'+
-    '</button>';
-  }).join('');
+
+  var regions = ['아시아','유럽','북미'];
+  var regionLabels = {'아시아':'🌏 아시아','유럽':'🌍 유럽','북미':'🌎 북미'};
+  var html = '';
+  regions.forEach(function(region){
+    var countries = COUNTRY_DATA.filter(function(c){ return c.region===region; });
+    html += '<div style="grid-column:1/-1;font-size:9px;letter-spacing:2px;font-weight:700;color:var(--gold);text-transform:uppercase;margin:8px 0 4px;">'+regionLabels[region]+'</div>';
+    html += countries.map(function(c){
+      return '<button class="city-btn" onclick="showCityStep(&quot;'+c.name+'&quot;)">'+
+        '<div style="font-size:22px;margin-bottom:3px;">'+c.flag+'</div>'+
+        '<div class="city-btn-name">'+c.name+'</div>'+
+        '<div class="city-btn-en" style="font-size:9px;">'+c.en+'</div>'+
+        '<div style="font-size:8px;color:var(--gold);margin-top:2px;">도시 '+c.cities.length+'개</div>'+
+      '</button>';
+    }).join('');
+  });
+  grid.innerHTML = html;
 }
 
 function showCityStep(countryName){
@@ -4091,8 +4138,9 @@ function applyCity(nameKo,nameEn){
   if(l) l.textContent=nameKo+' · '+nameEn;
   var w=document.getElementById('wContent');
   if(w) w.innerHTML='<div class="weather-loading">🌤 날씨 정보를 불러오는 중...</div>';
+  applyCurrency(nameKo);
   fetchWeather();
-  showSyncToast('📍 '+nameKo+' 날씨로 업데이트됐어요!');
+  showSyncToast('📍 '+nameKo+' 날씨·환율 업데이트됐어요!');
 }
 
 /* city-btn CSS */
@@ -4315,6 +4363,40 @@ function toggleEdit4() {
   btn.textContent=on?'✅ 편집 완료':'✏️ 일정 편집';
   btn.classList.toggle('on',on);
   document.querySelectorAll('.ev-title,.ev-cat,.ev-desc p,.ev-desc li').forEach(function(el){ el.contentEditable=on?'true':'false'; });
+}
+
+
+/* ══ 나라별 화폐 설정 ══ */
+var CURRENCY_MAP = {
+  // 아시아
+  '일본':   {code:'JPY', symbol:'¥', name:'엔',     flag:'🇯🇵'},
+  '베트남': {code:'VND', symbol:'₫', name:'동',     flag:'🇻🇳'},
+  '태국':   {code:'THB', symbol:'฿', name:'바트',   flag:'🇹🇭'},
+  '필리핀': {code:'PHP', symbol:'₱', name:'페소',   flag:'🇵🇭'},
+  // 유럽
+  '프랑스': {code:'EUR', symbol:'€', name:'유로',   flag:'🇫🇷'},
+  '영국':   {code:'GBP', symbol:'£', name:'파운드', flag:'🇬🇧'},
+  // 북미
+  '미국':   {code:'USD', symbol:'$', name:'달러',   flag:'🇺🇸'},
+  '캐나다': {code:'CAD', symbol:'CA$', name:'캐나다 달러', flag:'🇨🇦'}
+};
+
+var CURRENT_CURRENCY = {code:'JPY', symbol:'¥', name:'엔', flag:'🇯🇵'};
+
+function applyCurrency(countryName) {
+  var cur = CURRENCY_MAP[countryName] || CURRENCY_MAP['일본'];
+  CURRENT_CURRENCY = cur;
+
+  // 환율 라벨 업데이트
+  var label = document.querySelector('.rate-label');
+  if(label) label.textContent = '실시간 ' + cur.name + ' 환율';
+
+  // 입력 라벨 업데이트
+  var inputLabel = document.querySelector('.rate-input-wrap label');
+  if(inputLabel) inputLabel.textContent = cur.symbol;
+
+  // 환율 새로 로드
+  fetchRate();
 }
 
 </script>
@@ -5098,16 +5180,28 @@ function toggleEdit4() {
           <div class="w-bal-label">💴 현금 잔액</div>
           <div class="w-bal-val" id="wBalCash">¥0</div>
           <div class="w-bal-krw" id="wBalCashKrw"></div>
+          <div class="w-bal-exp-row">
+            <span class="w-bal-exp-label">지출</span>
+            <span class="w-bal-exp-val" id="wExpCash">¥0</span>
+          </div>
         </div>
         <div class="w-bal-card card">
           <div class="w-bal-label">💳 카드 잔액</div>
           <div class="w-bal-val" id="wBalCard">¥0</div>
           <div class="w-bal-krw" id="wBalCardKrw"></div>
+          <div class="w-bal-exp-row">
+            <span class="w-bal-exp-label">지출</span>
+            <span class="w-bal-exp-val" id="wExpCard">¥0</span>
+          </div>
         </div>
         <div class="w-bal-card ic">
           <div class="w-bal-label">🚇 교통IC 잔액</div>
           <div class="w-bal-val" id="wBalIC">¥0</div>
           <div class="w-bal-krw" id="wBalICKrw"></div>
+          <div class="w-bal-exp-row">
+            <span class="w-bal-exp-label">지출</span>
+            <span class="w-bal-exp-val" id="wExpIC">¥0</span>
+          </div>
         </div>
       </div>
 

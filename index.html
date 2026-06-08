@@ -1160,6 +1160,16 @@ body.editing .edit-hint{display:flex}
 .w-total-exp-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--red);line-height:1;}
 .w-total-exp-krw{font-size:10px;color:var(--ink3);font-weight:600;}
 
+
+.wallet-cur-sel{
+  padding:0 6px;border:none;background:var(--bg2);
+  border-right:1px solid var(--border);
+  font-size:11px;font-weight:700;color:var(--gold);
+  outline:none;cursor:pointer;height:100%;
+  font-family:'Noto Sans KR',sans-serif;
+  min-width:70px;
+}
+
 </style>
 </head>
 <body>
@@ -3868,10 +3878,40 @@ function saveWallet() {
 function switchWalletTab(idx) {
   _walletTab = idx;
   document.querySelectorAll('.w-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
-  // 입력폼 subType 기본값 조정
+
+  // 입력폼 subType 기본값
   var sub = document.getElementById('wSubType');
   if(sub) sub.value = (idx===3) ? 'expense' : 'income';
+
+  // 사전예매 탭: 화폐 선택 표시
+  var curSel   = document.getElementById('wCurrency');
+  var curLabel = document.getElementById('wCurrencyLabel');
+  var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+
+  if(idx === 3){
+    // 사전예매 → 화폐 선택 표시, LOCAL 옵션 텍스트 업데이트
+    if(curSel){
+      curSel.style.display = 'block';
+      curSel.options[1].text = sym + ' 현지통화';
+    }
+    if(curLabel) curLabel.style.display = 'none';
+    updateCurrencyLabel();
+  } else {
+    // 다른 탭 → 화폐 선택 숨기고 기본 심볼 표시
+    if(curSel) curSel.style.display = 'none';
+    if(curLabel){ curLabel.style.display = 'inline'; curLabel.textContent = sym; }
+  }
+
   renderWallet();
+}
+
+function updateCurrencyLabel(){
+  var curSel = document.getElementById('wCurrency');
+  var val = curSel ? curSel.value : 'LOCAL';
+  var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+  // 입력값 옆 라벨 변경
+  var amtInput = document.getElementById('wAmount');
+  if(amtInput) amtInput.placeholder = val==='KRW' ? '₩ 금액 입력' : sym+' 금액 입력';
 }
 
 function addWalletItem() {
@@ -3881,6 +3921,12 @@ function addWalletItem() {
   var amount  = parseInt(document.getElementById('wAmount').value) || 0;
   if(!desc || amount<=0){ document.getElementById('wDesc').focus(); return; }
 
+  // 사전예매: 화폐 단위 처리
+  var curSel = document.getElementById('wCurrency');
+  var curType = (_walletTab===3 && curSel) ? curSel.value : 'LOCAL';
+  var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+  var itemSym = (curType==='KRW') ? '₩' : sym;
+
   _walletItems.push({
     id: Date.now(),
     wallet: W_TAB_MAP[_walletTab],
@@ -3888,6 +3934,8 @@ function addWalletItem() {
     cat: cat,
     desc: desc,
     amount: amount,
+    currency: curType,   // 'KRW' 또는 'LOCAL'
+    symbol: itemSym,
     shopId: null,
     date: new Date().toLocaleDateString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
   });
@@ -3925,7 +3973,7 @@ function updateBalances() {
   });
 
   // 전체 총지출 (현금+카드+IC+사전예매)
-  var totalExp = _walletItems.filter(function(i){ return i.type==='expense'; })
+  var totalExp = _walletItems.filter(function(i){ return i.type==='expense' && i.wallet!=='prepay'; })
                              .reduce(function(s,i){ return s+i.amount; }, 0);
   var elTotal = document.getElementById('wTotalExpAll');
   var elTotalKrw = document.getElementById('wTotalExpAllKrw');
@@ -3937,6 +3985,7 @@ function renderWallet() {
   var list = document.getElementById('walletList'); if(!list) return;
   var label = document.getElementById('wListLabel');
   var wKey = W_TAB_MAP[_walletTab];
+  var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
 
   if(label) label.textContent = W_TAB_LABELS[_walletTab] + ' 내역';
 
@@ -3952,10 +4001,22 @@ function renderWallet() {
   }
 
   list.innerHTML =
-    '<div class="w-subtotal">'+
-      '<span>충전/입금 <b style="color:'+W_COLORS[wKey]+'">+¥'+inc.toLocaleString()+'</b></span>'+
-      '<span>지출 <b style="color:var(--red)">-¥'+exp.toLocaleString()+'</b></span>'+
-    '</div>' +
+    (function(){
+      if(wKey === 'prepay'){
+        // 사전예매: 원화 합계 표시
+        var krwTotal = filtered.reduce(function(s,item){
+          return s + (item.currency==='KRW' ? item.amount : Math.round(item.amount*(_rateKRW||0)));
+        }, 0);
+        return '<div class="w-subtotal">'+
+          '<span>총 예매금액</span>'+
+          '<span><b style="color:var(--red)">₩'+krwTotal.toLocaleString()+'</b></span>'+
+        '</div>';
+      }
+      return '<div class="w-subtotal">'+
+        '<span>충전/입금 <b style="color:'+W_COLORS[wKey]+'">+'+sym+inc.toLocaleString()+'</b></span>'+
+        '<span>지출 <b style="color:var(--red)">-'+sym+exp.toLocaleString()+'</b></span>'+
+      '</div>';
+    })() +
     filtered.map(function(item){
       var icon = CAT_ICON[item.cat]||'📦';
       var sign = item.type==='income' ? '+' : '-';
@@ -3967,8 +4028,10 @@ function renderWallet() {
           '<div class="wallet-item-meta">'+item.cat+' · '+(item.date||'')+(item.shopId?' · 🔗구매목록':'')+'</div>'+
         '</div>'+
         '<div class="wallet-item-amount">'+
-          '<span class="wia-yen" style="color:'+col+'">'+sign+'¥'+item.amount.toLocaleString()+'</span>'+
-          (_rateKRW?'<span class="wia-krw">₩'+Math.round(item.amount*_rateKRW).toLocaleString()+'</span>':'')+
+          '<span class="wia-yen" style="color:'+col+'">'+sign+(item.symbol||sym)+(item.currency==='KRW'?'':'')+item.amount.toLocaleString()+'</span>'+
+          (item.currency==='KRW'
+            ? '<span class="wia-krw">원화 결제</span>'
+            : (_rateKRW?'<span class="wia-krw">₩'+Math.round(item.amount*_rateKRW).toLocaleString()+'</span>':''))+
         '</div>'+
         '<button class="wallet-item-del" onclick="deleteWalletItem('+item.id+')">✕</button>'+
       '</div>';
@@ -5265,7 +5328,11 @@ function applyCurrency(countryName) {
         </div>
         <div class="wallet-form-row">
           <div class="wallet-amount-wrap">
-            <span class="wallet-currency">¥</span>
+            <select id="wCurrency" class="wallet-cur-sel" style="display:none;" onchange="updateCurrencyLabel()">
+              <option value="KRW">₩ 원화</option>
+              <option value="LOCAL">현지통화</option>
+            </select>
+            <span class="wallet-currency" id="wCurrencyLabel">¥</span>
             <input id="wAmount" class="wallet-input amount" type="number" placeholder="0" min="0" />
           </div>
           <button class="wallet-add-btn" onclick="addWalletItem()">+ 추가</button>

@@ -1119,6 +1119,26 @@ body.editing .edit-hint{display:flex}
 .city-btn-name{font-size:15px;font-weight:700;color:var(--ink)}
 .city-btn-en{font-size:10px;color:var(--ink3);letter-spacing:.5px}
 
+
+/* ── 항공사 선택 ── */
+.airline-sel-btn{
+  display:flex; align-items:center; gap:12px;
+  width:100%; padding:12px 14px;
+  background:var(--bg2); border:1.5px solid var(--border);
+  border-radius:var(--r-sm); cursor:pointer; text-align:left;
+  transition:all .15s; -webkit-tap-highlight-color:transparent;
+}
+.airline-sel-btn:active{ opacity:.8; }
+.airline-sel-btn.selected{
+  background:linear-gradient(135deg,#fff5f0,#ffe8dc);
+  border-color:#FF9A5C;
+}
+.air-logo{ font-size:20px; flex-shrink:0; width:28px; text-align:center; }
+.air-info{ flex:1; min-width:0; }
+.air-name{ font-size:14px; font-weight:700; color:var(--ink); }
+.air-en{ font-size:10px; color:var(--ink3); margin-top:2px; }
+.air-check{ font-size:14px; font-weight:700; color:#E8602A; flex-shrink:0; }
+
 </style>
 </head>
 <body>
@@ -1132,7 +1152,7 @@ body.editing .edit-hint{display:flex}
   </div>
   <div class="header-meta">
     <button class="meta-chip date-chip" onclick="openDateModal()">📅 <span id="dateChipText">06.14~17</span></button>
-    <button class="meta-chip airline-chip" onclick="document.getElementById('asiana-modal').classList.add('open')">✈ 아시아나항공</button>
+    <button class="meta-chip airline-chip" onclick="openAirlineModal()" id="airlineChipBtn">✈ <span id="airlineChipText">아시아나항공</span></button>
     <button class="meta-chip pax-chip" onclick="openPaxModal()">👫 <span id="paxChipText">2인 여행</span></button>
     <button class="meta-chip location-btn" onclick="openWallet()">👛 지갑</button>
     <button class="meta-chip smoking-btn" onclick="openClubJT()">🚬 흡연 구역</button>
@@ -1191,7 +1211,7 @@ body.editing .edit-hint{display:flex}
     <div class="rc-path">
       <div class="rc-node"><div class="rc-nd" style="background:#3a8fd4"></div><div><div class="rc-nn">이좋은집 오피스텔</div><div class="rc-ns">서울 구로구 오류동</div></div></div>
       <div class="rc-dash"></div>
-      <div class="rc-node"><div class="rc-nd" style="background:#28a060"></div><div><div class="rc-nn">김포국제공항</div><div class="rc-ns">아시아나항공 탑승</div></div></div>
+      <div class="rc-node"><div class="rc-nd" style="background:#28a060"></div><div><div class="rc-nn">김포국제공항</div></div></div>
     </div>
     <div class="rc-minimap"><canvas id="map0" style="width:100%;height:72px;"></canvas></div>
     <div class="rc-foot">
@@ -1210,20 +1230,20 @@ body.editing .edit-hint{display:flex}
   <div class="ev">
     <div class="ev-time"><span class="ev-time-val" id="et2" data-coord="37.5583,126.7906" data-time="08:10" onclick="openTimePicker('et2')">08:10</span><div class="ev-dot hl"></div></div>
     <div class="ev-body">
-      <p class="ev-cat">Flight · 아시아나항공</p>
+      <p class="ev-cat" id="flightCat1">Flight · 아시아나항공</p>
       <p class="ev-title red">✈ 비행기 출발</p>
       <div class="ev-desc"><ul>
-        <li>김포 → 간사이공항 · 아시아나항공 OZ111</li>
+        <li>김포 → 간사이공항 · <span id="flightName1">아시아나항공 OZ111</span></li>
         <li>비행시간 약 1시간 40분</li>
       </ul></div>
-      <div class="bus-timetable-btn" onclick="document.getElementById('asiana-modal').classList.add('open')" style="color:var(--blue);background:#EBF4FF;border-color:#90CAF9;">✈ 탑승 규정 보기</div>
+      <div class="bus-timetable-btn" onclick="openAirlineRules()" style="color:var(--blue);background:#EBF4FF;border-color:#90CAF9;">✈ 탑승 규정 보기</div>
     </div>
   </div>
 </div>
 
 <div class="rc">
   <div class="rc-left">
-    <div class="rc-head"><span class="rc-mode">✈ 아시아나 OZ111</span><span class="rc-dur">소요시간 : 1시간 40분</span></div>
+    <div class="rc-head"><span class="rc-mode" id="rcMode1">✈ 아시아나 OZ111</span><span class="rc-dur">소요시간 : 1시간 40분</span></div>
     <div class="rc-path">
       <div class="rc-node"><div class="rc-nd" style="background:#1a7ab8"></div><div><div class="rc-nn">김포국제공항</div><div class="rc-ns">08:10 출발</div></div></div>
       <div class="rc-dash"></div>
@@ -2588,13 +2608,13 @@ body.editing .edit-hint{display:flex}
   <div class="ev">
     <div class="ev-time"><span class="ev-time-val" id="et47" data-coord="34.4320,135.2366" data-time="20:30" onclick="openTimePicker('et47')">20:30</span><div class="ev-dot hl"></div></div>
     <div class="ev-body">
-      <p class="ev-cat">Flight · 아시아나항공 OZ112</p>
+      <p class="ev-cat" id="flightCat4">Flight · 아시아나항공 OZ112</p>
       <p class="ev-title red">✈ 간사이공항 출발</p>
       <div class="ev-desc"><ul>
         <li>간사이국제공항 → 김포국제공항</li>
         <li>비행시간 약 1시간 55분</li>
       </ul></div>
-      <div class="bus-timetable-btn" onclick="document.getElementById('asiana-modal').classList.add('open')" style="color:var(--blue);background:#EBF4FF;border-color:#90CAF9;">✈ 탑승 규정 보기</div>
+      <div class="bus-timetable-btn" onclick="openAirlineRules()" style="color:var(--blue);background:#EBF4FF;border-color:#90CAF9;">✈ 탑승 규정 보기</div>
     </div>
   </div>
 </div>
@@ -2720,7 +2740,8 @@ body.editing .edit-hint{display:flex}
           </div>
         </div>
       </div>
-      <button class="shop-clear-btn" onclick="clearChecked()">완료 항목 삭제</button>
+      <button class="shop-clear-btn" onclick="clearChecked()">완료 삭제</button>
+      <button onclick="saveAllData()" style="display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:20px;font-size:10px;font-weight:700;padding:7px 14px;cursor:pointer;min-height:36px;-webkit-tap-highlight-color:transparent;">💾 저장</button>
     </div><!-- /shop-footer -->
     </div><!-- /shopMainList -->
 
@@ -3273,19 +3294,24 @@ function switchRecTab(btn,area,idx){
 /* ══════════════════════════════════════
    쇼핑 리스트
 ══════════════════════════════════════ */
+var _SAVED_SHOP = [];
+var _SAVED_WALLET = [];
 var _shopItems=[], _shopCat='all', _shopShowAll=false;
 var CAT_LABELS={food:'🍜 식품',beauty:'💄 뷰티',fashion:'👗 패션',goods:'🎁 굿즈',cvs:'🏪 편의점',duty:'✈ 면세',etc:'📦 기타'};
 var DEFAULT_ITEMS=[];
 function initShop(){
-  try{
-    var s=localStorage.getItem('osaka_shop');
-    var saved=s?JSON.parse(s):[];
-    // 기존 DEFAULT_ITEMS 샘플 데이터 제거 (id 1~16)
-    _shopItems=saved.filter(function(i){ return i.id > 100; });
-    if(_shopItems.length===0) _shopItems=[];
-    localStorage.setItem('osaka_shop', JSON.stringify(_shopItems));
+  // 저장된 데이터 우선 로드
+  if(_SAVED_SHOP && _SAVED_SHOP.length > 0){
+    _shopItems = _SAVED_SHOP;
+  } else {
+    try{
+      var s=localStorage.getItem('osaka_shop');
+      var saved=s?JSON.parse(s):[];
+      _shopItems=saved.filter(function(i){ return i.id > 100; });
+      if(_shopItems.length===0) _shopItems=[];
+    }
+    catch(e){ _shopItems=[]; }
   }
-  catch(e){ _shopItems=[]; }
   renderShop();
 }
 function saveShop(){ try{localStorage.setItem('osaka_shop',JSON.stringify(_shopItems));}catch(e){} }
@@ -3578,7 +3604,21 @@ window.addEventListener('scroll',function(){
 ══════════════════════════════════════ */
 window.addEventListener('load',function(){
   drawAllMaps(); fetchRate(); fetchWeather();
-  setTimeout(function(){ highlightWeatherDay(0); }, 1000);
+
+  // 오늘 날짜가 여행 기간 안이면 해당 Day 탭 자동 선택
+  (function(){
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var start = new Date(TRIP_START);
+    start.setHours(0,0,0,0);
+    var diff = Math.round((today - start) / (1000*60*60*24));
+    var dayIdx = (diff >= 0 && diff < TRIP_DAYS) ? diff : 0;
+    if(dayIdx > 0) {
+      switchDay(dayIdx);
+    } else {
+      setTimeout(function(){ highlightWeatherDay(0); }, 1000);
+    }
+  })();
 });
 window.addEventListener('resize', drawAllMaps);
 
@@ -3786,8 +3826,13 @@ function openWallet() {
   document.getElementById('walletModal').classList.add('open');
 }
 function loadWallet() {
-  try { var s=localStorage.getItem('osaka_wallet'); _walletItems=s?JSON.parse(s):[]; }
-  catch(e){ _walletItems=[]; }
+  // 저장된 데이터 우선 로드
+  if(_SAVED_WALLET && _SAVED_WALLET.length > 0 && _walletItems.length === 0){
+    _walletItems = _SAVED_WALLET.slice();
+  } else if(_walletItems.length === 0){
+    try { var s=localStorage.getItem('osaka_wallet'); _walletItems=s?JSON.parse(s):[]; }
+    catch(e){ _walletItems=[]; }
+  }
 }
 function saveWallet() {
   try { localStorage.setItem('osaka_wallet', JSON.stringify(_walletItems)); } catch(e){}
@@ -4051,6 +4096,227 @@ function applyCity(nameKo,nameEn){
 }
 
 /* city-btn CSS */
+
+/* ══ 항공사 설정 ══ */
+var CURRENT_AIRLINE = 'asiana';
+
+var AIRLINE_DATA = {
+  asiana: {
+    name:'아시아나항공', en:'Asiana Airlines', code:'OZ',
+    baggage:'23kg × 1개', carryOn:'10kg · 개인소지품 1개',
+    liquid:'100ml 이하 · 1L 지퍼백 1개',
+    battery:'100Wh 이하 무제한 · 위탁 금지',
+    url:'https://flyasiana.com/C/KR/KO/contents/baggage',
+    note:'2025년부터 승무원 탑재 지원 없음'
+  },
+  koreanair: {
+    name:'대한항공', en:'Korean Air', code:'KE',
+    baggage:'23kg × 1개 (이코노미)', carryOn:'12kg · 기내 1개',
+    liquid:'100ml 이하 · 1L 지퍼백 1개',
+    battery:'100Wh 이하 무제한 · 위탁 금지',
+    url:'https://www.koreanair.com/kr/ko/travel-information/baggage',
+    note:'일부 노선 23kg × 2개 가능 — 예약 시 확인'
+  },
+  jeju: {
+    name:'제주항공', en:'Jeju Air', code:'7C',
+    baggage:'15kg (기본) · 추가 구매 가능', carryOn:'10kg · 기내 1개',
+    liquid:'100ml 이하 · 1L 지퍼백 1개',
+    battery:'100Wh 이하 무제한 · 위탁 금지',
+    url:'https://www.jejuair.net/ko/jp/information/baggage.do',
+    note:'위탁수하물 기본 15kg — 사전 구매 시 할인'
+  },
+  jinair: {
+    name:'진에어', en:'Jin Air', code:'LJ',
+    baggage:'15kg (기본) · 추가 구매 가능', carryOn:'10kg · 기내 1개',
+    liquid:'100ml 이하 · 1L 지퍼백 1개',
+    battery:'100Wh 이하 무제한 · 위탁 금지',
+    url:'https://www.jinair.com/information/baggage',
+    note:'위탁수하물 별도 구매 필요 (미포함 요금제)'
+  },
+  tway: {
+    name:'티웨이항공', en:"T'way Air", code:'TW',
+    baggage:'15kg (기본) · 추가 구매 가능', carryOn:'10kg · 기내 1개',
+    liquid:'100ml 이하 · 1L 지퍼백 1개',
+    battery:'100Wh 이하 무제한 · 위탁 금지',
+    url:'https://www.twayair.com/app/guide/baggage',
+    note:'요금제에 따라 위탁수하물 포함 여부 상이'
+  },
+  airseoul: {
+    name:'에어서울', en:'Air Seoul', code:'RS',
+    baggage:'15kg (기본) · 추가 구매 가능', carryOn:'10kg · 기내 1개',
+    liquid:'100ml 이하 · 1L 지퍼백 1개',
+    battery:'100Wh 이하 무제한 · 위탁 금지',
+    url:'https://flyairseoul.com/CW/ko/baggage.do',
+    note:'아시아나항공 계열 LCC'
+  },
+  airbusan: {
+    name:'에어부산', en:'Air Busan', code:'BX',
+    baggage:'15kg (기본) · 추가 구매 가능', carryOn:'10kg · 기내 1개',
+    liquid:'100ml 이하 · 1L 지퍼백 1개',
+    battery:'100Wh 이하 무제한 · 위탁 금지',
+    url:'https://www.airbusan.com/ko/information/baggage',
+    note:'부산 기반 LCC — 김해공항 출발 노선 다수'
+  },
+  eaststar: {
+    name:'이스타항공', en:'Eastar Jet', code:'ZE',
+    baggage:'15kg (기본) · 추가 구매 가능', carryOn:'10kg · 기내 1개',
+    liquid:'100ml 이하 · 1L 지퍼백 1개',
+    battery:'100Wh 이하 무제한 · 위탁 금지',
+    url:'https://www.eastarjet.com/guide/baggage',
+    note:'요금제에 따라 위탁수하물 포함 여부 상이'
+  }
+};
+
+function openAirlineModal(){
+  // 현재 선택 항공사 체크 표시
+  Object.keys(AIRLINE_DATA).forEach(function(k){
+    var el = document.getElementById('airCheck-'+k);
+    if(el) el.style.opacity = (k === CURRENT_AIRLINE) ? '1' : '0';
+    var btn = el ? el.closest('.airline-sel-btn') : null;
+    if(btn) btn.classList.toggle('selected', k === CURRENT_AIRLINE);
+  });
+  document.getElementById('airlineSelectModal').classList.add('open');
+}
+
+function selectAirline(name, key){
+  CURRENT_AIRLINE = key;
+  var a = AIRLINE_DATA[key];
+  if(!a) return;
+
+  // 1. 헤더 칩 텍스트
+  var chipEl = document.getElementById('airlineChipText');
+  if(chipEl) chipEl.textContent = name;
+
+  // 2. 체크 표시 업데이트
+  Object.keys(AIRLINE_DATA).forEach(function(k){
+    var el = document.getElementById('airCheck-'+k);
+    if(el) el.style.opacity = (k === key) ? '1' : '0';
+    var btn = el ? el.closest('.airline-sel-btn') : null;
+    if(btn) btn.classList.toggle('selected', k === key);
+  });
+
+  // 3. Day1 일정 텍스트 업데이트
+  var cat1 = document.getElementById('flightCat1');
+  if(cat1) cat1.textContent = 'Flight · ' + name;
+
+  var fn1 = document.getElementById('flightName1');
+  if(fn1) fn1.textContent = name + ' ' + a.code + '111';
+
+  var rc1 = document.getElementById('rcMode1');
+  if(rc1) rc1.textContent = '✈ ' + name + ' ' + a.code + '111';
+
+  // 4. Day4 일정 텍스트 업데이트
+  var cat4 = document.getElementById('flightCat4');
+  if(cat4) cat4.textContent = 'Flight · ' + name + ' ' + a.code + '112';
+
+  var rc4 = document.getElementById('rcMode4');
+  if(rc4) rc4.textContent = '✈ ' + name + ' ' + a.code + '112 · 20:30 출발';
+
+  document.getElementById('airlineSelectModal').classList.remove('open');
+  // 탑승규정 모달 바로 열기
+  setTimeout(function(){ openAirlineRules(); }, 200);
+}
+
+function openAirlineRules(){
+  var a = AIRLINE_DATA[CURRENT_AIRLINE];
+  if(!a) return;
+
+  // 모달 헤더 업데이트
+  var head = document.querySelector('#asiana-modal .modal-head h3');
+  if(head) head.textContent = '✈ ' + a.name + ' 탑승 규정';
+
+  // 모달 내용 동적 생성
+  var body = document.querySelector('#asiana-modal .modal-body');
+  if(!body) return;
+
+  body.innerHTML =
+    '<div class="bus-info-strip" style="margin-bottom:14px;">'+
+      '<div class="bus-info-item"><div class="bi-label">항공사</div><div class="bi-val" style="font-size:13px;">'+a.name+'</div></div>'+
+      '<div class="bus-info-item"><div class="bi-label">코드</div><div class="bi-val">'+a.code+'</div></div>'+
+      '<div class="bus-info-item"><div class="bi-label">구분</div><div class="bi-val" style="font-size:12px;">'+(Object.keys(AIRLINE_DATA).indexOf(CURRENT_AIRLINE)<2?'대형항공사':'저비용항공사')+'</div></div>'+
+    '</div>'+
+
+    '<div class="timetable-label">🧳 위탁수하물</div>'+
+    '<div class="toss-card" style="margin-bottom:12px;">'+
+      '<div class="toss-header" style="background:#EBF4FF;">'+
+        '<span class="toss-logo" style="color:#1565C0;">이코노미 클래스</span>'+
+      '</div>'+
+      '<div class="toss-rows">'+
+        '<div class="toss-row"><span class="toss-label">허용 무게</span><span class="toss-val free">'+a.baggage+'</span></div>'+
+        '<div class="toss-row"><span class="toss-label">크기 제한</span><span class="toss-val">세 변의 합 158cm 이하</span></div>'+
+        '<div class="toss-row"><span class="toss-label">32kg 초과</span><span class="toss-val warn">위탁 불가</span></div>'+
+      '</div>'+
+      '<div class="toss-tip">💡 '+a.note+'</div>'+
+    '</div>'+
+
+    '<div class="timetable-label">🎒 기내수하물</div>'+
+    '<div class="toss-card" style="margin-bottom:12px;">'+
+      '<div class="toss-header" style="background:#f0faf0;">'+
+        '<span class="toss-logo" style="color:#2E7D32;">기내 반입 허용</span>'+
+      '</div>'+
+      '<div class="toss-rows">'+
+        '<div class="toss-row"><span class="toss-label">수하물</span><span class="toss-val free">'+a.carryOn+'</span></div>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="timetable-label">💧 액체류 · 🔋 보조배터리</div>'+
+    '<div class="toss-card" style="margin-bottom:12px;">'+
+      '<div class="toss-rows">'+
+        '<div class="toss-row"><span class="toss-label">액체류</span><span class="toss-val">'+a.liquid+'</span></div>'+
+        '<div class="toss-row"><span class="toss-label">보조배터리</span><span class="toss-val warn">'+a.battery+'</span></div>'+
+      '</div>'+
+    '</div>'+
+
+    '<a class="modal-link-btn" href="'+a.url+'" target="_blank" rel="noopener">'+
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'+
+      a.name+' 공식 수하물 안내'+
+    '</a>';
+
+  document.getElementById('asiana-modal').classList.add('open');
+}
+
+
+/* ══ 데이터 저장 (파일 다운로드) ══ */
+function saveAllData(){
+  // 현재 _shopItems, _walletItems를 HTML에 삽입해서 파일 다운로드
+  var html = document.documentElement.outerHTML;
+
+  // 초기 데이터 주입 마커 교체
+  html = html.replace(
+    /var _SAVED_SHOP = \[.*?\];/s,
+    'var _SAVED_SHOP = ' + JSON.stringify(_shopItems) + ';'
+  );
+  html = html.replace(
+    /var _SAVED_WALLET = \[.*?\];/s,
+    'var _SAVED_WALLET = ' + JSON.stringify(_walletItems) + ';'
+  );
+
+  var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'osaka_trip_saved.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showSyncToast('💾 저장 완료! 다운로드된 파일을 사용하세요');
+}
+
+
+function toggleEdit3() {
+  var body=document.body, btn=document.getElementById('editBtn3');
+  var on=body.classList.toggle('editing');
+  btn.textContent=on?'✅ 편집 완료':'✏️ 일정 편집';
+  btn.classList.toggle('on',on);
+  document.querySelectorAll('.ev-title,.ev-cat,.ev-desc p,.ev-desc li').forEach(function(el){ el.contentEditable=on?'true':'false'; });
+}
+
+function toggleEdit4() {
+  var body=document.body, btn=document.getElementById('editBtn4');
+  var on=body.classList.toggle('editing');
+  btn.textContent=on?'✅ 편집 완료':'✏️ 일정 편집';
+  btn.classList.toggle('on',on);
+  document.querySelectorAll('.ev-title,.ev-cat,.ev-desc p,.ev-desc li').forEach(function(el){ el.contentEditable=on?'true':'false'; });
+}
+
 </script>
 
 <!-- 리무진 버스 시간표 모달 -->
@@ -4533,6 +4799,93 @@ function applyCity(nameKo,nameEn){
 </div>
 
 
+
+<!-- 항공사 선택 모달 -->
+<div class="modal-overlay" id="airlineSelectModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-head">
+      <h3>✈ 항공사 선택</h3>
+      <button class="modal-close" onclick="document.getElementById('airlineSelectModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="timetable-label">한국 출발 인기 항공사</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:16px;">
+
+        <!-- 대형항공사 -->
+        <div class="timetable-label" style="margin-top:4px;">🏢 대형항공사 (FSC)</div>
+        <button class="airline-sel-btn" onclick="selectAirline('아시아나항공','asiana')">
+          <div class="air-logo">🇰🇷</div>
+          <div class="air-info">
+            <div class="air-name">아시아나항공</div>
+            <div class="air-en">Asiana Airlines · OZ</div>
+          </div>
+          <div class="air-check" id="airCheck-asiana">✓</div>
+        </button>
+        <button class="airline-sel-btn" onclick="selectAirline('대한항공','koreanair')">
+          <div class="air-logo">🇰🇷</div>
+          <div class="air-info">
+            <div class="air-name">대한항공</div>
+            <div class="air-en">Korean Air · KE</div>
+          </div>
+          <div class="air-check" id="airCheck-koreanair" style="opacity:0;">✓</div>
+        </button>
+
+        <!-- LCC -->
+        <div class="timetable-label" style="margin-top:8px;">💺 저비용항공사 (LCC)</div>
+        <button class="airline-sel-btn" onclick="selectAirline('제주항공','jeju')">
+          <div class="air-logo">🟠</div>
+          <div class="air-info">
+            <div class="air-name">제주항공</div>
+            <div class="air-en">Jeju Air · 7C</div>
+          </div>
+          <div class="air-check" id="airCheck-jeju" style="opacity:0;">✓</div>
+        </button>
+        <button class="airline-sel-btn" onclick="selectAirline('진에어','jinair')">
+          <div class="air-logo">🔵</div>
+          <div class="air-info">
+            <div class="air-name">진에어</div>
+            <div class="air-en">Jin Air · LJ</div>
+          </div>
+          <div class="air-check" id="airCheck-jinair" style="opacity:0;">✓</div>
+        </button>
+        <button class="airline-sel-btn" onclick="selectAirline('티웨이항공','tway')">
+          <div class="air-logo">🔴</div>
+          <div class="air-info">
+            <div class="air-name">티웨이항공</div>
+            <div class="air-en">T'way Air · TW</div>
+          </div>
+          <div class="air-check" id="airCheck-tway" style="opacity:0;">✓</div>
+        </button>
+        <button class="airline-sel-btn" onclick="selectAirline('에어서울','airseoul')">
+          <div class="air-logo">🌸</div>
+          <div class="air-info">
+            <div class="air-name">에어서울</div>
+            <div class="air-en">Air Seoul · RS</div>
+          </div>
+          <div class="air-check" id="airCheck-airseoul" style="opacity:0;">✓</div>
+        </button>
+        <button class="airline-sel-btn" onclick="selectAirline('에어부산','airbusan')">
+          <div class="air-logo">🟡</div>
+          <div class="air-info">
+            <div class="air-name">에어부산</div>
+            <div class="air-en">Air Busan · BX</div>
+          </div>
+          <div class="air-check" id="airCheck-airbusan" style="opacity:0;">✓</div>
+        </button>
+        <button class="airline-sel-btn" onclick="selectAirline('이스타항공','eaststar')">
+          <div class="air-logo">⭐</div>
+          <div class="air-info">
+            <div class="air-name">이스타항공</div>
+            <div class="air-en">Eastar Jet · ZE</div>
+          </div>
+          <div class="air-check" id="airCheck-eaststar" style="opacity:0;">✓</div>
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 아시아나 탑승 규정 모달 -->
 <div class="modal-overlay" id="asiana-modal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal" style="max-width:520px;">
@@ -4803,6 +5156,7 @@ function applyCity(nameKo,nameEn){
       </div>
 
       <!-- 내역 -->
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button onclick="saveWallet();saveAllData()" style="display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:20px;font-size:10px;font-weight:700;padding:7px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">💾 저장</button></div>
       <div class="timetable-label" id="wListLabel">💴 현금 내역</div>
       <div id="walletList" class="wallet-list">
         <div class="wallet-empty">내역이 없어요.</div>

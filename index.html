@@ -416,7 +416,7 @@ body.editing .edit-hint{display:flex}
 .rc-fare-2p{font-size:10px;color:var(--ink2);font-weight:600;margin-top:3px}
 .rc-btn{
   display:inline-flex;align-items:center;gap:4px;
-  background:var(--ink);color:#fff;
+  background:linear-gradient(135deg,#42A5F5,#1565C0);color:#fff;
   font-size:10px;font-weight:700;
   padding:7px 10px;border-radius:20px;
   white-space:nowrap;transition:opacity .15s;
@@ -647,13 +647,13 @@ body.editing .edit-hint{display:flex}
   -webkit-tap-highlight-color:transparent;
 }
 .atm-ctab span{font-size:10px;font-weight:400;color:var(--ink3);display:block}
-.atm-ctab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.atm-ctab.active{background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border-color:#E8602A}
 .atm-ctab.active span{color:rgba(255,255,255,.6)}
 .atm-cpanel{display:none}.atm-cpanel.active{display:block}
-.toss-card{background:var(--surface);border:1.5px solid #BBDEFB;border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px}
-.toss-header{background:#EBF4FF;padding:8px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.toss-logo{font-size:var(--fsm);font-weight:700;color:#1565C0}
-.toss-badge{font-size:10px;font-weight:500;background:#fff;color:#1565C0;border:1px solid #90CAF9;padding:2px 8px;border-radius:10px}
+.toss-card{background:var(--surface);border:1.5px solid #FFB899;border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px}
+.toss-header{background:linear-gradient(135deg,#FF9A5C,#E8602A);padding:8px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.toss-logo{font-size:var(--fsm);font-weight:700;color:#fff}
+.toss-badge{font-size:10px;font-weight:600;background:rgba(255,255,255,0.25);color:#fff;border:1px solid rgba(255,255,255,0.5);padding:2px 8px;border-radius:10px}
 .toss-rows{padding:10px 13px;display:flex;flex-direction:column;gap:7px}
 .toss-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .toss-label{font-size:var(--fsm);color:var(--ink2)}
@@ -1168,6 +1168,24 @@ body.editing .edit-hint{display:flex}
   cursor:pointer;flex-shrink:0;white-space:nowrap;
   -webkit-tap-highlight-color:transparent;
 }
+
+
+.date-chip{background:linear-gradient(135deg,#42A5F5,#1565C0)!important;color:#fff!important;border:1.5px solid #1565C0!important;}
+.airline-chip{background:linear-gradient(135deg,#42A5F5,#1565C0)!important;color:#fff!important;border:1.5px solid #1565C0!important;}
+.pax-chip{background:linear-gradient(135deg,#42A5F5,#1565C0)!important;color:#fff!important;border:1.5px solid #1565C0!important;}
+
+.w-forecast-full{display:grid;gap:5px;width:100%;box-sizing:border-box;}
+.weather-widget{width:100%;box-sizing:border-box;}
+#wContent{width:100%;box-sizing:border-box;}
+
+.wfc-item{
+  flex:1;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:6px 2px;text-align:center;min-width:0;
+  overflow:hidden;display:flex;flex-direction:column;align-items:center;
+  justify-content:space-between;min-height:90px;}
+.wfc-icon-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2px 0;}
+.wfc-desc{font-size:7px;color:var(--ink3);font-weight:600;line-height:1.2;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.wfc-icon{font-size:22px;line-height:1;}
 
 </style>
 </head>
@@ -3107,8 +3125,10 @@ function applyWeather(d) {
   var temp=Math.round(c.temperature_2m), feels=Math.round(c.apparent_temperature);
   var humid=c.relative_humidity_2m, wind=Math.round(c.wind_speed_10m);
   var now=new Date();
+  var wdesc2 = WX_DESC[c.weather_code]||'';
   document.getElementById('wDate').textContent=
-    String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준';
+    String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준  '+
+    Math.round(c.temperature_2m)+'°C '+wdesc2;
 
   // 여행 날짜 기준 라벨 + 날짜
   var DAY_NAMES_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -3131,21 +3151,15 @@ function applyWeather(d) {
     fcHtml+='<div class="wfc-item'+(isToday?' today':'')+'" onclick="switchDay('+i+')" style="cursor:pointer;">'+
       '<div class="wfc-day">'+dayLabels[i]+'</div>'+
       '<div class="wfc-date">'+dayDates[i]+'</div>'+
-      '<div class="wfc-icon">'+fi+'</div>'+
+      '<div class="wfc-icon-wrap"><div class="wfc-icon">'+fi+'</div></div>'+
+      '<div class="wfc-desc">'+(WX_DESC[daily.weather_code[i]]||'')+'</div>'+
       '<div class="wfc-temp">'+Math.round(daily.temperature_2m_max[i])+'°/'+Math.round(daily.temperature_2m_min[i])+'°</div>'+
       '<div class="wfc-rain">💧'+daily.precipitation_probability_max[i]+'%</div>'+
     '</div>';
   }
 
   document.getElementById('wContent').innerHTML=
-    '<div class="w-compact">'+
-      '<div class="w-now">'+
-        '<span class="w-icon">'+icon+'</span>'+
-        '<span class="w-temp">'+temp+'<small>°C</small></span>'+
-        '<span class="w-desc">'+desc+'<br><small>체감 '+feels+'°C · 습도 '+humid+'%</small></span>'+
-      '</div>'+
-      '<div class="w-forecast" style="grid-template-columns:repeat('+count+',1fr)">'+fcHtml+'</div>'+
-    '</div>';
+    '<div class="w-forecast-full" style="grid-template-columns:repeat('+count+',1fr)">'+fcHtml+'</div>';
 }
 
 /* ══════════════════════════════════════
@@ -4326,8 +4340,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <div class="atm-cpanel active" id="atm-cp-0">
         <div class="toss-card" style="margin-bottom:14px;">
           <div class="toss-header">
-            <span class="toss-logo" style="color:#1565C0;">토스뱅크 체크카드</span>
-            <span class="toss-badge" style="color:#1565C0;border-color:#90CAF9;">외화통장 연결 필수</span>
+            <span class="toss-logo">토스뱅크 체크카드</span>
+            <span class="toss-badge">외화통장 연결 필수</span>
           </div>
           <div class="toss-rows">
             <div class="toss-row"><span class="toss-label">세븐뱅크 ATM 수수료</span><span class="toss-val free">월 5회·$700까지 무료</span></div>
@@ -4371,9 +4385,9 @@ document.addEventListener('DOMContentLoaded', function(){
       <!-- 트래블월렛 패널 -->
       <div class="atm-cpanel" id="atm-cp-1">
         <div class="toss-card" style="margin-bottom:14px;border-color:#BBDEFB;">
-          <div class="toss-header" style="background:#f0f4ff;">
-            <span class="toss-logo" style="color:#3d5afe;">트래블월렛 카드</span>
-            <span class="toss-badge" style="color:#3d5afe;border-color:#90a4ff;">이온ATM 완전 무료</span>
+          <div class="toss-header">
+            <span class="toss-logo">트래블월렛 카드</span>
+            <span class="toss-badge">이온ATM 완전 무료</span>
           </div>
           <div class="toss-rows">
             <div class="toss-row"><span class="toss-label">이온(AEON) ATM 수수료</span><span class="toss-val free">완전 무료</span></div>
@@ -4645,9 +4659,9 @@ document.addEventListener('DOMContentLoaded', function(){
       <!-- 위탁수하물 -->
       <div class="timetable-label">🧳 위탁 수하물 (일본 노선)</div>
       <div class="toss-card" style="margin-bottom:12px;">
-        <div class="toss-header" style="background:#EBF4FF;">
-          <span class="toss-logo" style="color:#1565C0;">이코노미 클래스</span>
-          <span class="toss-badge" style="color:#1565C0;border-color:#90CAF9;">OZ111 · OZ112</span>
+        <div class="toss-header">
+          <span class="toss-logo">이코노미 클래스</span>
+          <span class="toss-badge">OZ111 · OZ112</span>
         </div>
         <div class="toss-rows">
           <div class="toss-row"><span class="toss-label">무게 허용</span><span class="toss-val free">23kg × 1개</span></div>
@@ -4661,8 +4675,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <!-- 기내 수하물 -->
       <div class="timetable-label">🎒 기내 수하물</div>
       <div class="toss-card" style="margin-bottom:12px;">
-        <div class="toss-header" style="background:#f0faf0;">
-          <span class="toss-logo" style="color:#2E7D32;">기내 반입 허용</span>
+        <div class="toss-header">
+          <span class="toss-logo">기내 반입 허용</span>
         </div>
         <div class="toss-rows">
           <div class="toss-row"><span class="toss-label">수하물 1개</span><span class="toss-val free">최대 10kg</span></div>
@@ -4700,8 +4714,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <!-- 보조배터리 -->
       <div class="timetable-label">🔋 보조배터리 규정</div>
       <div class="toss-card" style="margin-bottom:12px;">
-        <div class="toss-header" style="background:#fff8f0;">
-          <span class="toss-logo" style="color:#E65100;">반드시 기내 반입 (위탁 절대 금지)</span>
+        <div class="toss-header">
+          <span class="toss-logo">반드시 기내 반입 (위탁 절대 금지)</span>
         </div>
         <div class="toss-rows">
           <div class="toss-row"><span class="toss-label">100Wh 이하</span><span class="toss-val free">개수 제한 없이 기내 반입 가능</span></div>

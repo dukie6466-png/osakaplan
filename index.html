@@ -1241,6 +1241,21 @@ body.editing .edit-hint{display:flex}
 }
 .prepay-input:focus,.prepay-select:focus{border-color:var(--gold);}
 
+
+.air-logo{
+  font-size:20px; flex-shrink:0; width:36px; height:36px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:8px; font-weight:900;
+  font-family:'Noto Sans KR',sans-serif;
+  position:relative;
+}
+.air-logo span{
+  position:absolute; bottom:0; right:0;
+  font-size:7px; font-weight:900; letter-spacing:0;
+  line-height:1; background:rgba(255,255,255,0.9);
+  border-radius:3px; padding:1px 2px; color:#1A1612;
+}
+
 </style>
 </head>
 <body>
@@ -5634,7 +5649,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
         <!-- 대형항공사 -->
         <div class="timetable-label" style="margin-top:4px;">🏢 대형항공사 (FSC)</div>
         <button class="airline-sel-btn" onclick="selectAirline('아시아나항공','asiana')">
-          <div class="air-logo">🇰🇷</div>
+          <div class="air-logo" style="background:#F2D0D3;color:#C0324A;">✈<span style="color:#C0324A;">OZ</span></div>
           <div class="air-info">
             <div class="air-name">아시아나항공</div>
             <div class="air-en">Asiana Airlines · OZ</div>
@@ -5642,7 +5657,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
           <div class="air-check" id="airCheck-asiana">✓</div>
         </button>
         <button class="airline-sel-btn" onclick="selectAirline('대한항공','koreanair')">
-          <div class="air-logo">🇰🇷</div>
+          <div class="air-logo" style="background:#D0DEFF;color:#002B7F;">✈<span style="color:#002B7F;">KE</span></div>
           <div class="air-info">
             <div class="air-name">대한항공</div>
             <div class="air-en">Korean Air · KE</div>
@@ -5653,7 +5668,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
         <!-- LCC -->
         <div class="timetable-label" style="margin-top:8px;">💺 저비용항공사 (LCC)</div>
         <button class="airline-sel-btn" onclick="selectAirline('제주항공','jeju')">
-          <div class="air-logo">🟠</div>
+          <div class="air-logo" style="background:#FFE8D0;color:#E05500;">✈<span style="color:#E05500;">7C</span></div>
           <div class="air-info">
             <div class="air-name">제주항공</div>
             <div class="air-en">Jeju Air · 7C</div>
@@ -5661,7 +5676,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
           <div class="air-check" id="airCheck-jeju" style="opacity:0;">✓</div>
         </button>
         <button class="airline-sel-btn" onclick="selectAirline('진에어','jinair')">
-          <div class="air-logo">🔵</div>
+          <div class="air-logo" style="background:#D0E0FF;color:#003A8C;">✈<span style="color:#003A8C;">LJ</span></div>
           <div class="air-info">
             <div class="air-name">진에어</div>
             <div class="air-en">Jin Air · LJ</div>
@@ -5669,7 +5684,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
           <div class="air-check" id="airCheck-jinair" style="opacity:0;">✓</div>
         </button>
         <button class="airline-sel-btn" onclick="selectAirline('티웨이항공','tway')">
-          <div class="air-logo">🔴</div>
+          <div class="air-logo" style="background:#FFD0D0;color:#C0000A;">✈<span style="color:#C0000A;">TW</span></div>
           <div class="air-info">
             <div class="air-name">티웨이항공</div>
             <div class="air-en">T'way Air · TW</div>
@@ -5677,7 +5692,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
           <div class="air-check" id="airCheck-tway" style="opacity:0;">✓</div>
         </button>
         <button class="airline-sel-btn" onclick="selectAirline('에어서울','airseoul')">
-          <div class="air-logo">🌸</div>
+          <div class="air-logo" style="background:#D0E4FF;color:#00408C;">✈<span style="color:#00408C;">RS</span></div>
           <div class="air-info">
             <div class="air-name">에어서울</div>
             <div class="air-en">Air Seoul · RS</div>
@@ -5685,7 +5700,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
           <div class="air-check" id="airCheck-airseoul" style="opacity:0;">✓</div>
         </button>
         <button class="airline-sel-btn" onclick="selectAirline('에어부산','airbusan')">
-          <div class="air-logo">🟡</div>
+          <div class="air-logo" style="background:#FFF3C0;color:#8A6800;">✈<span style="color:#8A6800;">BX</span></div>
           <div class="air-info">
             <div class="air-name">에어부산</div>
             <div class="air-en">Air Busan · BX</div>
@@ -5693,7 +5708,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
           <div class="air-check" id="airCheck-airbusan" style="opacity:0;">✓</div>
         </button>
         <button class="airline-sel-btn" onclick="selectAirline('이스타항공','eaststar')">
-          <div class="air-logo">⭐</div>
+          <div class="air-logo" style="background:#D0D8FF;color:#001E6C;">✈<span style="color:#001E6C;">ZE</span></div>
           <div class="air-info">
             <div class="air-name">이스타항공</div>
             <div class="air-en">Eastar Jet · ZE</div>

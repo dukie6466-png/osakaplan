@@ -3904,6 +3904,7 @@ function openWallet() {
   _walletShowAll = false;
   var list=document.getElementById('walletList'); if(list) list.style.display='none';
   var btn=document.getElementById('wListToggleBtn'); if(btn) btn.textContent='▼ 내역 보기';
+  var mBtn=document.getElementById('walletMoreBtn'); if(mBtn) mBtn.style.display='none';
   updateWalletForm(_walletTab);
   // 쇼핑 연동 합계 직접 계산
   var wShop = document.getElementById('walletShopTotal');

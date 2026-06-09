@@ -1120,13 +1120,18 @@ body.editing .edit-hint{display:flex}
 .city-btn-en{font-size:10px;color:var(--ink3);letter-spacing:.5px}
 
 
-.store-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+.store-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
 .store-cat-btn{
-  padding:7px 4px;border-radius:var(--r-sm);border:1.5px solid var(--border);
-  background:var(--bg2);font-size:var(--f2xs);font-weight:700;color:var(--ink2);
-  cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:center;
+  font-size:11px;font-weight:700;
+  padding:0;border-radius:12px;
+  border:1.5px solid var(--border);background:var(--surface);color:var(--ink);
+  cursor:pointer;transition:all .15s;
+  height:40px;width:100%;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+  white-space:nowrap;
 }
-.store-cat-btn.active{background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border-color:#E8602A;}
+.store-cat-btn.active{background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff!important;border-color:#E8602A;}
 .store-cards-wrap{display:flex;flex-direction:column;gap:8px;}
 .store-cards-wrap.collapsed .store-card:nth-child(n+4){display:none;}
 .store-card{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);text-decoration:none;color:var(--ink);-webkit-tap-highlight-color:transparent;}
@@ -1138,6 +1143,31 @@ body.editing .edit-hint{display:flex}
 .store-desc{font-size:var(--f2xs);color:var(--ink3);margin-top:2px;}
 .store-arrow{font-size:14px;color:var(--ink3);flex-shrink:0;}
 .store-more-btn{width:100%;margin-top:8px;padding:9px;background:var(--bg2);border:1.5px dashed var(--gold);border-radius:var(--r-sm);font-size:var(--fxs);font-weight:700;color:var(--gold);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+
+
+.store-search-wrap{margin-bottom:12px;}
+.store-search-box{
+  display:flex;align-items:center;gap:0;
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
+  background:var(--surface);overflow:hidden;height:44px;
+}
+.store-search-icon{
+  padding:0 10px;font-size:16px;flex-shrink:0;
+  color:var(--ink3);
+}
+.store-search-input{
+  flex:1;border:none;outline:none;font-size:var(--fsm);
+  color:var(--ink);background:transparent;
+  font-family:'Noto Sans KR',sans-serif;
+  padding:0 4px;
+}
+.store-search-btn{
+  padding:0 16px;height:100%;
+  background:linear-gradient(135deg,#FF9A5C,#E8602A);
+  color:#fff;border:none;font-size:var(--fsm);font-weight:700;
+  cursor:pointer;flex-shrink:0;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+}
 
 </style>
 </head>
@@ -2712,12 +2742,12 @@ body.editing .edit-hint{display:flex}
     <!-- 카테고리 탭 -->
     <div class="shop-cats">
       <button class="shop-cat active" onclick="switchShopCat(this,'all')">전체</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'food')">🍜 식품</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'beauty')">💄 뷰티</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'fashion')">👗 패션</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'goods')">🎁 굿즈</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'food')">🍱 식품/간식</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'beauty')">👗 패션/뷰티</button>
       <button class="shop-cat" onclick="switchShopCat(this,'cvs')">🏪 편의점</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'duty')">✈ 면세</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'drug')">💊 드럭스토어</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'goods')">🎁 굿즈</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'duty')">🛫 면세</button>
       <button class="shop-cat" onclick="switchShopCat(this,'etc')">📦 기타</button>
     </div>
 
@@ -2749,9 +2779,15 @@ body.editing .edit-hint{display:flex}
       <div class="shop-head">
         <div>
           <div class="shop-title">📍 매장 찾기</div>
-          <div class="shop-sub">카드를 탭하면 구글맵 검색 · ✏️ 편집 모드에서 수정 가능</div>
+          <div class="shop-sub">카드를 탭하면 구글맵 검색</div>
         </div>
-        <div class="shop-head-actions" style="display:flex;gap:8px;">
+      </div>
+      <!-- 직접 찾기 -->
+      <div class="store-search-wrap">
+        <div class="store-search-box">
+          <span class="store-search-icon">🔍</span>
+          <input id="storeSearchInput" class="store-search-input" type="text" placeholder="매장명 검색 (예: 이온몰, 마츠키요...)" />
+          <button class="store-search-btn" onclick="searchStore()">찾기</button>
         </div>
       </div>
       <div class="store-cats">
@@ -2764,6 +2800,7 @@ body.editing .edit-hint{display:flex}
         <button class="store-cat-btn " onclick="switchStoreCat(this,'duty')">🛫 면세</button>
         <button class="store-cat-btn " onclick="switchStoreCat(this,'etc')">📦 기타</button>
       </div>
+      
       <div class="store-panel" id="store-cat-cvs" style="">
         <div class="store-cards-wrap collapsed" id="store-wrap-cvs">
           <a class="store-card" href="https://www.google.com/maps/search/セブンイレブン+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">세븐일레븐 우메다역점</div><div class="store-area">우메다</div><div class="store-desc">ATM·도시락·세금환급</div></div><div class="store-arrow">→</div></a>
@@ -2788,12 +2825,12 @@ body.editing .edit-hint{display:flex}
       </div>
       <div class="store-panel" id="store-cat-dept" style="display:none;">
         <div class="store-cards-wrap collapsed" id="store-wrap-dept">
-          <a class="store-card" href="https://www.google.com/maps/search/大丸+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">다이마루 우메다점</div><div class="store-area">우메다 · 백화점</div><div class="store-desc">지하 식품관·기념품·면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/阪急百貨店+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">한큐 백화점 우메다본점</div><div class="store-area">우메다 · 백화점</div><div class="store-desc">일본 최대 백화점·럭셔리</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ルクア+大阪+梅田" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">루쿠아 오사카</div><div class="store-area">우메다 · 쇼핑몰</div><div class="store-desc">JR 오사카역 직결·트렌디</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/なんばパークス+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">난바 파크스</div><div class="store-area">난바 · 쇼핑몰</div><div class="store-desc">루프탑 가든·패션·식당</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/大丸+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">다이마루 우메다점</div><div class="store-area">우메다 · 백화점</div><div class="store-desc">지하 식품관·면세</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/阪急百貨店+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">한큐 백화점 우메다본점</div><div class="store-area">우메다 · 백화점</div><div class="store-desc">일본 최대 백화점</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/ルクア+大阪+梅田" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">루쿠아 오사카</div><div class="store-area">우메다 · 쇼핑몰</div><div class="store-desc">JR역 직결·트렌디</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/なんばパークス+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">난바 파크스</div><div class="store-area">난바 · 쇼핑몰</div><div class="store-desc">루프탑·패션·식당</div></div><div class="store-arrow">→</div></a>
           <a class="store-card" href="https://www.google.com/maps/search/阪神百貨店+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">한신 백화점 우메다</div><div class="store-area">우메다 · 백화점</div><div class="store-desc">지하 식품·식당가</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/なんばCITY+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">난바 시티</div><div class="store-area">난바 · 쇼핑몰</div><div class="store-desc">지하철 직결·쇼핑·식사</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/なんばCITY+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">난바 시티</div><div class="store-area">난바 · 쇼핑몰</div><div class="store-desc">지하철 직결·쇼핑</div></div><div class="store-arrow">→</div></a>
         </div>
         <button class="store-more-btn" id="store-more-dept" onclick="toggleStoreMore(this,'dept')">▼ 더보기 (3개 더)</button>
       </div>
@@ -2826,7 +2863,7 @@ body.editing .edit-hint{display:flex}
           <a class="store-card" href="https://www.google.com/maps/search/蔦屋書店+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">📚</div><div class="store-info"><div class="store-name">츠타야 우메다</div><div class="store-area">우메다</div><div class="store-desc">책·음반·굿즈</div></div><div class="store-arrow">→</div></a>
           <a class="store-card" href="https://www.google.com/maps/search/ジャンプショップ+大阪+難波" target="_blank" rel="noopener"><div class="store-emoji">🎌</div><div class="store-info"><div class="store-name">점프샵 오사카</div><div class="store-area">난바</div><div class="store-desc">원피스·나루토·DBZ</div></div><div class="store-arrow">→</div></a>
           <a class="store-card" href="https://www.google.com/maps/search/サンリオ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🐱</div><div class="store-info"><div class="store-name">산리오 갤러리 우메다</div><div class="store-area">우메다</div><div class="store-desc">헬로키티·산리오 굿즈</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/東急ハンズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">도큐핸즈 우메다</div><div class="store-area">우메다</div><div class="store-desc">생활잡화·아이디어 상품</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/東急ハンズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">도큐핸즈 우메다</div><div class="store-area">우메다</div><div class="store-desc">생활잡화·아이디어</div></div><div class="store-arrow">→</div></a>
         </div>
         <button class="store-more-btn" id="store-more-goods" onclick="toggleStoreMore(this,'goods')">▼ 더보기 (3개 더)</button>
       </div>
@@ -2843,7 +2880,7 @@ body.editing .edit-hint{display:flex}
       </div>
       <div class="store-panel" id="store-cat-etc" style="display:none;">
         <div class="store-cards-wrap collapsed" id="store-wrap-etc">
-          <a class="store-card" href="https://www.google.com/maps/search/ロイズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🍫</div><div class="store-info"><div class="store-name">로이스 초콜릿 우메다</div><div class="store-area">우메다</div><div class="store-desc">홋카이도 초콜릿 기념품</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/ロイズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🍫</div><div class="store-info"><div class="store-name">로이스 초콜릿 우메다</div><div class="store-area">우메다</div><div class="store-desc">홋카이도 초콜릿</div></div><div class="store-arrow">→</div></a>
           <a class="store-card" href="https://www.google.com/maps/search/民芸品+三年坂+京都" target="_blank" rel="noopener"><div class="store-emoji">🏺</div><div class="store-info"><div class="store-name">민예품점 산넨자카</div><div class="store-area">교토</div><div class="store-desc">교토 전통 공예품</div></div><div class="store-arrow">→</div></a>
           <a class="store-card" href="https://www.google.com/maps/search/Aesop+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🧴</div><div class="store-info"><div class="store-name">이솝 신사이바시</div><div class="store-area">신사이바시</div><div class="store-desc">호주 뷰티 브랜드</div></div><div class="store-arrow">→</div></a>
           <a class="store-card" href="https://www.google.com/maps/search/ブルーボトル+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">☕</div><div class="store-info"><div class="store-name">블루보틀 오사카</div><div class="store-area">신사이바시</div><div class="store-desc">블루보틀 커피 원두</div></div><div class="store-arrow">→</div></a>
@@ -2852,23 +2889,7 @@ body.editing .edit-hint{display:flex}
         </div>
         <button class="store-more-btn" id="store-more-etc" onclick="toggleStoreMore(this,'etc')">▼ 더보기 (3개 더)</button>
       </div>
-
-      <!-- 카테고리 필터 -->
-      <div class="shop-cats" id="storeCatBtns"></div>
-
-      <!-- 매장 카드 목록 -->
-      <div class="store-grid" id="storeGrid"></div>
-
-      <!-- 직접 검색 -->
-      <div class="store-search-wrap">
-        <div class="store-search-label">🔍 직접 검색</div>
-        <div class="store-search-row">
-          <input class="store-search-input" id="storeSearchInput" type="text"
-            placeholder="매장명 또는 상품명 입력..." onkeydown="if(event.key==='Enter')searchStore()">
-          <button class="store-search-btn" onclick="searchStore()">찾기</button>
-        </div>
-      </div>
-
+    </div>
     </div><!-- /shopMainStore -->
 
   </div>
@@ -4115,6 +4136,20 @@ function toggleStoreMore(btn, cat){
   if(collapsed){wrap.classList.remove('collapsed'); btn.textContent='▲ 접기';}
   else{wrap.classList.add('collapsed'); btn.textContent='▼ 더보기 (3개 더)';}
 }
+
+
+function searchStore(){
+  var q = document.getElementById('storeSearchInput').value.trim();
+  if(!q) return;
+  var city = CITY_NAME ? CITY_NAME : '오사카';
+  var url = 'https://www.google.com/maps/search/' + encodeURIComponent(q + ' ' + city);
+  window.open(url, '_blank');
+}
+// Enter 키로도 검색
+document.addEventListener('DOMContentLoaded', function(){
+  var inp = document.getElementById('storeSearchInput');
+  if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') searchStore(); });
+});
 
 </script>
 

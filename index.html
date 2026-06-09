@@ -1260,8 +1260,20 @@ body.editing .edit-hint{display:flex}
 /* ══ 가로 모드 (landscape) ══ */
 @media (orientation: landscape) and (max-height: 500px) {
 
-  /* wrap 좌우 여백 늘리고 상하 패딩 줄이기 */
-  .wrap{ padding:0 24px 40px; max-width:900px; }
+  /* 탭이 화면 전체 너비를 채우게 */
+  .tabs{
+    position:sticky; top:0; z-index:50;
+    width:100vw; left:0;
+    margin-left:calc(-1 * (100vw - 100%) / 2);
+    grid-template-columns:repeat(5,1fr);
+    box-sizing:border-box;
+  }
+  .tab{ min-height:40px; padding:6px 2px; }
+  .td{ font-size:10px; }
+  .ts{ font-size:8px; }
+
+  /* wrap 좌우 여백 줄이기 */
+  .wrap{ padding:0 12px 40px; max-width:100%; }
 
   /* 헤더 컴팩트하게 */
   .header{ padding:10px 0 8px; }
@@ -1323,7 +1335,14 @@ body.editing .edit-hint{display:flex}
 
 /* 태블릿 가로 모드 */
 @media (orientation: landscape) and (min-height: 500px) {
-  .wrap{ max-width:760px; padding:0 32px 60px; }
+  .wrap{ max-width:900px; padding:0 24px 60px; }
+  .tabs{
+    width:100vw;
+    left:0;
+    margin-left:calc(-1 * (100vw - 100%) / 2);
+    grid-template-columns:repeat(5,1fr);
+    box-sizing:border-box;
+  }
   .header-meta{ grid-template-columns:repeat(6,1fr); }
 
   /* 이동카드 2열 레이아웃 */

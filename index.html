@@ -917,8 +917,11 @@ body.editing .edit-hint{display:flex}
 .weather-refresh{font-size:10px}
 
 /* 컴팩트 레이아웃 */
-.w-compact{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.w-now{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.w-compact{display:flex;align-items:stretch;gap:8px;flex-wrap:nowrap;}
+.w-now{
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:4px;flex-shrink:0;min-width:90px;max-width:100px;
+}
 .w-icon{font-size:28px;line-height:1}
 .w-temp{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--ink);line-height:1}
 .w-temp small{font-size:13px;font-family:'Noto Sans KR',sans-serif;color:var(--ink3)}
@@ -1342,6 +1345,12 @@ body.editing .edit-hint{display:flex}
 .wfc-icon-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2px 0;}
 .wfc-desc{font-size:7px;color:var(--ink3);font-weight:600;line-height:1.2;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 .wfc-icon{font-size:22px;line-height:1;}
+
+.w-now-top{display:flex;align-items:center;gap:5px;}
+.w-now-bottom{display:flex;flex-direction:column;gap:2px;}
+.w-desc-text{font-size:var(--fsm);font-weight:700;color:var(--ink);line-height:1.2;}
+.w-meta{font-size:var(--f2xs);color:var(--ink3);}
+
 </style>
 </head>
 <body>
@@ -3325,9 +3334,8 @@ function applyWeather(d) {
   document.getElementById('wContent').innerHTML=
     '<div class="w-compact">'+
       '<div class="w-now">'+
-        '<span class="w-icon">'+icon+'</span>'+
-        '<span class="w-temp">'+temp+'<small>°C</small></span>'+
-        '<span class="w-desc">'+desc+'<br><small>체감 '+feels+'°C · 습도 '+humid+'%</small></span>'+
+        '<div class="w-now-top"><span class="w-icon">'+icon+'</span><span class="w-temp">'+temp+'<small>°C</small></span></div>'+
+        '<div class="w-now-bottom"><span class="w-desc-text">'+desc+'</span><span class="w-meta">체감 '+feels+'°C · 습도 '+humid+'%</span></div>'+
       '</div>'+
       '<div class="w-forecast" style="grid-template-columns:repeat('+count+',1fr)">'+fcHtml+'</div>'+
     '</div>';

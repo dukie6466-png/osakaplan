@@ -1256,6 +1256,86 @@ body.editing .edit-hint{display:flex}
   border-radius:3px; padding:1px 2px; color:#1A1612;
 }
 
+
+/* ══ 가로 모드 (landscape) ══ */
+@media (orientation: landscape) and (max-height: 500px) {
+
+  /* wrap 좌우 여백 늘리고 상하 패딩 줄이기 */
+  .wrap{ padding:0 24px 40px; max-width:900px; }
+
+  /* 헤더 컴팩트하게 */
+  .header{ padding:10px 0 8px; }
+  .header-eyebrow{ margin-bottom:4px; font-size:8px; }
+  .header-title{ font-size:1.2rem; }
+  .header-nights{ font-size:12px; margin-top:3px; }
+  .header-meta{ gap:5px; margin-top:8px; }
+  .meta-chip{ height:36px!important; font-size:11px; }
+
+  /* 탭 컴팩트 */
+  .tab{ padding:8px 4px; }
+  .td{ font-size:10px; }
+  .ts{ font-size:8px; }
+
+  /* 날씨 위젯 */
+  .weather-widget{ padding:6px 10px; }
+  .w-now{ gap:6px; }
+  .w-icon{ font-size:22px; }
+  .w-temp{ font-size:1.4rem; }
+  .wfc-item{ padding:4px 2px; }
+
+  /* 환율 위젯 */
+  .rate-widget{ padding:6px 10px; }
+
+  /* 이동카드 */
+  .rc{ gap:8px; }
+  .rc-minimap canvas{ height:56px!important; }
+
+  /* 미니맵 높이 축소 */
+  .rc-minimap{ display:none; }  /* 가로모드에서 미니맵 숨김 */
+
+  /* 타임라인 */
+  .ev{ padding:10px 12px; }
+
+  /* 모달 */
+  .modal{
+    max-height:85vh;
+    overflow-y:auto;
+  }
+  .modal-body{
+    max-height:60vh;
+    overflow-y:auto;
+  }
+
+  /* 지갑 모달 */
+  .w-balance-grid{
+    grid-template-columns:repeat(3,1fr);
+    gap:5px;
+  }
+
+  /* 추천 섹션 카드 */
+  .rec-panel{
+    grid-template-columns:repeat(3,1fr)!important;
+  }
+
+  /* 스크롤탑 위치 */
+  .scroll-top{ bottom:12px; right:12px; width:36px; height:36px; }
+}
+
+/* 태블릿 가로 모드 */
+@media (orientation: landscape) and (min-height: 500px) {
+  .wrap{ max-width:760px; padding:0 32px 60px; }
+  .header-meta{ grid-template-columns:repeat(6,1fr); }
+
+  /* 이동카드 2열 레이아웃 */
+  .rc-minimap canvas{ height:80px!important; }
+
+  /* 추천 카드 3열 */
+  .rec-panel{ grid-template-columns:repeat(3,1fr)!important; }
+
+  /* 모달 */
+  .modal{ max-width:520px!important; }
+}
+
 </style>
 </head>
 <body>

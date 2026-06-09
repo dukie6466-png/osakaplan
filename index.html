@@ -933,7 +933,7 @@ body.editing .edit-hint{display:flex}
   flex:1;background:var(--bg2);border:1px solid var(--border);
   border-radius:8px;padding:6px 2px;text-align:center;min-width:0;
   overflow:hidden;display:flex;flex-direction:column;align-items:center;
-  justify-content:space-between;min-height:90px;max-width:72px;}
+  justify-content:space-between;min-height:90px;}
 .wfc-day{font-size:9px;font-weight:700;color:var(--gold);margin-bottom:2px}
 .wfc-icon{font-size:16px;margin-bottom:2px}
 .wfc-temp{font-size:8px;font-weight:700;color:var(--ink)}
@@ -1352,6 +1352,24 @@ body.editing .edit-hint{display:flex}
 .w-desc-text{font-size:var(--fsm);font-weight:700;color:var(--ink);line-height:1.2;}
 .w-meta{font-size:var(--f2xs);color:var(--ink3);}
 
+.w-forecast-full{
+  display:grid;gap:5px;width:100%;
+}
+
+/* ══ 태블릿 세로 모드 ══ */
+@media (min-width: 600px) and (orientation: portrait) {
+  .wrap{ max-width:100%; padding:0 24px 72px; }
+  .wfc-item{ max-width:100px; }
+  .header-meta{ gap:8px; }
+  .meta-chip{ font-size:13px; }
+  .rec-panel{ grid-template-columns:repeat(3,1fr)!important; }
+}
+
+@media (min-width: 768px) {
+  .wrap{ max-width:100%; padding:0 32px 72px; }
+  .wfc-item{ max-width:110px; }
+}
+
 </style>
 </head>
 <body>
@@ -1375,15 +1393,13 @@ body.editing .edit-hint{display:flex}
 <div class="weather-widget" id="weatherWidget">
   <div class="weather-head">
     <div class="weather-head-left">
-      <button class="weather-refresh" onclick="fetchWeather()">↻ 새로고침</button>
-    </div>
-    <div class="weather-head-right">
       <span style="font-size:14px;">🌤</span>
       <div>
         <div class="weather-location" id="weatherCityName">오사카 · Osaka</div>
         <div class="weather-date" id="wDate">날씨 정보 로딩 중...</div>
       </div>
     </div>
+    <button class="weather-refresh" onclick="fetchWeather()">↻ 새로고침</button>
   </div>
   <div id="wContent"><div class="weather-loading">🌤 날씨 정보를 불러오는 중...</div></div>
 </div>
@@ -3335,13 +3351,7 @@ function applyWeather(d) {
   }
 
   document.getElementById('wContent').innerHTML=
-    '<div class="w-compact">'+
-      '<div class="w-forecast" style="grid-template-columns:repeat('+count+',1fr)">'+fcHtml+'</div>'+
-      '<div class="w-now">'+
-        '<div class="w-now-top"><span class="w-icon">'+icon+'</span><span class="w-temp">'+temp+'<small>°C</small></span></div>'+
-        '<div class="w-now-bottom"><span class="w-desc-text">'+desc+'</span><span class="w-meta">체감 '+feels+'°C · 습도 '+humid+'%</span></div>'+
-      '</div>'+
-    '</div>';
+    '<div class="w-forecast-full" style="grid-template-columns:repeat('+count+',1fr)">'+fcHtml+'</div>';
 }
 
 /* ══════════════════════════════════════

@@ -3010,7 +3010,7 @@ body.editing .edit-hint{display:flex}
     <div class="shop-cats">
       <button class="shop-cat active" onclick="switchShopCat(this,'all')">전체</button>
       <button class="shop-cat" onclick="switchShopCat(this,'food')">🍱 식품/간식</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'beauty')">💄 뷰티/패션</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'beauty')">👗 패션/뷰티</button>
       <button class="shop-cat" onclick="switchShopCat(this,'cvs')">🏪 편의점</button>
       <button class="shop-cat" onclick="switchShopCat(this,'gift')">🎁 선물</button>
       <button class="shop-cat" onclick="switchShopCat(this,'duty')">🛫 면세</button>
@@ -3666,7 +3666,7 @@ function switchRecTab(btn,area,idx){
 var _SAVED_SHOP = [];
 var _SAVED_WALLET = [];
 var _shopItems=[], _shopCat='all', _shopShowAll=false;
-var CAT_LABELS={food:'🍱 식품/간식',beauty:'💄 뷰티/패션',cvs:'🏪 편의점',gift:'🎁 선물',duty:'🛫 면세',transport:'🚇 교통',etc:'📦 기타'};
+var CAT_LABELS={food:'🍱 식품/간식',beauty:'👗 패션/뷰티',cvs:'🏪 편의점',gift:'🎁 선물',duty:'🛫 면세',transport:'🚇 교통',etc:'📦 기타'};
 var DEFAULT_ITEMS=[];
 function initShop(){
   loadCards(); // 카드 목록 로드

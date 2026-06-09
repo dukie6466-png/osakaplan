@@ -3901,6 +3901,9 @@ var CAT_ICON = {충전:'⚡', 입금:'💰', 환전:'💱', 예매:'🎟', 쇼�
 
 function openWallet() {
   loadWallet();
+  _walletShowAll = false;
+  var list=document.getElementById('walletList'); if(list) list.style.display='none';
+  var btn=document.getElementById('wListToggleBtn'); if(btn) btn.textContent='▼ 내역 보기';
   updateWalletForm(_walletTab);
   // 쇼핑 연동 합계 직접 계산
   var wShop = document.getElementById('walletShopTotal');
@@ -3935,6 +3938,13 @@ function saveWallet() {
 function switchWalletTab(idx) {
   _walletTab = idx;
   _walletShowAll = false;
+  // 탭 전환 시 내역 숨기기
+  var list = document.getElementById('walletList');
+  var btn  = document.getElementById('wListToggleBtn');
+  var moreBtn = document.getElementById('walletMoreBtn');
+  if(list) list.style.display = 'none';
+  if(btn)  btn.textContent = '▼ 내역 보기';
+  if(moreBtn) moreBtn.style.display = 'none';
   document.querySelectorAll('.w-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
 
   // 탭별 subType + 카테고리 기본값
@@ -4872,6 +4882,19 @@ function renderMemberLists(){
   }).join('');
 }
 
+
+function toggleWalletList(){
+  var list = document.getElementById('walletList');
+  var btn  = document.getElementById('wListToggleBtn');
+  var moreBtn = document.getElementById('walletMoreBtn');
+  if(!list) return;
+  var isHidden = list.style.display === 'none';
+  list.style.display = isHidden ? 'block' : 'none';
+  if(moreBtn) moreBtn.style.display = isHidden ? '' : 'none';
+  if(btn) btn.textContent = isHidden ? '▲ 내역 숨기기' : '▼ 내역 보기';
+  if(isHidden) renderWallet();
+}
+
 </script>
 
 <!-- 리무진 버스 시간표 모달 -->
@@ -5711,9 +5734,9 @@ function renderMemberLists(){
       </div>
 
       <!-- 내역 -->
-      <div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button onclick="saveWallet();saveAllData()" style="display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:20px;font-size:10px;font-weight:700;padding:7px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">💾 저장</button></div>
       <div class="timetable-label" id="wListLabel">💴 현금 내역</div>
-      <div id="walletList" class="wallet-list">
+      <button id="wListToggleBtn" onclick="toggleWalletList()" style="display:flex;align-items:center;justify-content:center;gap:5px;width:100%;margin-bottom:8px;padding:9px;background:var(--bg2);border:1.5px dashed var(--gold);border-radius:var(--r-sm);font-size:12px;font-weight:700;color:var(--gold);cursor:pointer;-webkit-tap-highlight-color:transparent;">▼ 내역 보기</button>
+      <div id="walletList" class="wallet-list" style="display:none;">
         <div class="wallet-empty">내역이 없어요.</div>
       </div>
 
@@ -5759,6 +5782,7 @@ function renderMemberLists(){
         </div>
       </div>
 
+      <button onclick="saveWallet();saveAllData()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:12px;padding:13px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;">💾 저장하기</button>
     </div>
   </div>
 </div>

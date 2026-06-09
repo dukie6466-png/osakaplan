@@ -4161,8 +4161,16 @@ function addWalletItem() {
     date: new Date().toLocaleDateString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
   });
   saveWallet();
-  document.getElementById('wDesc').value='';
+  var descEl2 = document.getElementById('wDesc');
+  if(descEl2) descEl2.value='';
   document.getElementById('wAmount').value='';
+
+  // 내역 자동으로 펼치기
+  var list = document.getElementById('walletList');
+  var btn  = document.getElementById('wListToggleBtn');
+  if(list) list.style.display = 'block';
+  if(btn)  btn.textContent = '▲ 내역 숨기기';
+
   renderWallet(); updateBalances();
 }
 
@@ -4192,11 +4200,9 @@ function renderWallet() {
   var label = document.getElementById('wListLabel');
   var wKey = W_TAB_MAP[_walletTab];
 
-  var listNames2 = ['💴 현금 내역','💳 카드 내역','🚇 교통IC 내역','🎟 사전예매 내역'];
-  var cnt2 = filtered.length;
-  if(label) label.textContent = (listNames2[_walletTab]||'내역') + (cnt2>0?' ('+cnt2+'건)':'');
-
   var filtered = _walletItems.filter(function(i){ return i.wallet===wKey; }).slice().reverse();
+  var listNames2 = ['💴 현금 내역','💳 카드 내역','🚇 교통IC 내역','🎟 사전예매 내역'];
+  if(label) label.textContent = (listNames2[_walletTab]||'내역') + (filtered.length>0?' ('+filtered.length+'건)':'');
 
   // 탭별 소계
   var inc = filtered.filter(function(i){ return i.type==='income'; }).reduce(function(s,i){ return s+i.amount; },0);

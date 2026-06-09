@@ -1170,6 +1170,14 @@ body.editing .edit-hint{display:flex}
   min-width:70px;
 }
 
+
+.wallet-form-label{
+  font-size:13px;font-weight:700;color:var(--gold);
+  padding-bottom:8px;border-bottom:1px solid var(--border);
+  margin-bottom:4px;
+}
+
+
 </style>
 </head>
 <body>
@@ -3000,6 +3008,12 @@ function applyRate(krw) {
   var now = new Date();
   document.getElementById('rateUpdated').textContent = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준';
   calcRate();
+  // 환율 로드 후 지갑 전체 원화 재업데이트
+  if(typeof updateBalances === 'function') updateBalances();
+  if(typeof renderWallet === 'function'){
+    var wList = document.getElementById('walletList');
+    if(wList && wList.children.length > 0) renderWallet();
+  }
 }
 function calcRate() {
   var amt = parseFloat(document.getElementById('yenInput').value)||0;
@@ -3337,6 +3351,7 @@ var _shopItems=[], _shopCat='all', _shopShowAll=false;
 var CAT_LABELS={food:'🍜 식품',beauty:'💄 뷰티',fashion:'👗 패션',goods:'🎁 굿즈',cvs:'🏪 편의점',duty:'✈ 면세',etc:'📦 기타'};
 var DEFAULT_ITEMS=[];
 function initShop(){
+  loadCards(); // 카드 목록 로드
   // 저장된 데이터 우선 로드
   if(_SAVED_SHOP && _SAVED_SHOP.length > 0){
     _shopItems = _SAVED_SHOP;
@@ -3378,11 +3393,17 @@ function renderShop(){
             Object.keys(CAT_LABELS).map(function(k){return '<option value="'+k+'"'+(item.cat===k?' selected':'')+'>'+CAT_LABELS[k]+'</option>';}).join('')+
           '</select>'+
           '<input class="shop-item-price" type="number" value="'+(item.price||'')+'" placeholder="¥ 가격" onchange="updatePrice('+item.id+',this.value)">'+
-          '<select class="shop-pay-sel" onchange="updatePay('+item.id+',this.value)">'+
-            '<option value="cash"'+(item.pay==='cash'?' selected':'')+'>💴 현금</option>'+
-            '<option value="card"'+(item.pay==='card'?' selected':'')+'>💳 카드</option>'+
-            '<option value="ic"'+(item.pay==='ic'?' selected':'')+'>🚇 IC</option>'+
-          '</select>'+
+          (function(){
+            var cardOpts = _cards.map(function(c){
+              var val = 'card:'+c;
+              return '<option value="'+val+'"'+(item.pay===val?' selected':'')+'>💳 '+c+'</option>';
+            }).join('');
+            return '<select class="shop-pay-sel" onchange="updatePay('+item.id+',this.value)">'+
+              '<option value="cash"'+(item.pay==='cash'?' selected':'')+'>💴 현금</option>'+
+              cardOpts+
+              '<option value="ic"'+(item.pay==='ic'?' selected':'')+'>🚇 IC</option>'+
+            '</select>';
+          })()+
         '</div>'+
       '</div>'+
       '<button class="shop-item-del" onclick="deleteItem('+item.id+')">✕</button>'+
@@ -3469,7 +3490,10 @@ function updateTotal(){
   if(wShop){
     loadWallet();
     var wSpent=_walletItems.filter(function(w){return w.cat==='쇼핑';}).reduce(function(s,w){return s+(w.amount||0);},0);
-    wShop.textContent='¥'+wSpent.toLocaleString()+((_rateKRW>0)?(' ≈ ₩'+Math.round(wSpent*_rateKRW).toLocaleString()):'');
+    var sym3 = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+    wShop.textContent = sym3 + wSpent.toLocaleString();
+    var wShopKrw2 = document.getElementById('walletShopTotalKrw');
+    if(wShopKrw2) wShopKrw2.textContent = (_rateKRW>0) ? '≈ ₩'+Math.round(wSpent*_rateKRW).toLocaleString() : '';
   }
 }
 
@@ -3856,10 +3880,26 @@ var _walletTab = 0; // 0:현금 1:카드 2:IC 3:사전예매
 var W_TAB_MAP = {0:'cash', 1:'card', 2:'ic', 3:'prepay'};
 var W_TAB_LABELS = {0:'💴 현금', 1:'💳 카드', 2:'🚇 교통IC', 3:'🎟 사전예매'};
 var W_COLORS = {cash:'#1565C0', card:'#8A6818', ic:'#2E7D32', prepay:'#C62828'};
-var CAT_ICON = {교통:'🚇', 식사:'🍜', 쇼핑:'🛍', 관광:'🏯', 숙소:'🏨', 환전:'💱', 예매:'🎟', 기타:'📦'};
+var CAT_ICON = {충전:'⚡', 입금:'💰', 환전:'💱', 예매:'🎟'};
 
 function openWallet() {
-  loadWallet(); renderWallet(); updateTotal();
+  loadWallet();
+  updateWalletForm(_walletTab);
+  // 쇼핑 연동 합계 직접 계산
+  var wShop = document.getElementById('walletShopTotal');
+  var wShopKrw = document.getElementById('walletShopTotalKrw');
+  if(wShop){
+    var wSpent = _walletItems.filter(function(w){ return w.cat==='쇼핑'; })
+                             .reduce(function(s,w){ return s+(w.amount||0); }, 0);
+    var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+    wShop.textContent = sym + wSpent.toLocaleString();
+    if(wShopKrw){
+      if(_rateKRW>0) wShopKrw.textContent = '≈ ₩'+Math.round(wSpent*_rateKRW).toLocaleString();
+      else wShopKrw.textContent = '환율 로딩 중...';
+    }
+  }
+  renderWallet();
+  updateBalances();
   document.getElementById('walletModal').classList.add('open');
 }
 function loadWallet() {
@@ -3879,9 +3919,26 @@ function switchWalletTab(idx) {
   _walletTab = idx;
   document.querySelectorAll('.w-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
 
-  // 입력폼 subType 기본값
+  // 탭별 subType + 카테고리 기본값
   var sub = document.getElementById('wSubType');
-  if(sub) sub.value = (idx===3) ? 'expense' : 'income';
+  var cat = document.getElementById('wCat');
+  if(idx===0){
+    // 현금: 입금 + 환전
+    if(sub) sub.value = 'income';
+    if(cat) cat.value = '환전';
+  } else if(idx===1){
+    // 카드: 입금 + 입금
+    if(sub) sub.value = 'income';
+    if(cat) cat.value = '입금';
+  } else if(idx===2){
+    // 교통IC: 입금 + 충전
+    if(sub) sub.value = 'income';
+    if(cat) cat.value = '충전';
+  } else if(idx===3){
+    // 사전예매: 지출 + 예매
+    if(sub) sub.value = 'expense';
+    if(cat) cat.value = '예매';
+  }
 
   // 사전예매 탭: 화폐 선택 표시
   var curSel   = document.getElementById('wCurrency');
@@ -3902,7 +3959,55 @@ function switchWalletTab(idx) {
     if(curLabel){ curLabel.style.display = 'inline'; curLabel.textContent = sym; }
   }
 
+  // 폼 업데이트
+  updateWalletForm(idx);
   renderWallet();
+}
+
+function updateWalletForm(idx){
+  var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+  var labels = ['💱 현금 환전', '💳 카드 입금', '⚡ 교통IC 충전', '🎟 사전예매'];
+  var cats   = ['환전',         '입금',         '충전',           '예매'];
+  var subs   = ['income',       'income',       'income',         'expense'];
+
+  // 라벨 업데이트
+  var lbl = document.getElementById('wFormLabel');
+  if(lbl) lbl.textContent = labels[idx] || labels[0];
+
+  // hidden 필드 업데이트
+  var subEl = document.getElementById('wSubType');
+  var catEl = document.getElementById('wCat');
+  if(subEl) subEl.value = subs[idx] || 'income';
+  if(catEl) catEl.value = cats[idx] || '환전';
+
+  // 카드 선택 (카드 탭만)
+  var cardRow = document.getElementById('wCardRow');
+  if(cardRow){
+    cardRow.style.display = (idx===1) ? 'flex' : 'none';
+    if(idx===1){ loadCards(); refreshCardSelect(); }
+  }
+
+  // 내용 입력 (사전예매만 표시)
+  var descRow = document.getElementById('wDescRow');
+  var descEl  = document.getElementById('wDesc');
+  if(descRow) descRow.style.display = (idx===3) ? 'flex' : 'none';
+  if(descEl && idx!==3) descEl.value = '';
+
+  // 화폐 선택 (사전예매만)
+  var curSel   = document.getElementById('wCurrency');
+  var curLabel = document.getElementById('wCurrencyLabel');
+  if(idx===3){
+    if(curSel){ curSel.style.display='block'; curSel.options[1].text=sym+' 현지통화'; }
+    if(curLabel) curLabel.style.display='none';
+  } else {
+    if(curSel) curSel.style.display='none';
+    if(curLabel){ curLabel.style.display='inline'; curLabel.textContent=sym; }
+  }
+
+  // placeholder
+  var amtInput = document.getElementById('wAmount');
+  if(amtInput) amtInput.placeholder = (idx===3 && curSel && curSel.value==='KRW') ? '₩ 금액 입력' : sym+' 금액 입력';
+  if(amtInput) amtInput.value = '';
 }
 
 function updateCurrencyLabel(){
@@ -3917,9 +4022,19 @@ function updateCurrencyLabel(){
 function addWalletItem() {
   var subType = document.getElementById('wSubType').value;
   var cat     = document.getElementById('wCat').value;
-  var desc    = document.getElementById('wDesc').value.trim();
+  var descEl = document.getElementById('wDesc');
+  var desc   = descEl ? descEl.value.trim() : '';
+  // 카드 탭: 카드명 포함
+  if(_walletTab===1){
+    var cardSel = document.getElementById('wCardName');
+    var cardName = cardSel ? cardSel.value : '카드';
+    desc = cardName + ' 입금';
+  } else if(!desc){
+    var tabLabels = ['현금 환전','카드 입금','교통IC 충전','사전예매'];
+    desc = tabLabels[_walletTab] || '기타';
+  }
   var amount  = parseInt(document.getElementById('wAmount').value) || 0;
-  if(!desc || amount<=0){ document.getElementById('wDesc').focus(); return; }
+  if(amount<=0){ document.getElementById('wAmount').focus(); return; }
 
   // 사전예매: 화폐 단위 처리
   var curSel = document.getElementById('wCurrency');
@@ -3968,7 +4083,7 @@ function updateBalances() {
     var elE = document.getElementById(ids[2]);
 
     if(el)  el.textContent  = sym + bal.toLocaleString();
-    if(elK && _rateKRW>0) elK.textContent = '≈ ₩' + Math.round(bal*_rateKRW).toLocaleString();
+    if(elK) elK.textContent = _rateKRW>0 ? '≈ ₩' + Math.round(bal*_rateKRW).toLocaleString() : '≈ ₩-';
     if(elE) elE.textContent = '-' + sym + exp.toLocaleString();
   });
 
@@ -3978,7 +4093,7 @@ function updateBalances() {
   var elTotal = document.getElementById('wTotalExpAll');
   var elTotalKrw = document.getElementById('wTotalExpAllKrw');
   if(elTotal) elTotal.textContent = sym + totalExp.toLocaleString();
-  if(elTotalKrw && _rateKRW>0) elTotalKrw.textContent = '≈ ₩' + Math.round(totalExp*_rateKRW).toLocaleString();
+  if(elTotalKrw) elTotalKrw.textContent = _rateKRW>0 ? '≈ ₩' + Math.round(totalExp*_rateKRW).toLocaleString() : '≈ ₩-';
 }
 
 function renderWallet() {
@@ -4031,7 +4146,7 @@ function renderWallet() {
           '<span class="wia-yen" style="color:'+col+'">'+sign+(item.symbol||sym)+(item.currency==='KRW'?'':'')+item.amount.toLocaleString()+'</span>'+
           (item.currency==='KRW'
             ? '<span class="wia-krw">원화 결제</span>'
-            : (_rateKRW?'<span class="wia-krw">₩'+Math.round(item.amount*_rateKRW).toLocaleString()+'</span>':''))+
+            : '<span class="wia-krw">'+(_rateKRW>0?'≈ ₩'+Math.round(item.amount*_rateKRW).toLocaleString():'₩-')+'</span>')+
         '</div>'+
         '<button class="wallet-item-del" onclick="deleteWalletItem('+item.id+')">✕</button>'+
       '</div>';
@@ -4043,7 +4158,13 @@ function renderWallet() {
   var wShop = document.getElementById('walletShopTotal');
   if(wShop){
     var shopTotal = _walletItems.filter(function(w){ return w.cat==='쇼핑'; }).reduce(function(s,w){ return s+w.amount; },0);
-    wShop.textContent = '¥'+shopTotal.toLocaleString()+(_rateKRW?' ≈ ₩'+Math.round(shopTotal*_rateKRW).toLocaleString():'');
+    var sym2 = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+    wShop.textContent = sym2 + shopTotal.toLocaleString();
+    var wShopKrw = document.getElementById('walletShopTotalKrw');
+    if(wShopKrw){
+      if(_rateKRW>0) wShopKrw.textContent = '≈ ₩'+Math.round(shopTotal*_rateKRW).toLocaleString();
+      else wShopKrw.textContent = '환율 로딩 중...';
+    }
   }
 }
 
@@ -4051,10 +4172,15 @@ function renderWallet() {
 function syncShopToWallet(item, checked){
   loadWallet();
   if(checked && item.price>0){
-    var wKey = item.pay==='card'?'card': item.pay==='ic'?'ic':'cash';
+    var pay = item.pay || 'cash';
+    var wKey = pay==='ic' ? 'ic' : pay.indexOf('card:')===0 ? 'card' : 'cash';
+    var cardName = pay.indexOf('card:')===0 ? pay.replace('card:','') : null;
+    var desc = item.name || '구매 항목';
+    if(cardName) desc = desc + ' (' + cardName + ')';
     _walletItems.push({
       id: Date.now(), wallet: wKey, type:'expense', cat:'쇼핑',
-      desc: item.name||'구매 항목', amount: item.price, shopId: item.id,
+      desc: desc, amount: item.price, shopId: item.id,
+      symbol: CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥',
       date: new Date().toLocaleDateString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
     });
     saveWallet();
@@ -4480,6 +4606,68 @@ function applyCurrency(countryName) {
 
   // 환율 새로 로드
   fetchRate();
+}
+
+
+/* ══ 카드 관리 ══ */
+var _cards = ['트래블월렛', '토스뱅크', '하나트래블로그'];
+
+function loadCards(){
+  try{
+    var s = localStorage.getItem('osaka_cards');
+    if(s) _cards = JSON.parse(s);
+  } catch(e){}
+}
+
+function saveCards(){
+  try{ localStorage.setItem('osaka_cards', JSON.stringify(_cards)); } catch(e){}
+  refreshCardSelect();
+  // 쇼핑 목록도 즉시 갱신
+  if(typeof renderShop === 'function') renderShop();
+}
+
+function refreshCardSelect(){
+  var sel = document.getElementById('wCardName');
+  if(!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = _cards.map(function(c){
+    return '<option value="'+c+'"'+(c===cur?' selected':'')+'>💳 '+c+'</option>';
+  }).join('');
+}
+
+function openCardManager(){
+  loadCards();
+  renderCardList();
+  document.getElementById('cardMgrModal').classList.add('open');
+}
+
+function renderCardList(){
+  var list = document.getElementById('cardList');
+  if(!list) return;
+  list.innerHTML = _cards.map(function(c, i){
+    return '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);">'+
+      '<span style="font-size:18px;">💳</span>'+
+      '<span style="flex:1;font-size:14px;font-weight:700;color:var(--ink);">'+c+'</span>'+
+      '<button onclick="deleteCard('+i+')" style="border:none;background:none;color:var(--ink3);font-size:14px;cursor:pointer;padding:3px;">✕</button>'+
+    '</div>';
+  }).join('');
+}
+
+function addCard(){
+  var input = document.getElementById('newCardName');
+  var name = input ? input.value.trim() : '';
+  if(!name) return;
+  if(_cards.indexOf(name) >= 0){ alert('이미 등록된 카드예요.'); return; }
+  _cards.push(name);
+  saveCards();
+  renderCardList();
+  if(input) input.value = '';
+}
+
+function deleteCard(idx){
+  _cards.splice(idx, 1);
+  saveCards();
+  renderCardList();
 }
 
 </script>
@@ -5267,26 +5455,23 @@ function applyCurrency(countryName) {
       </div>
 
       <!-- 입력 폼 -->
-      <div class="wallet-form">
-        <div class="wallet-form-row">
-          <select id="wSubType" class="wallet-select">
-            <option value="income">+ 충전/환전</option>
-            <option value="expense">- 지출</option>
+      <div class="wallet-form" id="walletForm">
+        <!-- 탭별 라벨 -->
+        <div class="wallet-form-label" id="wFormLabel">💱 현금 환전</div>
+        <!-- 카드 선택 (카드 탭만) -->
+        <div class="wallet-form-row" id="wCardRow" style="display:none;">
+          <select id="wCardName" class="wallet-select">
+            <option value="트래블월렛">💳 트래블월렛</option>
+            <option value="토스뱅크">💳 토스뱅크</option>
+            <option value="하나트래블로그">💳 하나트래블로그</option>
           </select>
-          <select id="wCat" class="wallet-select">
-            <option value="교통">🚇 교통</option>
-            <option value="식사">🍜 식사</option>
-            <option value="쇼핑">🛍 쇼핑</option>
-            <option value="관광">🏯 관광</option>
-            <option value="숙소">🏨 숙소</option>
-            <option value="환전">💱 환전</option>
-            <option value="예매">🎟 예매</option>
-            <option value="기타">📦 기타</option>
-          </select>
+          <button onclick="openCardManager()" style="flex-shrink:0;padding:9px 10px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:11px;color:var(--ink2);cursor:pointer;white-space:nowrap;">⚙️ 카드관리</button>
         </div>
-        <div class="wallet-form-row">
-          <input id="wDesc" class="wallet-input" type="text" placeholder="내용 (예: 이치란 라멘)" />
+        <!-- 내용 입력 (사전예매만) -->
+        <div class="wallet-form-row" id="wDescRow" style="display:none;">
+          <input id="wDesc" class="wallet-input" type="text" placeholder="예매 내용 입력" />
         </div>
+        <!-- 금액 입력 -->
         <div class="wallet-form-row">
           <div class="wallet-amount-wrap">
             <select id="wCurrency" class="wallet-cur-sel" style="display:none;" onchange="updateCurrencyLabel()">
@@ -5294,16 +5479,22 @@ function applyCurrency(countryName) {
               <option value="LOCAL">현지통화</option>
             </select>
             <span class="wallet-currency" id="wCurrencyLabel">¥</span>
-            <input id="wAmount" class="wallet-input amount" type="number" placeholder="0" min="0" />
+            <input id="wAmount" class="wallet-input amount" type="number" placeholder="¥ 금액 입력" min="0" />
           </div>
           <button class="wallet-add-btn" onclick="addWalletItem()">+ 추가</button>
         </div>
+        <!-- 숨겨진 필드 -->
+        <input type="hidden" id="wSubType" value="income">
+        <input type="hidden" id="wCat" value="환전">
       </div>
 
       <!-- 구매목록 연동 -->
       <div class="wallet-sync-box">
         <span class="wallet-sync-label">🛍 구매목록 연동 지출</span>
-        <span class="wallet-sync-val" id="walletShopTotal">¥0</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+          <span class="wallet-sync-val" id="walletShopTotal">¥0</span>
+          <span style="font-size:10px;color:var(--ink3);font-weight:600;" id="walletShopTotalKrw"></span>
+        </div>
       </div>
 
       <!-- 내역 -->
@@ -5405,6 +5596,26 @@ function applyCurrency(countryName) {
     </div>
   </div>
 </div>
+</div>
+
+
+<!-- 카드 관리 모달 -->
+<div class="modal-overlay" id="cardMgrModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-head">
+      <h3>💳 카드 관리</h3>
+      <button class="modal-close" onclick="document.getElementById('cardMgrModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="timetable-label">등록된 카드</div>
+      <div id="cardList" style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px;"></div>
+      <div class="timetable-label">카드 추가</div>
+      <div style="display:flex;gap:7px;">
+        <input id="newCardName" class="wallet-input" type="text" placeholder="카드명 입력 (예: 신한 SOL)" style="flex:1;"/>
+        <button onclick="addCard()" style="padding:9px 14px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">+ 추가</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 </body>

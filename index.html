@@ -2761,12 +2761,12 @@ body.editing .edit-hint{display:flex}
     <!-- 카테고리 탭 -->
     <div class="shop-cats">
       <button class="shop-cat active" onclick="switchShopCat(this,'all')">전체</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'food')">🍜 식품</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'beauty')">💄 뷰티</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'fashion')">👗 패션</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'goods')">🎁 굿즈</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'food')">🍱 식품/간식</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'beauty')">💄 뷰티/패션</button>
       <button class="shop-cat" onclick="switchShopCat(this,'cvs')">🏪 편의점</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'duty')">✈ 면세</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'gift')">🎁 선물</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'duty')">🛫 면세</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'transport')">🚇 교통</button>
       <button class="shop-cat" onclick="switchShopCat(this,'etc')">📦 기타</button>
     </div>
 
@@ -3358,7 +3358,7 @@ function switchRecTab(btn,area,idx){
 var _SAVED_SHOP = [];
 var _SAVED_WALLET = [];
 var _shopItems=[], _shopCat='all', _shopShowAll=false;
-var CAT_LABELS={food:'🍜 식품',beauty:'💄 뷰티',fashion:'👗 패션',goods:'🎁 굿즈',cvs:'🏪 편의점',duty:'✈ 면세',etc:'📦 기타'};
+var CAT_LABELS={food:'🍱 식품/간식',beauty:'💄 뷰티/패션',cvs:'🏪 편의점',gift:'🎁 선물',duty:'🛫 면세',transport:'🚇 교통',etc:'📦 기타'};
 var DEFAULT_ITEMS=[];
 function initShop(){
   loadCards(); // 카드 목록 로드
@@ -3476,7 +3476,7 @@ function deleteItem(id){
   saveShop(); renderShop();
 }
 function addShopItem(){
-  var nid=Date.now(); _shopItems.push({id:nid,name:'',cat:'etc',price:0,pay:'cash',done:false}); saveShop(); _shopShowAll=true; renderShop();
+  var nid=Date.now(); _shopItems.push({id:nid,name:'',cat:'food',price:0,pay:'cash:본인',done:false}); saveShop(); _shopShowAll=true; renderShop();
   setTimeout(function(){ var el=document.querySelector('#si'+nid+' .shop-item-name'); if(el)el.focus(); },100);
 }
 function clearChecked(){ _shopItems=_shopItems.filter(function(i){return !i.done;}); saveShop();renderShop(); }

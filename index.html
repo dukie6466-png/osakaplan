@@ -4117,11 +4117,38 @@ function switchWalletTab(idx) {
 }
 
 function addWalletItem() {
-  var subType = document.getElementById('wSubType').value;
-  var cat     = document.getElementById('wCat').value;
-  var desc    = document.getElementById('wDesc').value.trim();
+  var subEl   = document.getElementById('wSubType');
+  var catEl   = document.getElementById('wCat');
+  var subType = subEl ? subEl.value : 'income';
+  var cat     = catEl ? catEl.value : '기타';
+  var descEl  = document.getElementById('wDesc');
+  var desc    = descEl ? descEl.value.trim() : '';
   var amount  = parseInt(document.getElementById('wAmount').value) || 0;
-  if(!desc || amount<=0){ document.getElementById('wDesc').focus(); return; }
+  if(amount <= 0){ document.getElementById('wAmount').focus(); return; }
+
+  // 탭별 카드/멤버명 + 기본 desc
+  var cardSel  = document.getElementById('wCardName');
+  var cashSel  = document.getElementById('wCashMember');
+  var icSel    = document.getElementById('wICMember');
+  var prepayType = document.getElementById('wPrepayType');
+
+  if(_walletTab === 0){
+    var cashMember = cashSel ? cashSel.value.replace('cash:','') : '본인';
+    if(!desc) desc = cashMember + ' 현금 환전';
+    cat = '환전';
+  } else if(_walletTab === 1){
+    var cardName = cardSel ? cardSel.value : '카드';
+    if(!desc) desc = cardName + ' 입금';
+    cat = '입금';
+  } else if(_walletTab === 2){
+    var icMember = icSel ? icSel.value.replace('ic:','') : '본인';
+    if(!desc) desc = icMember + ' IC 충전';
+    cat = '충전';
+  } else {
+    if(prepayType) cat = prepayType.value;
+    if(!desc) desc = (prepayType ? prepayType.value : '') + ' 예매';
+    subType = 'expense';
+  }
 
   _walletItems.push({
     id: Date.now(),
@@ -4165,7 +4192,9 @@ function renderWallet() {
   var label = document.getElementById('wListLabel');
   var wKey = W_TAB_MAP[_walletTab];
 
-  if(label) label.textContent = W_TAB_LABELS[_walletTab] + ' 내역';
+  var listNames2 = ['💴 현금 내역','💳 카드 내역','🚇 교통IC 내역','🎟 사전예매 내역'];
+  var cnt2 = filtered.length;
+  if(label) label.textContent = (listNames2[_walletTab]||'내역') + (cnt2>0?' ('+cnt2+'건)':'');
 
   var filtered = _walletItems.filter(function(i){ return i.wallet===wKey; }).slice().reverse();
 
@@ -4339,6 +4368,15 @@ function updateWalletForm(idx){
   var lbl = document.getElementById('wFormLabel');
   if(lbl) lbl.textContent = labels[idx]||labels[0];
 
+  // 내역 라벨도 탭에 맞게 업데이트
+  var listLabel = document.getElementById('wListLabel');
+  var listNames = ['💴 현금 내역','💳 카드 내역','🚇 교통IC 내역','🎟 사전예매 내역'];
+  if(listLabel){
+    var wKeys = ['cash','card','ic','prepay'];
+    var cnt = _walletItems.filter(function(i){ return i.wallet===wKeys[idx]; }).length;
+    listLabel.textContent = (listNames[idx]||listNames[0]) + (cnt>0 ? ' ('+cnt+'건)' : '');
+  }
+
   // hidden 필드
   var subEl = document.getElementById('wSubType');
   var catEl = document.getElementById('wCat');
@@ -4394,6 +4432,24 @@ function updateCurrencyLabel(){
   var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
   var amtInput = document.getElementById('wAmount');
   if(amtInput) amtInput.placeholder = val==='KRW' ? '₩ 금액 입력' : sym+' 금액 입력';
+}
+
+
+function toggleWalletList(){
+  var list    = document.getElementById('walletList');
+  var btn     = document.getElementById('wListToggleBtn');
+  var moreBtn = document.getElementById('walletMoreBtn');
+  if(!list) return;
+  var isHidden = list.style.display === 'none';
+  if(isHidden){
+    list.style.display = 'block';
+    if(btn) btn.textContent = '▲ 내역 숨기기';
+    renderWallet();
+  } else {
+    list.style.display = 'none';
+    if(moreBtn) moreBtn.style.display = 'none';
+    if(btn) btn.textContent = '▼ 내역 보기';
+  }
 }
 
 </script>
@@ -5166,8 +5222,9 @@ function updateCurrencyLabel(){
       </div>
 
       <!-- 내역 -->
-      <div class="timetable-label" id="wListLabel">💴 현금 내역</div>
-      <div id="walletList" class="wallet-list">
+      <div class="timetable-label" id="wListLabel" style="margin-bottom:6px;">💴 현금 내역</div>
+      <button id="wListToggleBtn" onclick="toggleWalletList()" style="display:flex;align-items:center;justify-content:center;gap:5px;width:100%;margin-bottom:8px;padding:9px;background:var(--bg2);border:1.5px dashed var(--gold);border-radius:var(--r-sm);font-size:12px;font-weight:700;color:var(--gold);cursor:pointer;-webkit-tap-highlight-color:transparent;">▼ 내역 보기</button>
+      <div id="walletList" class="wallet-list" style="display:none;">
         <div class="wallet-empty">내역이 없어요.</div>
       </div>
 

@@ -4890,10 +4890,17 @@ function toggleWalletList(){
   var moreBtn = document.getElementById('walletMoreBtn');
   if(!list) return;
   var isHidden = list.style.display === 'none';
-  list.style.display = isHidden ? 'block' : 'none';
-  if(moreBtn) moreBtn.style.display = isHidden ? '' : 'none';
-  if(btn) btn.textContent = isHidden ? '▲ 내역 숨기기' : '▼ 내역 보기';
-  if(isHidden) renderWallet();
+  if(isHidden){
+    // 펼치기: 내역 표시 + renderWallet (더보기는 renderWallet이 처리)
+    list.style.display = 'block';
+    if(btn) btn.textContent = '▲ 내역 숨기기';
+    renderWallet();
+  } else {
+    // 접기: 내역 + 더보기 모두 숨김
+    list.style.display = 'none';
+    if(moreBtn) moreBtn.style.display = 'none';
+    if(btn) btn.textContent = '▼ 내역 보기';
+  }
 }
 
 </script>

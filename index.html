@@ -5845,24 +5845,30 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
       <button class="modal-close" onclick="document.getElementById('dateModal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div>
-          <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">출발일</div>
-          <input type="date" id="dateStart" value="2026-06-14"
-            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);outline:none;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <div style="display:flex;flex-direction:column;gap:10px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:var(--f2xs);letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;width:36px;flex-shrink:0;">출발</span>
+            <input type="date" id="dateStart" value="2026-06-14"
+              style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--surface);outline:none;height:44px;box-sizing:border-box;">
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:var(--f2xs);letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;width:36px;flex-shrink:0;">귀국</span>
+            <input type="date" id="dateEnd" value="2026-06-17"
+              style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--surface);outline:none;height:44px;box-sizing:border-box;">
+          </div>
         </div>
-        <div>
-          <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">귀국일</div>
-          <input type="date" id="dateEnd" value="2026-06-17"
-            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);outline:none;">
-        </div>
-        <div id="datePreview" style="text-align:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px;">
+
+        <div id="datePreview" style="text-align:center;font-family:'Playfair Display',serif;font-size:var(--fxl);font-weight:700;color:var(--ink);background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px;">
           2026.06.14~17
         </div>
+
         <button onclick="applyDate()"
-          style="background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);padding:13px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;width:100%;">
+          style="background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);padding:13px;font-size:var(--fmd);font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;width:100%;height:48px;">
           ✓ 적용하기
         </button>
+
       </div>
     </div>
   </div>

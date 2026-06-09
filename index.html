@@ -927,12 +927,12 @@ body.editing .edit-hint{display:flex}
 .w-temp small{font-size:13px;font-family:'Noto Sans KR',sans-serif;color:var(--ink3)}
 .w-desc{font-size:11px;color:var(--ink2);font-weight:600;line-height:1.5}
 .w-desc small{font-size:9px;color:var(--ink3);font-weight:400}
-.w-forecast{display:grid;gap:5px;flex:1;min-width:0;width:100%}
+.w-forecast{display:grid;gap:5px;flex:1;min-width:0;width:100%;max-width:calc(100% - 10px)}
 .wfc-item{
   flex:1;background:var(--bg2);border:1px solid var(--border);
-  border-radius:8px;padding:6px 3px;text-align:center;min-width:0;
+  border-radius:8px;padding:6px 2px;text-align:center;min-width:0;
   overflow:hidden;display:flex;flex-direction:column;align-items:center;
-  justify-content:space-between;min-height:90px;}
+  justify-content:space-between;min-height:90px;max-width:72px;}
 .wfc-day{font-size:9px;font-weight:700;color:var(--gold);margin-bottom:2px}
 .wfc-icon{font-size:16px;margin-bottom:2px}
 .wfc-temp{font-size:8px;font-weight:700;color:var(--ink)}

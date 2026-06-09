@@ -4227,11 +4227,16 @@ function renderWallet() {
 function syncShopToWallet(item, checked){
   loadWallet();
   if(checked && item.price>0){
-    var pay = item.pay || 'cash';
-    var wKey = pay==='ic' ? 'ic' : pay.indexOf('ic:')===0 ? 'ic' : pay.indexOf('card:')===0 ? 'card' : 'cash';
-    var cardName = pay.indexOf('card:')===0 ? pay.replace('card:','') : null;
+    var pay = item.pay || 'cash:본인';
+    var wKey = (pay==='card' || pay.indexOf('card:')===0) ? 'card' :
+               (pay==='ic'   || pay.indexOf('ic:')===0  ) ? 'ic'   : 'cash';
+    // 멤버/카드명 추출
+    var memberName = null;
+    if(pay.indexOf('card:')===0) memberName = pay.replace('card:','');
+    else if(pay.indexOf('cash:')===0) memberName = pay.replace('cash:','');
+    else if(pay.indexOf('ic:')===0) memberName = pay.replace('ic:','');
     var desc = item.name || '구매 항목';
-    if(cardName) desc = desc + ' (' + cardName + ')';
+    if(memberName) desc = desc + ' (' + memberName + ')';
     _walletItems.push({
       id: Date.now(), wallet: wKey, type:'expense', cat:'쇼핑',
       desc: desc, amount: item.price, shopId: item.id,

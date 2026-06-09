@@ -1777,9 +1777,9 @@ body.editing .edit-hint{display:flex}
   </div>
   <div class="rc-thumb" style="background:linear-gradient(150deg,#006064,#00BCD4);">
     <div class="rc-thumb-inner">
-      <div class="rc-thumb-emoji">🐟</div>
-      <div class="rc-thumb-name">우나기로<br>나루세</div>
-      <div class="rc-thumb-en">Unagiro Naruse</div>
+      <div class="rc-thumb-emoji">🍱</div>
+      <div class="rc-thumb-name">가츠규<br>우메다점</div>
+      <div class="rc-thumb-en">Kyoto Katsugyu</div>
     </div>
   </div>
 </div>
@@ -5258,46 +5258,7 @@ function applyCurrency(countryName) {
     <div class="modal-body">
 
       <!-- 상단 잔액 요약 3칸 -->
-      <div class="w-balance-grid">
-        <div class="w-bal-card cash">
-          <div class="w-bal-label">💴 현금 잔액</div>
-          <div class="w-bal-val" id="wBalCash">¥0</div>
-          <div class="w-bal-krw" id="wBalCashKrw"></div>
-          <div class="w-bal-exp-row">
-            <span class="w-bal-exp-label">지출</span>
-            <span class="w-bal-exp-val" id="wExpCash">¥0</span>
-          </div>
-        </div>
-        <div class="w-bal-card card">
-          <div class="w-bal-label">💳 카드 잔액</div>
-          <div class="w-bal-val" id="wBalCard">¥0</div>
-          <div class="w-bal-krw" id="wBalCardKrw"></div>
-          <div class="w-bal-exp-row">
-            <span class="w-bal-exp-label">지출</span>
-            <span class="w-bal-exp-val" id="wExpCard">¥0</span>
-          </div>
-        </div>
-        <div class="w-bal-card ic">
-          <div class="w-bal-label">🚇 교통IC 잔액</div>
-          <div class="w-bal-val" id="wBalIC">¥0</div>
-          <div class="w-bal-krw" id="wBalICKrw"></div>
-          <div class="w-bal-exp-row">
-            <span class="w-bal-exp-label">지출</span>
-            <span class="w-bal-exp-val" id="wExpIC">¥0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 총지출 합산 -->
-      <div class="w-total-exp-box">
-        <span class="w-total-exp-label">💸 총 지출 합계</span>
-        <div class="w-total-exp-right">
-          <span class="w-total-exp-val" id="wTotalExpAll">¥0</span>
-          <span class="w-total-exp-krw" id="wTotalExpAllKrw"></span>
-        </div>
-      </div>
-
-      <!-- 탭 -->
+            <!-- 탭 -->
       <div class="w-tabs">
         <button class="w-tab active" id="wTab0" onclick="switchWalletTab(0)">💴 현금</button>
         <button class="w-tab" id="wTab1" onclick="switchWalletTab(1)">💳 카드</button>
@@ -5350,6 +5311,45 @@ function applyCurrency(countryName) {
       <div class="timetable-label" id="wListLabel">💴 현금 내역</div>
       <div id="walletList" class="wallet-list">
         <div class="wallet-empty">내역이 없어요.</div>
+      </div>
+
+      <div class="w-balance-grid">
+        <div class="w-bal-card cash">
+          <div class="w-bal-label">💴 현금 잔액</div>
+          <div class="w-bal-val" id="wBalCash">¥0</div>
+          <div class="w-bal-krw" id="wBalCashKrw"></div>
+          <div class="w-bal-exp-row">
+            <span class="w-bal-exp-label">지출</span>
+            <span class="w-bal-exp-val" id="wExpCash">¥0</span>
+          </div>
+        </div>
+        <div class="w-bal-card card">
+          <div class="w-bal-label">💳 카드 잔액</div>
+          <div class="w-bal-val" id="wBalCard">¥0</div>
+          <div class="w-bal-krw" id="wBalCardKrw"></div>
+          <div class="w-bal-exp-row">
+            <span class="w-bal-exp-label">지출</span>
+            <span class="w-bal-exp-val" id="wExpCard">¥0</span>
+          </div>
+        </div>
+        <div class="w-bal-card ic">
+          <div class="w-bal-label">🚇 교통IC 잔액</div>
+          <div class="w-bal-val" id="wBalIC">¥0</div>
+          <div class="w-bal-krw" id="wBalICKrw"></div>
+          <div class="w-bal-exp-row">
+            <span class="w-bal-exp-label">지출</span>
+            <span class="w-bal-exp-val" id="wExpIC">¥0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 총지출 합산 -->
+      <div class="w-total-exp-box">
+        <span class="w-total-exp-label">💸 총 지출 합계</span>
+        <div class="w-total-exp-right">
+          <span class="w-total-exp-val" id="wTotalExpAll">¥0</span>
+          <span class="w-total-exp-krw" id="wTotalExpAllKrw"></span>
+        </div>
       </div>
 
     </div>

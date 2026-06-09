@@ -3322,10 +3322,10 @@ function applyWeather(d) {
   var temp=Math.round(c.temperature_2m), feels=Math.round(c.apparent_temperature);
   var humid=c.relative_humidity_2m, wind=Math.round(c.wind_speed_10m);
   var now=new Date();
-  var wdesc = WX_DESC[current.weather_code]||'';
+  var wdesc = WX_DESC[c.weather_code]||'';
   document.getElementById('wDate').textContent=
     String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준  '+
-    Math.round(current.temperature_2m)+'°C '+wdesc;
+    Math.round(c.temperature_2m)+'°C '+wdesc;
 
   // 여행 날짜 기준 라벨 + 날짜
   var DAY_NAMES_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];

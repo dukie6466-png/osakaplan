@@ -647,13 +647,13 @@ body.editing .edit-hint{display:flex}
   -webkit-tap-highlight-color:transparent;
 }
 .atm-ctab span{font-size:10px;font-weight:400;color:var(--ink3);display:block}
-.atm-ctab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.atm-ctab.active{background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border-color:#E8602A}
 .atm-ctab.active span{color:rgba(255,255,255,.6)}
 .atm-cpanel{display:none}.atm-cpanel.active{display:block}
-.toss-card{background:var(--surface);border:1.5px solid #BBDEFB;border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px}
-.toss-header{background:#EBF4FF;padding:8px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.toss-logo{font-size:var(--fsm);font-weight:700;color:#1565C0}
-.toss-badge{font-size:10px;font-weight:500;background:#fff;color:#1565C0;border:1px solid #90CAF9;padding:2px 8px;border-radius:10px}
+.toss-card{background:var(--surface);border:1.5px solid #FFB899;border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px}
+.toss-header{background:linear-gradient(135deg,#FF9A5C,#E8602A);padding:8px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.toss-logo{font-size:var(--fsm);font-weight:700;color:#fff}
+.toss-badge{font-size:10px;font-weight:600;background:rgba(255,255,255,0.25);color:#fff;border:1px solid rgba(255,255,255,0.5);padding:2px 8px;border-radius:10px}
 .toss-rows{padding:10px 13px;display:flex;flex-direction:column;gap:7px}
 .toss-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .toss-label{font-size:var(--fsm);color:var(--ink2)}
@@ -927,8 +927,9 @@ body.editing .edit-hint{display:flex}
 .w-forecast{display:grid;gap:5px;flex:1;min-width:0;width:100%}
 .wfc-item{
   flex:1;background:var(--bg2);border:1px solid var(--border);
-  border-radius:8px;padding:5px 3px;text-align:center;min-width:0;
-;min-width:0;overflow:hidden}
+  border-radius:8px;padding:6px 3px;text-align:center;min-width:0;
+  overflow:hidden;display:flex;flex-direction:column;align-items:center;
+  justify-content:space-between;min-height:90px;}
 .wfc-day{font-size:9px;font-weight:700;color:var(--gold);margin-bottom:2px}
 .wfc-icon{font-size:16px;margin-bottom:2px}
 .wfc-temp{font-size:8px;font-weight:700;color:var(--ink)}
@@ -1321,6 +1322,26 @@ body.editing .edit-hint{display:flex}
   .modal{ max-width:520px!important; }
 }
 
+
+.air-watermark{
+  position:absolute;
+  right:-8px; top:50%;
+  transform:translateY(-50%);
+  font-size:52px;
+  font-weight:900;
+  letter-spacing:-3px;
+  opacity:0.12;
+  pointer-events:none;
+  z-index:0;
+  font-family:'Playfair Display',serif;
+  line-height:1;
+}
+.airline-sel-btn .air-info{ position:relative; z-index:1; }
+.airline-sel-btn .air-check{ position:relative; z-index:1; }
+
+.wfc-icon-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2px 0;}
+.wfc-desc{font-size:7px;color:var(--ink3);font-weight:600;line-height:1.2;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.wfc-icon{font-size:22px;line-height:1;}
 </style>
 </head>
 <body>
@@ -3294,7 +3315,8 @@ function applyWeather(d) {
     fcHtml+='<div class="wfc-item'+(isToday?' today':'')+'" onclick="switchDay('+i+')" style="cursor:pointer;">'+
       '<div class="wfc-day">'+dayLabels[i]+'</div>'+
       '<div class="wfc-date">'+dayDates[i]+'</div>'+
-      '<div class="wfc-icon">'+fi+'</div>'+
+      '<div class="wfc-icon-wrap"><div class="wfc-icon">'+fi+'</div></div>'+
+      '<div class="wfc-desc">'+(WX_DESC[daily.weather_code[i]]||'')+'</div>'+
       '<div class="wfc-temp">'+Math.round(daily.temperature_2m_max[i])+'°/'+Math.round(daily.temperature_2m_min[i])+'°</div>'+
       '<div class="wfc-rain">💧'+daily.precipitation_probability_max[i]+'%</div>'+
     '</div>';
@@ -3980,7 +4002,8 @@ function updateDatePreview() {
   var sm = String(sd.getMonth()+1).padStart(2,'0');
   var sd2 = String(sd.getDate()).padStart(2,'0');
   var ed2 = String(ed.getDate()).padStart(2,'0');
-  var txt = sd.getFullYear() + '. ' + sm + '. ' + sd2 + ' — ' + ed2;
+  var em = String(ed.getMonth()+1).padStart(2,'0');
+  var txt = sd.getFullYear() + '.' + sm + '.' + sd2 + '~' + em + '.' + ed2;
   document.getElementById('datePreview').textContent = txt;
 }
 
@@ -4843,8 +4866,8 @@ function openAirlineRules(){
 
     '<div class="timetable-label">🧳 위탁수하물</div>'+
     '<div class="toss-card" style="margin-bottom:12px;">'+
-      '<div class="toss-header" style="background:#EBF4FF;">'+
-        '<span class="toss-logo" style="color:#1565C0;">이코노미 클래스</span>'+
+      '<div class="toss-header">'+
+        '<span class="toss-logo">이코노미 클래스</span>'+
       '</div>'+
       '<div class="toss-rows">'+
         '<div class="toss-row"><span class="toss-label">허용 무게</span><span class="toss-val free">'+a.baggage+'</span></div>'+
@@ -4856,8 +4879,8 @@ function openAirlineRules(){
 
     '<div class="timetable-label">🎒 기내수하물</div>'+
     '<div class="toss-card" style="margin-bottom:12px;">'+
-      '<div class="toss-header" style="background:#f0faf0;">'+
-        '<span class="toss-logo" style="color:#2E7D32;">기내 반입 허용</span>'+
+      '<div class="toss-header">'+
+        '<span class="toss-logo">기내 반입 허용</span>'+
       '</div>'+
       '<div class="toss-rows">'+
         '<div class="toss-row"><span class="toss-label">수하물</span><span class="toss-val free">'+a.carryOn+'</span></div>'+
@@ -5238,6 +5261,23 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
   });
 }
 
+
+function updateDateDisplay(){
+  var s = document.getElementById('dateStart').value;
+  var e = document.getElementById('dateEnd').value;
+  var sd = document.getElementById('dateStartDisplay');
+  var ed = document.getElementById('dateEndDisplay');
+  if(s && sd){
+    var d = new Date(s);
+    sd.textContent = d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');
+  }
+  if(e && ed){
+    var d2 = new Date(e);
+    ed.textContent = d2.getFullYear()+'.'+String(d2.getMonth()+1).padStart(2,'0')+'.'+String(d2.getDate()).padStart(2,'0');
+  }
+  updateDatePreview();
+}
+
 </script>
 
 <!-- 리무진 버스 시간표 모달 -->
@@ -5413,8 +5453,8 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
       <div class="atm-cpanel active" id="atm-cp-0">
         <div class="toss-card" style="margin-bottom:14px;">
           <div class="toss-header">
-            <span class="toss-logo" style="color:#1565C0;">토스뱅크 체크카드</span>
-            <span class="toss-badge" style="color:#1565C0;border-color:#90CAF9;">외화통장 연결 필수</span>
+            <span class="toss-logo">토스뱅크 체크카드</span>
+            <span class="toss-badge">외화통장 연결 필수</span>
           </div>
           <div class="toss-rows">
             <div class="toss-row"><span class="toss-label">세븐뱅크 ATM 수수료</span><span class="toss-val free">월 5회·$700까지 무료</span></div>
@@ -5458,9 +5498,9 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
       <!-- 트래블월렛 패널 -->
       <div class="atm-cpanel" id="atm-cp-1">
         <div class="toss-card" style="margin-bottom:14px;border-color:#BBDEFB;">
-          <div class="toss-header" style="background:#f0f4ff;">
-            <span class="toss-logo" style="color:#3d5afe;">트래블월렛 카드</span>
-            <span class="toss-badge" style="color:#3d5afe;border-color:#90a4ff;">이온ATM 완전 무료</span>
+          <div class="toss-header">
+            <span class="toss-logo">트래블월렛 카드</span>
+            <span class="toss-badge">이온ATM 완전 무료</span>
           </div>
           <div class="toss-rows">
             <div class="toss-row"><span class="toss-label">이온(AEON) ATM 수수료</span><span class="toss-val free">완전 무료</span></div>
@@ -5734,16 +5774,16 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
         <!-- 대형항공사 -->
         <div class="timetable-label" style="margin-top:4px;">🏢 대형항공사 (FSC)</div>
-        <button class="airline-sel-btn" onclick="selectAirline('아시아나항공','asiana')">
-          <div class="air-logo" style="background:#F2D0D3;color:#C0324A;">✈<span style="color:#C0324A;">OZ</span></div>
+        <button class="airline-sel-btn" style="background:linear-gradient(135deg,#F2D0D3,#E8B4B8);position:relative;overflow:hidden;" onclick="selectAirline('아시아나항공','asiana')">
+          <div class="air-watermark" style="color:#C0324A">OZ</div><div class="air-logo" style="background:rgba(255,255,255,0.7);color:#C0324A;position:relative;z-index:1;">✈<span style="color:#C0324A;">OZ</span></div>
           <div class="air-info">
             <div class="air-name">아시아나항공</div>
             <div class="air-en">Asiana Airlines · OZ</div>
           </div>
           <div class="air-check" id="airCheck-asiana">✓</div>
         </button>
-        <button class="airline-sel-btn" onclick="selectAirline('대한항공','koreanair')">
-          <div class="air-logo" style="background:#D0DEFF;color:#002B7F;">✈<span style="color:#002B7F;">KE</span></div>
+        <button class="airline-sel-btn" style="background:linear-gradient(135deg,#D0DEFF,#B8CCFF);position:relative;overflow:hidden;" onclick="selectAirline('대한항공','koreanair')">
+          <div class="air-watermark" style="color:#002B7F">KE</div><div class="air-logo" style="background:rgba(255,255,255,0.7);color:#002B7F;position:relative;z-index:1;">✈<span style="color:#002B7F;">KE</span></div>
           <div class="air-info">
             <div class="air-name">대한항공</div>
             <div class="air-en">Korean Air · KE</div>
@@ -5753,48 +5793,48 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
         <!-- LCC -->
         <div class="timetable-label" style="margin-top:8px;">💺 저비용항공사 (LCC)</div>
-        <button class="airline-sel-btn" onclick="selectAirline('제주항공','jeju')">
-          <div class="air-logo" style="background:#FFE8D0;color:#E05500;">✈<span style="color:#E05500;">7C</span></div>
+        <button class="airline-sel-btn" style="background:linear-gradient(135deg,#FFE8D0,#FFD4B0);position:relative;overflow:hidden;" onclick="selectAirline('제주항공','jeju')">
+          <div class="air-watermark" style="color:#E05500">7C</div><div class="air-logo" style="background:rgba(255,255,255,0.7);color:#E05500;position:relative;z-index:1;">✈<span style="color:#E05500;">7C</span></div>
           <div class="air-info">
             <div class="air-name">제주항공</div>
             <div class="air-en">Jeju Air · 7C</div>
           </div>
           <div class="air-check" id="airCheck-jeju" style="opacity:0;">✓</div>
         </button>
-        <button class="airline-sel-btn" onclick="selectAirline('진에어','jinair')">
-          <div class="air-logo" style="background:#D0E0FF;color:#003A8C;">✈<span style="color:#003A8C;">LJ</span></div>
+        <button class="airline-sel-btn" style="background:linear-gradient(135deg,#D0E0FF,#B8D0FF);position:relative;overflow:hidden;" onclick="selectAirline('진에어','jinair')">
+          <div class="air-watermark" style="color:#003A8C">LJ</div><div class="air-logo" style="background:rgba(255,255,255,0.7);color:#003A8C;position:relative;z-index:1;">✈<span style="color:#003A8C;">LJ</span></div>
           <div class="air-info">
             <div class="air-name">진에어</div>
             <div class="air-en">Jin Air · LJ</div>
           </div>
           <div class="air-check" id="airCheck-jinair" style="opacity:0;">✓</div>
         </button>
-        <button class="airline-sel-btn" onclick="selectAirline('티웨이항공','tway')">
-          <div class="air-logo" style="background:#FFD0D0;color:#C0000A;">✈<span style="color:#C0000A;">TW</span></div>
+        <button class="airline-sel-btn" style="background:linear-gradient(135deg,#FFD0D0,#FFB8B8);position:relative;overflow:hidden;" onclick="selectAirline('티웨이항공','tway')">
+          <div class="air-watermark" style="color:#C0000A">TW</div><div class="air-logo" style="background:rgba(255,255,255,0.7);color:#C0000A;position:relative;z-index:1;">✈<span style="color:#C0000A;">TW</span></div>
           <div class="air-info">
             <div class="air-name">티웨이항공</div>
             <div class="air-en">T'way Air · TW</div>
           </div>
           <div class="air-check" id="airCheck-tway" style="opacity:0;">✓</div>
         </button>
-        <button class="airline-sel-btn" onclick="selectAirline('에어서울','airseoul')">
-          <div class="air-logo" style="background:#D0E4FF;color:#00408C;">✈<span style="color:#00408C;">RS</span></div>
+        <button class="airline-sel-btn" style="background:linear-gradient(135deg,#D0E4FF,#B8D4FF);position:relative;overflow:hidden;" onclick="selectAirline('에어서울','airseoul')">
+          <div class="air-watermark" style="color:#00408C">RS</div><div class="air-logo" style="background:rgba(255,255,255,0.7);color:#00408C;position:relative;z-index:1;">✈<span style="color:#00408C;">RS</span></div>
           <div class="air-info">
             <div class="air-name">에어서울</div>
             <div class="air-en">Air Seoul · RS</div>
           </div>
           <div class="air-check" id="airCheck-airseoul" style="opacity:0;">✓</div>
         </button>
-        <button class="airline-sel-btn" onclick="selectAirline('에어부산','airbusan')">
-          <div class="air-logo" style="background:#FFF3C0;color:#8A6800;">✈<span style="color:#8A6800;">BX</span></div>
+        <button class="airline-sel-btn" style="background:linear-gradient(135deg,#FFF3C0,#FFE890);position:relative;overflow:hidden;" onclick="selectAirline('에어부산','airbusan')">
+          <div class="air-watermark" style="color:#8A6800">BX</div><div class="air-logo" style="background:rgba(255,255,255,0.7);color:#8A6800;position:relative;z-index:1;">✈<span style="color:#8A6800;">BX</span></div>
           <div class="air-info">
             <div class="air-name">에어부산</div>
             <div class="air-en">Air Busan · BX</div>
           </div>
           <div class="air-check" id="airCheck-airbusan" style="opacity:0;">✓</div>
         </button>
-        <button class="airline-sel-btn" onclick="selectAirline('이스타항공','eaststar')">
-          <div class="air-logo" style="background:#D0D8FF;color:#001E6C;">✈<span style="color:#001E6C;">ZE</span></div>
+        <button class="airline-sel-btn" style="background:linear-gradient(135deg,#D0D8FF,#B8C4FF);position:relative;overflow:hidden;" onclick="selectAirline('이스타항공','eaststar')">
+          <div class="air-watermark" style="color:#001E6C">ZE</div><div class="air-logo" style="background:rgba(255,255,255,0.7);color:#001E6C;position:relative;z-index:1;">✈<span style="color:#001E6C;">ZE</span></div>
           <div class="air-info">
             <div class="air-name">이스타항공</div>
             <div class="air-en">Eastar Jet · ZE</div>
@@ -5819,9 +5859,9 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
       <!-- 위탁수하물 -->
       <div class="timetable-label">🧳 위탁 수하물 (일본 노선)</div>
       <div class="toss-card" style="margin-bottom:12px;">
-        <div class="toss-header" style="background:#EBF4FF;">
-          <span class="toss-logo" style="color:#1565C0;">이코노미 클래스</span>
-          <span class="toss-badge" style="color:#1565C0;border-color:#90CAF9;">OZ111 · OZ112</span>
+        <div class="toss-header">
+          <span class="toss-logo">이코노미 클래스</span>
+          <span class="toss-badge">OZ111 · OZ112</span>
         </div>
         <div class="toss-rows">
           <div class="toss-row"><span class="toss-label">무게 허용</span><span class="toss-val free">23kg × 1개</span></div>
@@ -5835,8 +5875,8 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
       <!-- 기내 수하물 -->
       <div class="timetable-label">🎒 기내 수하물</div>
       <div class="toss-card" style="margin-bottom:12px;">
-        <div class="toss-header" style="background:#f0faf0;">
-          <span class="toss-logo" style="color:#2E7D32;">기내 반입 허용</span>
+        <div class="toss-header">
+          <span class="toss-logo">기내 반입 허용</span>
         </div>
         <div class="toss-rows">
           <div class="toss-row"><span class="toss-label">수하물 1개</span><span class="toss-val free">최대 10kg</span></div>
@@ -5874,8 +5914,8 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
       <!-- 보조배터리 -->
       <div class="timetable-label">🔋 보조배터리 규정</div>
       <div class="toss-card" style="margin-bottom:12px;">
-        <div class="toss-header" style="background:#fff8f0;">
-          <span class="toss-logo" style="color:#E65100;">반드시 기내 반입 (위탁 절대 금지)</span>
+        <div class="toss-header">
+          <span class="toss-logo">반드시 기내 반입 (위탁 절대 금지)</span>
         </div>
         <div class="toss-rows">
           <div class="toss-row"><span class="toss-label">100Wh 이하</span><span class="toss-val free">개수 제한 없이 기내 반입 가능</span></div>
@@ -5936,13 +5976,17 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
         <div style="display:flex;flex-direction:column;gap:10px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px;">
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="font-size:var(--f2xs);letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;width:36px;flex-shrink:0;">출발</span>
-            <input type="date" id="dateStart" value="2026-06-14"
-              style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--surface);outline:none;height:44px;box-sizing:border-box;">
+            <div style="flex:1;position:relative;">
+              <span id="dateStartDisplay" onclick="document.getElementById('dateStart').showPicker&&document.getElementById('dateStart').showPicker()" style="display:flex;align-items:center;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--surface);height:44px;box-sizing:border-box;cursor:pointer;font-weight:600;">2026.06.14</span>
+              <input type="date" id="dateStart" value="2026-06-14" onchange="updateDateDisplay()" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none;">
+            </div>
           </div>
           <div style="display:flex;align-items:center;gap:12px;">
             <span style="font-size:var(--f2xs);letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;width:36px;flex-shrink:0;">귀국</span>
-            <input type="date" id="dateEnd" value="2026-06-17"
-              style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--surface);outline:none;height:44px;box-sizing:border-box;">
+            <div style="flex:1;position:relative;">
+              <span id="dateEndDisplay" onclick="document.getElementById('dateEnd').showPicker&&document.getElementById('dateEnd').showPicker()" style="display:flex;align-items:center;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--surface);height:44px;box-sizing:border-box;cursor:pointer;font-weight:600;">2026.06.17</span>
+              <input type="date" id="dateEnd" value="2026-06-17" onchange="updateDateDisplay()" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none;">
+            </div>
           </div>
         </div>
 

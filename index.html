@@ -561,8 +561,8 @@ body.editing .edit-hint{display:flex}
   background:var(--surface);
   border-radius:20px 20px 0 0;
   width:100%;
-  max-width:560px;
-  max-height:90vh;
+  max-width:480px;
+  max-height:88vh;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   box-shadow:0 -4px 32px rgba(0,0,0,.16);
@@ -1258,94 +1258,60 @@ body.editing .edit-hint{display:flex}
 
 
 /* ══ 가로 모드 (landscape) ══ */
-@media (orientation: landscape) and (max-height: 500px) {
+@media (orientation: landscape) {
 
-  /* 탭이 화면 전체 너비를 채우게 */
+  /* 전체 body overflow 방지 */
+  body{ overflow-x:hidden; }
+
+  /* wrap 패딩 줄이기 */
+  .wrap{ padding:0 12px 40px; }
+
+  /* 헤더 컴팩트 */
+  .header{ padding:8px 0 6px; }
+  .header-eyebrow{ font-size:8px; margin-bottom:2px; }
+  .header-title{ font-size:clamp(1.2rem,4vw,1.8rem); }
+  .header-nights{ font-size:11px; margin-top:2px; }
+  .header-meta{
+    gap:5px; margin-top:6px;
+    grid-template-columns:repeat(6,1fr);
+  }
+  .meta-chip{ height:36px!important; font-size:10px; }
+
+  /* 탭바 - 화면 전체 너비 */
   .tabs{
-    position:sticky; top:0; z-index:50;
-    width:100vw; left:0;
-    margin-left:calc(-1 * (100vw - 100%) / 2);
+    display:grid;
     grid-template-columns:repeat(5,1fr);
+    width:100%;
     box-sizing:border-box;
   }
-  .tab{ min-height:40px; padding:6px 2px; }
-  .td{ font-size:10px; }
-  .ts{ font-size:8px; }
-
-  /* wrap 좌우 여백 줄이기 */
-  .wrap{ padding:0 12px 40px; max-width:100%; }
-
-  /* 헤더 컴팩트하게 */
-  .header{ padding:10px 0 8px; }
-  .header-eyebrow{ margin-bottom:4px; font-size:8px; }
-  .header-title{ font-size:1.2rem; }
-  .header-nights{ font-size:12px; margin-top:3px; }
-  .header-meta{ gap:5px; margin-top:8px; }
-  .meta-chip{ height:36px!important; font-size:11px; }
-
-  /* 탭 컴팩트 */
-  .tab{ padding:8px 4px; }
-  .td{ font-size:10px; }
-  .ts{ font-size:8px; }
+  .tab{ min-height:40px!important; padding:5px 2px; }
+  .td{ font-size:11px; }
+  .ts{ font-size:9px; }
 
   /* 날씨 위젯 */
-  .weather-widget{ padding:6px 10px; }
-  .w-now{ gap:6px; }
-  .w-icon{ font-size:22px; }
-  .w-temp{ font-size:1.4rem; }
-  .wfc-item{ padding:4px 2px; }
+  .weather-widget{ padding:6px 10px; margin:6px 0 0; }
+  .wfc-item{ padding:3px 2px; }
 
-  /* 환율 위젯 */
-  .rate-widget{ padding:6px 10px; }
-
-  /* 이동카드 */
-  .rc{ gap:8px; }
-  .rc-minimap canvas{ height:56px!important; }
-
-  /* 미니맵 높이 축소 */
-  .rc-minimap{ display:none; }  /* 가로모드에서 미니맵 숨김 */
-
-  /* 타임라인 */
-  .ev{ padding:10px 12px; }
+  /* 이동카드 미니맵 높이 축소 */
+  .rc-minimap canvas{ height:60px!important; }
 
   /* 모달 */
   .modal{
-    max-height:85vh;
+    max-height:90vh;
     overflow-y:auto;
   }
   .modal-body{
-    max-height:60vh;
+    max-height:70vh;
     overflow-y:auto;
   }
 
-  /* 지갑 모달 */
-  .w-balance-grid{
-    grid-template-columns:repeat(3,1fr);
-    gap:5px;
-  }
+  /* 추천 카드 3열 */
+  .rec-panel{ grid-template-columns:repeat(3,1fr)!important; }
 
-  /* 추천 섹션 카드 */
-  .rec-panel{
-    grid-template-columns:repeat(3,1fr)!important;
-  }
-
-  /* 스크롤탑 위치 */
-  .scroll-top{ bottom:12px; right:12px; width:36px; height:36px; }
+  /* 스크롤탑 */
+  .scroll-top{ bottom:10px; right:10px; width:36px; height:36px; }
 }
-
-/* 태블릿 가로 모드 */
-@media (orientation: landscape) and (min-height: 500px) {
-  .wrap{ max-width:900px; padding:0 24px 60px; }
-  .tabs{
-    width:100vw;
-    left:0;
-    margin-left:calc(-1 * (100vw - 100%) / 2);
-    grid-template-columns:repeat(5,1fr);
-    box-sizing:border-box;
-  }
-  .header-meta{ grid-template-columns:repeat(6,1fr); }
-
-  /* 이동카드 2열 레이아웃 */
+* 이동카드 2열 레이아웃 */
   .rc-minimap canvas{ height:80px!important; }
 
   /* 추천 카드 3열 */
@@ -5409,7 +5375,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- ATM 정보 모달 -->
 <div class="modal-overlay" id="atmModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:520px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>🏧 ATM 정보</h3>
       <button class="modal-close" onclick="document.getElementById('atmModal').classList.remove('open')">✕</button>
@@ -5519,7 +5485,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 흡연구역 모달 -->
 <div class="modal-overlay" id="smokingModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:500px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>🚬 오사카 흡연 구역</h3>
       <button class="modal-close" onclick="document.getElementById('smokingModal').classList.remove('open')">✕</button>
@@ -5643,7 +5609,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 4일차 리무진 버스 시간표 모달 (우메다→공항) -->
 <div class="modal-overlay" id="busModal4" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:480px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>🚌 리무진 버스 시간표</h3>
       <button class="modal-close" onclick="document.getElementById('busModal4').classList.remove('open')">✕</button>
@@ -5736,7 +5702,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 항공사 선택 모달 -->
 <div class="modal-overlay" id="airlineSelectModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:420px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>✈ 항공사 선택</h3>
       <button class="modal-close" onclick="document.getElementById('airlineSelectModal').classList.remove('open')">✕</button>
@@ -5822,7 +5788,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 아시아나 탑승 규정 모달 -->
 <div class="modal-overlay" id="asiana-modal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:520px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>✈ 아시아나항공 탑승 규정</h3>
       <button class="modal-close" onclick="document.getElementById('asiana-modal').classList.remove('open')">✕</button>
@@ -5938,7 +5904,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 날짜 수정 모달 -->
 <div class="modal-overlay" id="dateModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:380px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>📅 여행 날짜 수정</h3>
       <button class="modal-close" onclick="document.getElementById('dateModal').classList.remove('open')">✕</button>
@@ -5975,7 +5941,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 인원수 수정 모달 -->
 <div class="modal-overlay" id="paxModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:340px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>👫 여행 인원 설정</h3>
       <button class="modal-close" onclick="document.getElementById('paxModal').classList.remove('open')">✕</button>
@@ -6025,7 +5991,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 지갑 모달 -->
 <div class="modal-overlay" id="walletModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:540px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>👛 여행 지갑</h3>
       <button class="modal-close" onclick="document.getElementById('walletModal').classList.remove('open')">✕</button>
@@ -6160,7 +6126,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 도시 설정 모달 -->
 <div class="modal-overlay" id="cityModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:420px;">
+  <div class="modal">
     <div class="modal-head">
       <h3 id="cityModalTitle">🗺 여행 나라 선택</h3>
       <button class="modal-close" onclick="document.getElementById('cityModal').classList.remove('open')">✕</button>
@@ -6210,7 +6176,7 @@ function drawMapLarge(canvasId, points, dotColors, bgColor, lineColor) {
 
 <!-- 카드 관리 모달 -->
 <div class="modal-overlay" id="cardMgrModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:380px;">
+  <div class="modal">
     <div class="modal-head">
       <h3>💳 카드 관리</h3>
       <button class="modal-close" onclick="document.getElementById('cardMgrModal').classList.remove('open')">✕</button>

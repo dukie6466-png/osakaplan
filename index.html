@@ -4149,10 +4149,10 @@ function openWallet() {
   loadWallet();
   _walletTab = 0; _walletShowAll = false;
   updateWalletForm(0);
+  renderWallet();
   var list=document.getElementById('walletList'); if(list) list.style.display='block';
   var btn=document.getElementById('wListToggleBtn'); if(btn) btn.textContent='▲ 내역 숨기기';
   var moreBtn=document.getElementById('walletMoreBtn'); if(moreBtn) moreBtn.style.display='none';
-  updateBalances();
   document.getElementById('walletModal').classList.add('open');
 }
 function loadWallet() {
@@ -4176,6 +4176,7 @@ function switchWalletTab(idx) {
   if(moreBtn) moreBtn.style.display = 'none';
   // 폼 업데이트
   updateWalletForm(idx);
+  renderWallet();
 }
 
 function addWalletItem() {
@@ -4277,8 +4278,8 @@ function renderWallet() {
 
   list.innerHTML =
     '<div class="w-subtotal">'+
-      '<span>충전/입금 <b style="color:'+W_COLORS[wKey]+'">+¥'+inc.toLocaleString()+'</b></span>'+
-      '<span>지출 <b style="color:var(--red)">-¥'+exp.toLocaleString()+'</b></span>'+
+      '<span>충전/입금 <b style="color:'+W_COLORS[wKey]+'">'+(wKey==='prepay'?'+₩':'+¥')+inc.toLocaleString()+'</b></span>'+
+      '<span>지출 <b style="color:var(--red)">'+(wKey==='prepay'?'-₩':'-¥')+exp.toLocaleString()+'</b></span>'+
     '</div>' +
     filtered.map(function(item){
       var icon = CAT_ICON[item.cat]||'📦';
@@ -4291,8 +4292,8 @@ function renderWallet() {
           '<div class="wallet-item-meta">'+item.cat+' · '+(item.date||'')+(item.shopId?' · 🔗구매목록':'')+'</div>'+
         '</div>'+
         '<div class="wallet-item-amount">'+
-          '<span class="wia-yen" style="color:'+col+'">'+sign+'¥'+item.amount.toLocaleString()+'</span>'+
-          (_rateKRW?'<span class="wia-krw">₩'+Math.round(item.amount*_rateKRW).toLocaleString()+'</span>':'')+
+          '<span class="wia-yen" style="color:'+col+'">'+sign+(item.wallet==='prepay'?'₩':'¥')+item.amount.toLocaleString()+'</span>'+
+          (item.wallet!=='prepay'&&_rateKRW?'<span class="wia-krw">₩'+Math.round(item.amount*_rateKRW).toLocaleString()+'</span>':'')+
         '</div>'+
         '<button class="wallet-item-del" onclick="deleteWalletItem('+item.id+')">✕</button>'+
       '</div>';

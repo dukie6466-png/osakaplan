@@ -1201,6 +1201,26 @@ body.editing .edit-hint{display:flex}
   font-size:var(--fsm);font-weight:700;color:var(--gold);
 }
 
+
+.airline-sel-btn{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);cursor:pointer;
+  text-align:left;-webkit-tap-highlight-color:transparent;
+  position:relative;overflow:hidden;
+}
+.air-logo{
+  font-size:18px;flex-shrink:0;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:8px;font-weight:900;position:relative;
+}
+.air-logo span{ position:absolute;bottom:0;right:0;font-size:7px;font-weight:900;background:rgba(255,255,255,0.9);border-radius:3px;padding:1px 2px; }
+.air-info{ flex:1; }
+.air-name{ font-size:var(--fsm);font-weight:700;color:var(--ink); }
+.air-en{ font-size:var(--f2xs);color:var(--ink3);margin-top:2px; }
+.air-check{ font-size:16px;color:var(--gold);font-weight:700; }
+.air-watermark{ position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:52px;font-weight:900;letter-spacing:-3px;opacity:0.12;pointer-events:none;z-index:0;font-family:'Playfair Display',serif;line-height:1; }
+
 </style>
 </head>
 <body>
@@ -1213,8 +1233,8 @@ body.editing .edit-hint{display:flex}
     <div class="header-nights" id="headerNights">(3박4일)</div>
   </div>
   <div class="header-meta">
-    <button class="meta-chip date-chip" onclick="openDateModal()">📅 <span id="dateChipText">06.14~17</span></button>
-    <button class="meta-chip airline-chip" onclick="document.getElementById('asiana-modal').classList.add('open')">✈ 아시아나항공</button>
+    <button class="meta-chip date-chip" onclick="openDateModal()">📅 <span id="dateChipText">2026.06.14~17</span></button>
+    <button class="meta-chip airline-chip" onclick="openAirlineModal()">✈ 아시아나항공</button>
     <button class="meta-chip pax-chip" onclick="openPaxModal()">👫 <span id="paxChipText">2인 여행</span></button>
     <button class="meta-chip location-btn" onclick="openWallet()">👛 지갑</button>
     <button class="meta-chip atm-chip-btn" onclick="openAtmModal(0)">🏧 ATM 정보</button>
@@ -1447,22 +1467,34 @@ body.editing .edit-hint{display:flex}
   </div>
   <div class="rec-body">
     <div class="rec-panel active" id="rec-umeda1-0">
-      <a class="rec-card" href="https://www.google.com/search?q=우메다+스카이빌딩+공중정원" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌌</div><div class="rec-card-name">우메다 스카이빌딩 공중정원</div><div class="rec-card-desc">39~40F 360° 야경 · 입장 ¥2,000</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=헵파이브+관람차+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎡</div><div class="rec-card-name">헵 파이브 관람차</div><div class="rec-card-desc">우메다 랜드마크 관람차 · ¥600</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=오하츠텐진+신사+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">오하츠텐진 신사</div><div class="rec-card-desc">우메다 도심 속 연애 신사 · 야간 참배 가능</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=루쿠아+오사카+쇼핑" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏬</div><div class="rec-card-name">루쿠아 오사카</div><div class="rec-card-desc">JR 오사카역 직결 · 쇼핑몰</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=우메다+스카이빌딩" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌌</div><div class="rec-card-name">우메다 스카이빌딩 공중정원</div><div class="rec-card-desc">39~40F 360° 야경</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=헵파이브+관람차" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎡</div><div class="rec-card-name">헵파이브 관람차</div><div class="rec-card-desc">우메다 랜드마크 · ¥600</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=오하츠텐진+신사" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">오하츠텐진 신사</div><div class="rec-card-desc">연인의 신사 · 무료</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=루쿠아+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🛍</div><div class="rec-card-name">루쿠아 오사카</div><div class="rec-card-desc">JR역 직결 쇼핑몰</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=오사카+역사박물관" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏯</div><div class="rec-card-name">오사카 역사박물관</div><div class="rec-card-desc">전망대 · 역사전시</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=나카노시마+공원" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌸</div><div class="rec-card-name">나카노시마 공원</div><div class="rec-card-desc">장미공원 · 무료</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-umeda1-1">
-      <a class="rec-card" href="https://www.google.com/search?q=그릴캐피탈동양정+한큐+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍽</div><div class="rec-card-name">그릴 캐피탈 동양정 (당일)</div><div class="rec-card-desc">한큐백화점 12F · 오므라이스 명가 ★4.3</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=이치란라멘+우메다+24시간" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 우메다점</div><div class="rec-card-desc">개인 칸막이 톤코츠 · 24시간 운영</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=야키니쿠리키마루+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">야키니쿠 리키마루</div><div class="rec-card-desc">와규 무한리필 · ★4.8</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=규카츠+가츠규+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">牛カツ京都勝牛 우메다점</div><div class="rec-card-desc">소고기 카츠 전문 · 철판 구이 ★4.8</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=동양정+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">그릴 캐피탈 동양정</div><div class="rec-card-desc">오믈렛 라이스 · 노포</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=가츠규+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">가츠규 우메다점</div><div class="rec-card-desc">우규가츠 · 밥 무제한</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=이치란+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 우메다</div><div class="rec-card-desc">돈코츠 · 24시간</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=우나기로+나루세" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐡</div><div class="rec-card-name">우나기로 나루세</div><div class="rec-card-desc">장어덮밥 · 예약필수</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=야키니쿠+리키마루" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">야키니쿠 리키마루</div><div class="rec-card-desc">인기 고기집 · 가성비</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=히게스시+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">히게 스시 우메다</div><div class="rec-card-desc">아침 스시 · 신선</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-umeda1-2">
-      <a class="rec-card" href="https://www.google.com/search?q=HARBS+밀크레이프+다이마루+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">HARBS 다이마루 우메다점</div><div class="rec-card-desc">밀크레이프 명가 · 다이마루 6F</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+우메다+스카이빌딩" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 우메다 스카이빌딩점</div><div class="rec-card-desc">공중정원 뷰 카페 · 인증샷 명소</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=팔레도르+초콜릿+하비스+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍫</div><div class="rec-card-name">팔레도르 초콜라티에</div><div class="rec-card-desc">하비스4F 프리미엄 초콜릿 파르페</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=Grenier+우메다+밀푀유" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥐</div><div class="rec-card-name">Grenier 우메다점</div><div class="rec-card-desc">밀푀유·크림 페이스트리 · 1F</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=HARBS+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">HARBS 다이마루 우메다</div><div class="rec-card-desc">밀크레이프 명가</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 우메다 스카이</div><div class="rec-card-desc">야경 뷰 커피</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=루쿠아+카페" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧋</div><div class="rec-card-name">루쿠아 카페 몬타크</div><div class="rec-card-desc">감성 카페</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=팔레도르+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍩</div><div class="rec-card-name">팔레도르 초콜라티에</div><div class="rec-card-desc">초콜릿 카페</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=말차+카페+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍵</div><div class="rec-card-name">말차 카페 우메다</div><div class="rec-card-desc">말차 디저트 전문</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=블루보틀+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">블루보틀 오사카</div><div class="rec-card-desc">블루보틀 커피</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
   </div>
 </div>
@@ -1529,22 +1561,34 @@ body.editing .edit-hint{display:flex}
   </div>
   <div class="rec-body">
     <div class="rec-panel active" id="rec-dotonbori-0">
-      <a class="rec-card" href="https://www.google.com/search?q=도톤보리+글리코간판+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏃</div><div class="rec-card-name">글리코 러닝맨 간판</div><div class="rec-card-desc">도톤보리 상징 · 야경 포토스팟 필수</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=톤보리리버워크+도톤보리+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌉</div><div class="rec-card-name">톤보리 리버워크</div><div class="rec-card-desc">강변 산책로 · 야경 유람선 운영</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=신사이바시+쇼핑거리+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🛍</div><div class="rec-card-name">신사이바시 쇼핑거리</div><div class="rec-card-desc">400m 아케이드 쇼핑가 · 기념품 천국</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=호젠지요코초+오사카+골목" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🪨</div><div class="rec-card-name">호젠지 요코초 골목</div><div class="rec-card-desc">이끼낀 후도묘왕 · 고즈넉한 골목 선술집</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=글리코+도톤보리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏮</div><div class="rec-card-name">글리코 러닝맨</div><div class="rec-card-desc">도톤보리 상징 포토스팟</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=카니도락+도톤보리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦀</div><div class="rec-card-name">카니도라쿠 본점</div><div class="rec-card-desc">게 간판 · 도톤보리 명물</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=톤보리+리버워크" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌊</div><div class="rec-card-name">톤보리 리버워크</div><div class="rec-card-desc">강변 산책 · 야경</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=신사이바시+쇼핑" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🛍</div><div class="rec-card-name">신사이바시 쇼핑거리</div><div class="rec-card-desc">오사카 최대 상점가</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=호젠지+요코초" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">호젠지 요코초</div><div class="rec-card-desc">이끼 낀 불상 · 레트로</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=국립문락극장" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎭</div><div class="rec-card-name">국립 문락 극장</div><div class="rec-card-desc">전통 인형극</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-dotonbori-1">
-      <a class="rec-card" href="https://www.google.com/search?q=이치란라멘+도톤보리+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 도톤보리점</div><div class="rec-card-desc">개인 칸막이 톤코츠 라멘 · 24시간</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=도톤보리+타코야키+쿠쿠루+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐙</div><div class="rec-card-name">쿠쿠루 타코야키</div><div class="rec-card-desc">도톤보리 명물 타코야키 · 8개 ¥700</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=카니도라쿠+오사카+게요리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦀</div><div class="rec-card-name">카니도라쿠 본점</div><div class="rec-card-desc">도톤보리 게 요리 명가 · 거대 게 간판</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.0</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=야키니쿠+키탄+호젠지+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">야키니쿠 키탄 호젠지 (당일)</div><div class="rec-card-desc">호젠지 골목 와규 야키니쿠 ★4.5</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=이치란+도톤보리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 도톤보리</div><div class="rec-card-desc">돈코츠 · 24시간</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=야키니쿠+키탄" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">야키니쿠 키탄</div><div class="rec-card-desc">와규 야키니쿠 1위</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=쿠쿠루+타코야키" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐙</div><div class="rec-card-name">쿠쿠루 타코야키</div><div class="rec-card-desc">원조 타코야키</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=카니도라쿠+본점" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦀</div><div class="rec-card-name">카니도라쿠 본점</div><div class="rec-card-desc">신선한 게 요리</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=회전초밥+도톤보리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍣</div><div class="rec-card-name">회전초밥 도톤보리</div><div class="rec-card-desc">신선한 회전초밥</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=도톤보리+맛집" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">도톤보리 현지 맛집</div><div class="rec-card-desc">오사카 로컬 맛집</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-dotonbori-2">
-      <a class="rec-card" href="https://www.google.com/search?q=파블로+치즈타르트+도톤보리+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥧</div><div class="rec-card-name">파블로 치즈타르트</div><div class="rec-card-desc">반숙 치즈타르트 원조 · 도톤보리점</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=릿쿄에이시+소프트크림+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍦</div><div class="rec-card-name">돈키호테 소프트아이스크림</div><div class="rec-card-desc">미역맛·말차 등 특이 아이스크림 · 인기</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=자이언트+크레이프+도톤보리+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥞</div><div class="rec-card-name">매직 스파이스 크레이프</div><div class="rec-card-desc">대형 크레이프 · 도톤보리 길거리 간식</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.0</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=카페드크리에+도톤보리+오사카+커피" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">카페 드 크리에</div><div class="rec-card-desc">도톤보리 한강변 카페 · 야경 뷰 추천</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.0</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=파블로+치즈타르트" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍩</div><div class="rec-card-name">파블로 치즈타르트</div><div class="rec-card-desc">오사카 명물 타르트</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=돈키호테+소프트크림" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍦</div><div class="rec-card-name">돈키호테 소프트크림</div><div class="rec-card-desc">24시간 소프트아이스크림</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.0</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=도톤보리+도넛" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧇</div><div class="rec-card-name">도톤보리 도넛</div><div class="rec-card-desc">창작 도넛</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+도톤보리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 도톤보리</div><div class="rec-card-desc">강변 전망</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=크레이프+신사이바시" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍮</div><div class="rec-card-name">신사이바시 크레이프</div><div class="rec-card-desc">인기 크레이프</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=HARBS+도톤보리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">HARBS 도톤보리</div><div class="rec-card-desc">밀크레이프 케이크</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
   </div>
 </div>
@@ -1732,58 +1776,34 @@ body.editing .edit-hint{display:flex}
   </div>
   <div class="rec-body">
     <div class="rec-panel active" id="rec-USJ-0">
-      <a class="rec-card" href="https://www.google.com/search?q=수퍼닌텐도월드+USJ" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍄</div><div class="rec-card-name">수퍼 닌텐도 월드</div><div class="rec-card-desc">마리오 카트·쿠파성·파워업 밴드 필수 체험</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.9</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=해리포터+마법세계+USJ" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">⚡</div><div class="rec-card-name">해리포터 마법세계</div><div class="rec-card-desc">호그와트성·버터맥주·포비든저니 탑승 필수</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=미니언즈파크+USJ" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">💛</div><div class="rec-card-name">미니언즈 파크</div><div class="rec-card-desc">미니언 하차드 어트랙션 · 굿즈 쇼핑</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=쥬라기공원+USJ+워터월드" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🦖</div><div class="rec-card-name">쥬라기 공원·워터월드</div><div class="rec-card-desc">여름 시즌 워터월드 스턴트쇼 강력 추천</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=닌텐도월드+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⚡</div><div class="rec-card-name">닌텐도 월드</div><div class="rec-card-desc">마리오 세계관</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=위저딩월드+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧙</div><div class="rec-card-name">위저딩 월드 해리포터</div><div class="rec-card-desc">버터비어 · 지팡이 체험</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=할리우드드림+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎃</div><div class="rec-card-name">할리우드 드림 라이드</div><div class="rec-card-desc">최장 롤러코스터</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.7</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=쥬라기공원+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦕</div><div class="rec-card-name">쥬라기 공원 라이드</div><div class="rec-card-desc">물놀이 코스터</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=워터월드+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎬</div><div class="rec-card-name">워터월드 쇼</div><div class="rec-card-desc">액션 수상쇼</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스파이더맨+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🕷️</div><div class="rec-card-name">스파이더맨 라이드</div><div class="rec-card-desc">3D 어트랙션</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-USJ-1">
-      <a class="rec-card" href="https://www.google.com/search?q=호그스헤드+버터맥주+USJ" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍺</div><div class="rec-card-name">호그스 헤드 버터맥주</div><div class="rec-card-desc">해리포터존 내 버터맥주 · 차갑게 주문 추천</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.7</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=파크사이드+그릴+USJ" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍔</div><div class="rec-card-name">파크사이드 그릴</div><div class="rec-card-desc">USJ 내 가성비 버거·핫도그 레스토랑</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=키노피오카페+수퍼닌텐도월드+USJ" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍄</div><div class="rec-card-name">키노피오 카페</div><div class="rec-card-desc">닌텐도월드 내 마리오 테마 식당 · 예약 필수</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=플로리안+살롱+USJ" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🫖</div><div class="rec-card-name">플로리안 살롱 드 테</div><div class="rec-card-desc">USJ 내 클래식 카페 · 케이크·크레페 인기</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=버터비어+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍺</div><div class="rec-card-name">버터비어</div><div class="rec-card-desc">위저딩 월드 한정</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스튜디오레스토랑+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍕</div><div class="rec-card-name">스튜디오 레스토랑</div><div class="rec-card-desc">파크 내 대표 식당</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=호그와트+과자+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧁</div><div class="rec-card-name">마법 과자 가게</div><div class="rec-card-desc">호그와트 디저트</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=USJ+치킨+와플" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍗</div><div class="rec-card-name">USJ 치킨 앤 와플</div><div class="rec-card-desc">인기 간식</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=닌텐도월드+레스토랑" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">닌텐도 월드 레스토랑</div><div class="rec-card-desc">마리오 테마 요리</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=공룡레스토랑+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦖</div><div class="rec-card-name">공룡 테마 레스토랑</div><div class="rec-card-desc">쥬라기 내 식당</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-USJ-2">
-      <a class="rec-card" href="https://www.google.com/search?q=버터맥주+아이스크림+USJ+해리포터" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍦</div><div class="rec-card-name">버터맥주 아이스크림</div><div class="rec-card-desc">해리포터존 한정 · 부드럽고 달콤한 소프트아이스</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=마리오+스낵+쿠키+USJ" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍪</div><div class="rec-card-name">마리오 스낵·쿠키</div><div class="rec-card-desc">닌텐도월드 한정 굿즈·디저트. 버섯 쿠키 인기</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=크레이프+USJ+파크+카페" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🥞</div><div class="rec-card-name">USJ 파크 크레이프</div><div class="rec-card-desc">원내 곳곳 크레이프 스탠드 · 딸기·초코 인기</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=USJ+미니언+팝콘+버켓" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍿</div><div class="rec-card-name">미니언 팝콘 버켓</div><div class="rec-card-desc">USJ 명물 한정 팝콘 버켓 · 미니언 모양 굿즈</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">USJ 스타벅스</div><div class="rec-card-desc">파크 내 한정 굿즈</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=USJ+초콜릿+카페" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍫</div><div class="rec-card-name">초콜릿 팩토리</div><div class="rec-card-desc">캐릭터 굿즈 카페</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=버터비어+아이스크림+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧋</div><div class="rec-card-name">버터비어 아이스크림</div><div class="rec-card-desc">위저딩 월드 한정</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=USJ+소프트아이스크림" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍦</div><div class="rec-card-name">파크 소프트아이스크림</div><div class="rec-card-desc">USJ 한정</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=USJ+베이커리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥐</div><div class="rec-card-name">파크 베이커리</div><div class="rec-card-desc">아침 간식</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=해리포터+티카페+USJ" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍵</div><div class="rec-card-name">마법사 차 가게</div><div class="rec-card-desc">해리포터 테마 티</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
   </div>
 </div>
@@ -1900,60 +1920,36 @@ body.editing .edit-hint{display:flex}
   <div class="rec-body">
 
     <div class="rec-panel active" id="rec-harukas-0">
-      <a class="rec-card" href="https://www.google.com/search?q=우메다+스카이빌딩+공중정원" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🌌</div><div class="rec-card-name">우메다 스카이빌딩 공중정원</div><div class="rec-card-desc">39~40F 360° 야경 · 야간 별빛 보도 · 인증샷 명소</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=오하츠텐진+신사+우메다" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">오하츠텐진 신사</div><div class="rec-card-desc">우메다 한복판 연애운 신사 · 야간 참배 가능</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=신우메다시티+우메다" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🏙</div><div class="rec-card-name">신우메다시티</div><div class="rec-card-desc">스카이빌딩 주변 복합상업시설 · 폭포정원</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.0</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=헵파이브+관람차+우메다" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🎡</div><div class="rec-card-name">헵 파이브 관람차</div><div class="rec-card-desc">우메다 랜드마크 관람차 · 공중정원과 함께 추천</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=공중정원+전망대+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌃</div><div class="rec-card-name">공중정원 전망대</div><div class="rec-card-desc">우메다 39F · 야경</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=나카노시마+공원" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎑</div><div class="rec-card-name">나카노시마 공원</div><div class="rec-card-desc">장미공원 · 피크닉</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=헵파이브+관람차" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎡</div><div class="rec-card-name">헵파이브 관람차</div><div class="rec-card-desc">야경 · 빨간 관람차</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=도톤보리+야간크루즈" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌊</div><div class="rec-card-name">도톤보리 야간 크루즈</div><div class="rec-card-desc">강 유람선 · ¥1,500</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=나카노시마+신사" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">나카노시마 신사</div><div class="rec-card-desc">강변 신사 · 야경</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=나카노시마+야경" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏛</div><div class="rec-card-name">나카노시마 야경 워킹</div><div class="rec-card-desc">도심 야경 코스</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
 
     <div class="rec-panel" id="rec-harukas-1">
-      <a class="rec-card" href="https://www.google.com/search?q=루쿠아이즈모+이즈모+장어덮밥+우메다" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🦢</div><div class="rec-card-name">이즈모 루쿠아 (당일 저녁)</div><div class="rec-card-desc">우나타마동 ★4.6 · 루쿠아 B2F · 오픈런 추천</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=야키니쿠+리키마루+우메다" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">야키니쿠 리키마루</div><div class="rec-card-desc">와규 무한리필 야키니쿠 · 오하츠텐진 근처</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=이치란+라멘+우메다" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 우메다점</div><div class="rec-card-desc">개인 칸막이 톤코츠 라멘 · 24시간 운영</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=쵸츠가이+한큐그랜드빌딩+우메다+야경" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🌃</div><div class="rec-card-name">쵸츠가이 (한큐그랜드빌딩)</div><div class="rec-card-desc">28층 야경 레스토랑 · 공중정원과 연계 추천</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.0</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=우나기로+나루세" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐡</div><div class="rec-card-name">우나기로 나루세</div><div class="rec-card-desc">장어덮밥 · 예약필수</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=가츠규+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">가츠규 우메다점</div><div class="rec-card-desc">우규가츠 · 밥 무제한</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=야키니쿠+리키마루" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">야키니쿠 리키마루</div><div class="rec-card-desc">인기 고기집</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=이치란+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 우메다</div><div class="rec-card-desc">돈코츠 · 24시간</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스시+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍣</div><div class="rec-card-name">스시 우메다</div><div class="rec-card-desc">우메다 스시 명소</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=에비스바시+맛집" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦐</div><div class="rec-card-name">우메다 가성비 맛집</div><div class="rec-card-desc">에비스바시 주변</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
 
     <div class="rec-panel" id="rec-harukas-2">
-      <a class="rec-card" href="https://www.google.com/search?q=HARBS+밀크레이프+다이마루+우메다" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">HARBS 다이마루 우메다점</div><div class="rec-card-desc">밀크레이프 명가 · 과일 케이크 인기</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=팔레도르+초콜릿+하비스+우메다" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🍫</div><div class="rec-card-name">팔레도르 초콜라티에</div><div class="rec-card-desc">하비스4F 프리미엄 초콜릿 카페 · 파르페 추천</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+우메다+스카이빌딩" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 우메다 스카이빌딩점</div><div class="rec-card-desc">공중정원 뷰 카페 · 인증샷 명소</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
-      <a class="rec-card" href="https://www.google.com/search?q=Grenier+우메다+한큐그랜드빌딩" target="_blank" rel="noopener">
-        <div class="rec-card-top"><div class="rec-card-emoji">🥐</div><div class="rec-card-name">Grenier 우메다점</div><div class="rec-card-desc">밀푀유·크림 페이스트리 · 한큐그랜드빌딩 1F</div></div>
-        <div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div>
-      </a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 우메다 스카이</div><div class="rec-card-desc">야경 뷰 커피</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=HARBS+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">HARBS 우메다</div><div class="rec-card-desc">밀크레이프 명가</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=나카노시마+카페" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧋</div><div class="rec-card-name">나카노시마 로즈가든 카페</div><div class="rec-card-desc">장미 정원 야외 카페</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=팔레도르+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍩</div><div class="rec-card-name">팔레도르 초콜라티에</div><div class="rec-card-desc">초콜릿 카페</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=말차+카페+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍵</div><div class="rec-card-name">말차 전문 카페</div><div class="rec-card-desc">일본식 말차 디저트</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=블루보틀+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">블루보틀 오사카</div><div class="rec-card-desc">블루보틀 커피</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
 
   </div>
@@ -2108,22 +2104,34 @@ body.editing .edit-hint{display:flex}
   </div>
   <div class="rec-body">
     <div class="rec-panel active" id="rec-fushimi-0">
-      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+신사+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">후시미 이나리 신사</div><div class="rec-card-desc">수천 개 도리이 · 24시간 · 입장 무료 · 정상까지 약 2시간</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=후시미+모모야마성+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏯</div><div class="rec-card-name">후시미 모모야마성</div><div class="rec-card-desc">도요토미 히데요시의 성 · 후시미 이나리 근처</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+야간+참배" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌙</div><div class="rec-card-name">야간 도리이 터널</div><div class="rec-card-desc">밤에 조명 켜진 도리이 · 인파 없이 신비로운 분위기</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=이나리+주변+상점+기념품" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦊</div><div class="rec-card-name">이나리 여우 기념품 가게</div><div class="rec-card-desc">여우 마스코트·부적·도리이 미니어처 기념품</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+신사" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦊</div><div class="rec-card-name">후시미 이나리 신사</div><div class="rec-card-desc">천 개의 도리이 · 교토 상징</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.7</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+정상" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦊</div><div class="rec-card-name">후시미 이나리 오쿠샤</div><div class="rec-card-desc">정상 전망대 · 왕복 2시간</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=니조성+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌸</div><div class="rec-card-name">니조성</div><div class="rec-card-desc">유네스코 세계유산</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=후시미+산책" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏯</div><div class="rec-card-name">후시미 주변 산책</div><div class="rec-card-desc">신사 주변 골목</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=이나리+죽림+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌿</div><div class="rec-card-name">이나리 죽림</div><div class="rec-card-desc">대나무 숲 포토스팟</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=후시미+모모야마" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">후시미 모모야마 신사</div><div class="rec-card-desc">후시미 신사 투어</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-fushimi-1">
-      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+산도+차야+찻집" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍡</div><div class="rec-card-name">이나리 산도 차야</div><div class="rec-card-desc">이나리 입구 전통 찻집 · 젠자이·흑임자 아이스크림 ★4.6</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=이나리+여우우동+키츠네우동+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이나리 여우 우동</div><div class="rec-card-desc">이나리 신사 앞 키츠네우동 · 유부 올린 교토식 우동</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=이나리+스즈메야+메추리알+꼬치" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐣</div><div class="rec-card-name">스즈메야 (참새꼬치)</div><div class="rec-card-desc">이나리 명물 메추리알 꼬치 · 새 모양 경단</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=버밀리온카페+후시미이나리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥗</div><div class="rec-card-name">Vermillion Cafe</div><div class="rec-card-desc">이나리 인근 브런치 카페 · 연못 뷰 테라스 ★4.5</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=이치란+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 교토</div><div class="rec-card-desc">돈코츠 · 24시간</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=키쓰네+우동+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥢</div><div class="rec-card-name">키쓰네 우동 후시미</div><div class="rec-card-desc">여우 우동 · 명물</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+정식" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">후시미 주변 정식</div><div class="rec-card-desc">신사 입구 식당</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=교토+스시" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍣</div><div class="rec-card-name">교토 스시</div><div class="rec-card-desc">교토식 오마카세</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=닌나지+카페" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">닌나지 경내 카페</div><div class="rec-card-desc">교토 분위기 정식</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=교토+가이세키" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍵</div><div class="rec-card-name">교토 가이세키</div><div class="rec-card-desc">전통 교토 요리</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-fushimi-2">
-      <a class="rec-card" href="https://www.google.com/search?q=이나히코커피+후시미이나리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍦</div><div class="rec-card-name">Inahiko Coffee</div><div class="rec-card-desc">딸기·초코·말차 소프트아이스크림 · 도리이 색감 ★4.9</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.9</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+말차+카페+인스타" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍵</div><div class="rec-card-name">이나리 말차 카페</div><div class="rec-card-desc">이나리 거리 말차 라떼·와라비모찌 전문</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=이나리+이나히코커피+피스타치오아이스크림" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍨</div><div class="rec-card-name">이나리 소프트 아이스크림</div><div class="rec-card-desc">피스타치오·말차 콘아이스크림 · 포토스팟</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.7</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+산도차야+아마자케" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍶</div><div class="rec-card-name">산도 차야 아마자케</div><div class="rec-card-desc">감주(아마자케) · 일본 전통 발효 단술</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+말차" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍵</div><div class="rec-card-name">후시미 말차 카페</div><div class="rec-card-desc">신사 입구 전통 말차</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=교토+이나리+당고" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍡</div><div class="rec-card-name">교토 이나리 당고</div><div class="rec-card-desc">전통 당고 · 말차맛</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+교토+니넨자카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 교토 니넨자카</div><div class="rec-card-desc">전통 건물 스타벅스</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.7</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=교토+화과자+카페" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">교토 화과자 카페</div><div class="rec-card-desc">전통 디저트</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=후시미이나리+음료" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧋</div><div class="rec-card-name">이나리 기념 음료</div><div class="rec-card-desc">신사 내 음료 가게</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=교토+크레이프" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍩</div><div class="rec-card-name">교토 크레이프</div><div class="rec-card-desc">인기 크레이프</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
   </div>
 </div>
@@ -2185,22 +2193,34 @@ body.editing .edit-hint{display:flex}
   </div>
   <div class="rec-body">
     <div class="rec-panel active" id="rec-kiyomizu-0">
-      <a class="rec-card" href="https://www.google.com/search?q=기요미즈데라+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🛕</div><div class="rec-card-name">기요미즈데라</div><div class="rec-card-desc">나무 무대·오토와 폭포·교토 전망 · 입장 ¥500</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=니넨자카+산넨자카+교토+포토스팟" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🪨</div><div class="rec-card-name">니넨자카·산넨자카</div><div class="rec-card-desc">교토 전통 골목 · 유카타 포토스팟 · 기념품 거리</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=야사카신사+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">야사카 신사</div><div class="rec-card-desc">기온 거리 끝 신사 · 24시간 · 기온마쓰리 본거지</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=고다이지+교토+관광" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏯</div><div class="rec-card-name">고다이지 사원</div><div class="rec-card-desc">기요미즈 도보 5분 · 가이세키·죽림 정원</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=기요미즈데라" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">기요미즈데라</div><div class="rec-card-desc">교토 대표 사원 · 세계유산</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.7</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=야사카신사+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏮</div><div class="rec-card-name">야사카 신사</div><div class="rec-card-desc">기온 · 야간 등롱</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=니넨자카+산넨자카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍁</div><div class="rec-card-name">니넨자카·산넨자카</div><div class="rec-card-desc">돌계단 골목 · 상점가</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=마루야마+공원+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌺</div><div class="rec-card-name">마루야마 공원</div><div class="rec-card-desc">기온 옆 공원</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=기온+골목+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏯</div><div class="rec-card-name">기온 골목</div><div class="rec-card-desc">게이샤 거리 · 레트로</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=기요미즈+산책" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌿</div><div class="rec-card-name">기요미즈 주변 산책</div><div class="rec-card-desc">전통 골목 투어</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-kiyomizu-1">
-      <a class="rec-card" href="https://www.google.com/search?q=규카츠+가츠규+교토 teramachi" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">가츠규 교토 테라마치점</div><div class="rec-card-desc">니키시 근처 · 소고기 카츠 · 철판 구이 ★4.8</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=기온+키나나+두부+요리+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍲</div><div class="rec-card-name">교토 유도후 두부 요리</div><div class="rec-card-desc">산넨자카 두부 전문 · 교토 전통 가이세키 스타일</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=니키시 시장 타코 꼬치 교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐙</div><div class="rec-card-name">니키시 문어꼬치 (타코)  </div><div class="rec-card-desc">니키시 시장 명물 · 타코타마고 · 문어 달걀 꼬치</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=이자사+니키시 시장+도미고기+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐟</div><div class="rec-card-name">이자사 니키시점</div><div class="rec-card-desc">교토 도미고기 초밥 · 니키시 시장 대표 맛집</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=니키시시장+교토" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐟</div><div class="rec-card-name">니키시 시장</div><div class="rec-card-desc">교토의 부엌 · 시식</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=교토라멘+코진" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">교토 라멘 코진</div><div class="rec-card-desc">닭뼈 라멘 · 현지인 맛집</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=기온+스테이크" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">기온 스테이크</div><div class="rec-card-desc">기온 내 고급 스테이크</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=기요미즈+두부+정식" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">기요미즈 두부 정식</div><div class="rec-card-desc">사찰 음식 · 두부 요리</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=교토+오마카세+스시" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍣</div><div class="rec-card-name">교토 오마카세</div><div class="rec-card-desc">전통 스시 오마카세</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=산넨자카+식사" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">산넨자카 카페 식사</div><div class="rec-card-desc">골목 캐주얼 식당</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-kiyomizu-2">
-      <a class="rec-card" href="https://www.google.com/search?q=쿠모노차 기요미즈 산넨자카+말차" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌿</div><div class="rec-card-name">KUMONOCHA 산넨자카점</div><div class="rec-card-desc">구름 무스 케이크·말차 브륄레 · 인스타 명소 ★4.2</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=교토+녹차+아이스크림+길거리+기요미즈" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍦</div><div class="rec-card-name">녹차 소프트아이스크림</div><div class="rec-card-desc">산넨자카 길거리 명물 · 교토산 말차 진한 맛</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=교토+야쓰하시+과자+기념품" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍘</div><div class="rec-card-name">야쓰하시 (八ッ橋)</div><div class="rec-card-desc">교토 명과 · 말차·딸기 생야쓰하시 · 선물로 인기</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=산넨자카+스타벅스+교토+전통가옥" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 교토 산넨자카점</div><div class="rec-card-desc">100년 전통 가옥 스타벅스 · 전 세계 유일 다다미 공간</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=산넨자카+당고" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍡</div><div class="rec-card-name">산넨자카 당고</div><div class="rec-card-desc">전통 화과자 카페</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=기온+말차파르페" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">기온 KINSE 카페</div><div class="rec-card-desc">말차 파르페 명소</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+교토+니넨자카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 교토 니넨자카</div><div class="rec-card-desc">전통 건물 스타벅스</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.7</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=기요미즈+말차" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍵</div><div class="rec-card-name">기요미즈 말차 카페</div><div class="rec-card-desc">사원 주변 말차</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=기온+버블티" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧋</div><div class="rec-card-name">기온 버블티</div><div class="rec-card-desc">기온 인기 음료</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=기온+도넛" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍩</div><div class="rec-card-name">기온 도넛</div><div class="rec-card-desc">트렌디 도넛</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
   </div>
 </div>
@@ -2547,22 +2567,34 @@ body.editing .edit-hint{display:flex}
       <div class="rec-tab" onclick="switchRecTab(this,'umeda4',2)">☕ 카페·디저트</div>
     </div>
     <div class="rec-panel active" id="rec-umeda4-0">
-      <a class="rec-card" href="https://www.google.com/search?q=루쿠아+오사카+쇼핑" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏬</div><div class="rec-card-name">루쿠아 오사카</div><div class="rec-card-desc">JR 오사카역 직결 · 마지막 날 쇼핑 핵심</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=한큐백화점+우메다+식품관" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🛍</div><div class="rec-card-name">한큐백화점 우메다 B1 식품관</div><div class="rec-card-desc">귀국 선물·과자 마지막 구매 · 지하 식품관</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=헵파이브+관람차+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎡</div><div class="rec-card-name">헵파이브 관람차</div><div class="rec-card-desc">마지막 날 기념 · 오사카 야경 관람차</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=돈키호테+우메다+쇼핑" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🦆</div><div class="rec-card-name">돈키호테 우메다점</div><div class="rec-card-desc">마지막 날 쇼핑·과자·드럭스토어 총집합</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=다이마루+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🛍</div><div class="rec-card-name">다이마루 우메다</div><div class="rec-card-desc">지하 식품관 · 기념품</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=헵파이브+관람차" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🎡</div><div class="rec-card-name">헵파이브 관람차</div><div class="rec-card-desc">야경 · 빨간 관람차</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=루쿠아+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🛍</div><div class="rec-card-name">루쿠아 오사카</div><div class="rec-card-desc">JR역 직결 쇼핑몰</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=오하츠텐진+신사" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">⛩</div><div class="rec-card-name">오하츠텐진 신사</div><div class="rec-card-desc">연인의 신사 · 무료</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=우메다+스카이빌딩" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌌</div><div class="rec-card-name">우메다 스카이빌딩</div><div class="rec-card-desc">마지막 날 야경</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=오사카+역사박물관" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🏯</div><div class="rec-card-name">오사카 역사박물관</div><div class="rec-card-desc">마지막 날 코스</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-umeda4-1">
-      <a class="rec-card" href="https://www.google.com/search?q=히게스시+우메다+한신백화점" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍣</div><div class="rec-card-name">히게스시 우메다 (당일 아점)</div><div class="rec-card-desc">한신백화점 B2F · 신선 즉석 초밥 · ★4.1</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.1</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=츠루하시후게츠+한큐32번가+29층+오코노미야키" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥘</div><div class="rec-card-name">츠루하시 후게츠 29F (당일)</div><div class="rec-card-desc">한큐그랜드빌딩 29층 야경 오코노미야키 ★3.8</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 3.8</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=이치란라멘+우메다+24시간" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 우메다점</div><div class="rec-card-desc">개인 칸막이 톤코츠 · 24시간 · 마지막 라멘</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=야키니쿠리키마루+우메다+와규무한리필" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">야키니쿠 리키마루</div><div class="rec-card-desc">와규 무한리필 야키니쿠 · ★4.8 · 마지막 저녁</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.8</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=히게스시+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍱</div><div class="rec-card-name">히게 스시 우메다</div><div class="rec-card-desc">마지막 날 아침 스시</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=츠루하시+후게츠" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐟</div><div class="rec-card-name">츠루하시 후게츠</div><div class="rec-card-desc">오코노미야키 노포</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=가츠규+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥩</div><div class="rec-card-name">가츠규 우메다점</div><div class="rec-card-desc">우규가츠 · 밥 무제한</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.4</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=이치란+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍜</div><div class="rec-card-name">이치란 라멘 우메다</div><div class="rec-card-desc">마지막 날 라멘</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=우나기로+나루세" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🐡</div><div class="rec-card-name">우나기로 나루세</div><div class="rec-card-desc">장어덮밥 · 현금만</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.6</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스시+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍣</div><div class="rec-card-name">우메다 스시</div><div class="rec-card-desc">출국 전 스시</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
     <div class="rec-panel" id="rec-umeda4-2">
-      <a class="rec-card" href="https://www.google.com/search?q=HARBS+밀크레이프+다이마루+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">HARBS 다이마루 우메다</div><div class="rec-card-desc">밀크레이프 명가 · 마지막 날 디저트 추천</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=Inception+Osaka+카페+도야마" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🌿</div><div class="rec-card-name">Inception Osaka</div><div class="rec-card-desc">도야마초 숨은 카페 · 말차 빙수·스콘 ★4.5</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+우메다+스카이빌딩+뷰" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">스타벅스 우메다 스카이빌딩점</div><div class="rec-card-desc">공중정원 뷰 카페 · 출발 전 마지막 커피</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
-      <a class="rec-card" href="https://www.google.com/search?q=그레니에+우메다+밀푀유+크림페이스트리" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🥐</div><div class="rec-card-name">Grenier 우메다점</div><div class="rec-card-desc">밀푀유·크림 페이스트리 · 한큐그랜드빌딩 1F</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.5</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
+      <a class="rec-card" href="https://www.google.com/search?q=HARBS+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍰</div><div class="rec-card-name">HARBS 다이마루 우메다</div><div class="rec-card-desc">밀크레이프 · 마지막 날</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=루쿠아+카페" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">루쿠아 카페</div><div class="rec-card-desc">출국 전 커피</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=스타벅스+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🧋</div><div class="rec-card-name">스타벅스 우메다</div><div class="rec-card-desc">마지막 커피</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=팔레도르+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍩</div><div class="rec-card-name">팔레도르 초콜라티에</div><div class="rec-card-desc">마지막 초콜릿 기념품</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=말차+카페+우메다" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">🍵</div><div class="rec-card-name">말차 카페 우메다</div><div class="rec-card-desc">마지막 말차 디저트</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.2</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      <a class="rec-card" href="https://www.google.com/search?q=블루보틀+오사카" target="_blank" rel="noopener"><div class="rec-card-top"><div class="rec-card-emoji">☕</div><div class="rec-card-name">블루보틀 오사카</div><div class="rec-card-desc">출국 전 블루보틀</div></div><div class="rec-card-foot"><span class="rec-card-rating">⭐ 4.3</span><span class="rec-card-link">구글 검색 →</span></div></a>
+      
     </div>
   </div>
 </div>
@@ -3967,7 +3999,7 @@ function applyDate() {
   var sd2 = String(sd.getDate()).padStart(2,'0');
   var em  = String(ed.getMonth()+1).padStart(2,'0');
   var ed2 = String(ed.getDate()).padStart(2,'0');
-  var chipTxt = sm + '.' + sd2 + '~' + ed2;
+  var em2 = String(ed.getMonth()+1).padStart(2,'0'); var chipTxt = sd.getFullYear() + '.' + sm + '.' + sd2 + '~' + em2 + '.' + ed2;
   var chipEl = document.getElementById('dateChipText');
   if (chipEl) chipEl.textContent = chipTxt;
 
@@ -4456,6 +4488,25 @@ function toggleWalletList(){
     if(moreBtn) moreBtn.style.display = 'none';
     if(btn) btn.textContent = '▼ 내역 보기';
   }
+}
+
+
+var CURRENT_AIRLINE = 'asiana';
+
+function openAirlineModal(){
+  document.getElementById('airlineSelectModal').classList.add('open');
+}
+
+function selectAirline(name, key){
+  CURRENT_AIRLINE = key;
+  // 체크 표시 업데이트
+  document.querySelectorAll('[id^="airCheck-"]').forEach(function(el){ el.style.display='none'; });
+  var chk = document.getElementById('airCheck-'+key);
+  if(chk) chk.style.display='block';
+  // 헤더 버튼 텍스트 업데이트
+  var chip = document.querySelector('.airline-chip');
+  if(chip) chip.innerHTML = '✈ ' + name;
+  document.getElementById('airlineSelectModal').classList.remove('open');
 }
 
 </script>
@@ -5343,6 +5394,79 @@ function toggleWalletList(){
       <div style="display:flex;gap:7px;">
         <input id="newICName" class="wallet-input" type="text" placeholder="이름 (예: 아빠)" style="flex:1;"/>
         <button onclick="addICMember()" style="padding:9px 14px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;">+ 추가</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 항공사 선택 모달 -->
+<div class="modal-overlay" id="airlineSelectModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>✈ 항공사 선택</h3>
+      <button class="modal-close" onclick="document.getElementById('airlineSelectModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:14px;">항공사를 선택하면 탑승 규정을 확인할 수 있어요</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+
+        <button class="airline-sel-btn" onclick="selectAirline('아시아나항공','asiana')" style="background:linear-gradient(135deg,#F2D0D3,#E8B4B8);position:relative;overflow:hidden;">
+          <div class="air-watermark" style="color:#C0324A;">OZ</div>
+          <div class="air-logo" style="background:rgba(255,255,255,0.7);color:#C0324A;position:relative;z-index:1;">✈<span style="color:#C0324A;">OZ</span></div>
+          <div class="air-info"><div class="air-name">아시아나항공</div><div class="air-en">Asiana Airlines · OZ</div></div>
+          <div class="air-check" id="airCheck-asiana">✓</div>
+        </button>
+
+        <button class="airline-sel-btn" onclick="selectAirline('대한항공','koreanair')" style="background:linear-gradient(135deg,#D0DEFF,#B8CCFF);position:relative;overflow:hidden;">
+          <div class="air-watermark" style="color:#002B7F;">KE</div>
+          <div class="air-logo" style="background:rgba(255,255,255,0.7);color:#002B7F;position:relative;z-index:1;">✈<span style="color:#002B7F;">KE</span></div>
+          <div class="air-info"><div class="air-name">대한항공</div><div class="air-en">Korean Air · KE</div></div>
+          <div class="air-check" id="airCheck-koreanair" style="display:none;">✓</div>
+        </button>
+
+        <button class="airline-sel-btn" onclick="selectAirline('제주항공','jeju')" style="background:linear-gradient(135deg,#FFE8D0,#FFD4B0);position:relative;overflow:hidden;">
+          <div class="air-watermark" style="color:#E05500;">7C</div>
+          <div class="air-logo" style="background:rgba(255,255,255,0.7);color:#E05500;position:relative;z-index:1;">✈<span style="color:#E05500;">7C</span></div>
+          <div class="air-info"><div class="air-name">제주항공</div><div class="air-en">Jeju Air · 7C</div></div>
+          <div class="air-check" id="airCheck-jeju" style="display:none;">✓</div>
+        </button>
+
+        <button class="airline-sel-btn" onclick="selectAirline('진에어','jinair')" style="background:linear-gradient(135deg,#D0E0FF,#B8D0FF);position:relative;overflow:hidden;">
+          <div class="air-watermark" style="color:#003A8C;">LJ</div>
+          <div class="air-logo" style="background:rgba(255,255,255,0.7);color:#003A8C;position:relative;z-index:1;">✈<span style="color:#003A8C;">LJ</span></div>
+          <div class="air-info"><div class="air-name">진에어</div><div class="air-en">Jin Air · LJ</div></div>
+          <div class="air-check" id="airCheck-jinair" style="display:none;">✓</div>
+        </button>
+
+        <button class="airline-sel-btn" onclick="selectAirline('티웨이항공','tway')" style="background:linear-gradient(135deg,#FFD0D0,#FFB8B8);position:relative;overflow:hidden;">
+          <div class="air-watermark" style="color:#C0000A;">TW</div>
+          <div class="air-logo" style="background:rgba(255,255,255,0.7);color:#C0000A;position:relative;z-index:1;">✈<span style="color:#C0000A;">TW</span></div>
+          <div class="air-info"><div class="air-name">티웨이항공</div><div class="air-en">T'way Air · TW</div></div>
+          <div class="air-check" id="airCheck-tway" style="display:none;">✓</div>
+        </button>
+
+        <button class="airline-sel-btn" onclick="selectAirline('에어서울','airseoul')" style="background:linear-gradient(135deg,#D0E4FF,#B8D4FF);position:relative;overflow:hidden;">
+          <div class="air-watermark" style="color:#00408C;">RS</div>
+          <div class="air-logo" style="background:rgba(255,255,255,0.7);color:#00408C;position:relative;z-index:1;">✈<span style="color:#00408C;">RS</span></div>
+          <div class="air-info"><div class="air-name">에어서울</div><div class="air-en">Air Seoul · RS</div></div>
+          <div class="air-check" id="airCheck-airseoul" style="display:none;">✓</div>
+        </button>
+
+        <button class="airline-sel-btn" onclick="selectAirline('에어부산','airbusan')" style="background:linear-gradient(135deg,#FFF3C0,#FFE890);position:relative;overflow:hidden;">
+          <div class="air-watermark" style="color:#8A6800;">BX</div>
+          <div class="air-logo" style="background:rgba(255,255,255,0.7);color:#8A6800;position:relative;z-index:1;">✈<span style="color:#8A6800;">BX</span></div>
+          <div class="air-info"><div class="air-name">에어부산</div><div class="air-en">Air Busan · BX</div></div>
+          <div class="air-check" id="airCheck-airbusan" style="display:none;">✓</div>
+        </button>
+
+        <button class="airline-sel-btn" onclick="selectAirline('이스타항공','eaststar')" style="background:linear-gradient(135deg,#D0D8FF,#B8C4FF);position:relative;overflow:hidden;">
+          <div class="air-watermark" style="color:#001E6C;">ZE</div>
+          <div class="air-logo" style="background:rgba(255,255,255,0.7);color:#001E6C;position:relative;z-index:1;">✈<span style="color:#001E6C;">ZE</span></div>
+          <div class="air-info"><div class="air-name">이스타항공</div><div class="air-en">Eastar Jet · ZE</div></div>
+          <div class="air-check" id="airCheck-eaststar" style="display:none;">✓</div>
+        </button>
+
       </div>
     </div>
   </div>

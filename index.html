@@ -3678,9 +3678,7 @@ function renderShop(){
           '</select>'+
           '<input class="shop-item-price" type="number" value="'+(item.price||'')+'" placeholder="¥ 가격" onchange="updatePrice('+item.id+',this.value)">'+
           '<select class="shop-pay-sel" onchange="updatePay('+item.id+',this.value)">'+
-            '<option value="cash"'+(item.pay==='cash'?' selected':'')+'>💴 현금</option>'+
-            '<option value="card"'+(item.pay==='card'?' selected':'')+'>💳 카드</option>'+
-            '<option value="ic"'+(item.pay==='ic'?' selected':'')+'>🚇 IC</option>'+
+            buildPayOptions(item.pay)+
           '</select>'+
         '</div>'+
       '</div>'+
@@ -4314,18 +4312,21 @@ function renderWallet() {
 function syncShopToWallet(item, checked){
   loadWallet();
   if(checked && item.price>0){
-    var wKey = item.pay==='card'?'card': item.pay==='ic'?'ic':'cash';
+    var pay = item.pay || 'cash:본인';
+    var parts = pay.split(':');
+    var wKey = parts[0]; // cash, card, ic
+    var who  = parts[1] || '';
+    var wName = who ? (wKey==='card'?'💳 '+who : wKey==='ic'?'⚡ '+who+' IC':'💴 '+who+' 현금') : (wKey==='card'?'💳 카드':wKey==='ic'?'⚡ IC':'💴 현금');
     _walletItems.push({
       id: Date.now(), wallet: wKey, type:'expense', cat:'쇼핑',
-      desc: item.name||'구매 항목', amount: item.price, shopId: item.id,
+      desc: (item.name||'구매 항목') + ' ('+wName+')', amount: item.price, shopId: item.id,
       date: new Date().toLocaleDateString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
     });
     saveWallet();
-    showSyncToast((wKey==='card'?'💳 카드':wKey==='ic'?'🚇 IC':'💴 현금')+' 지출 ¥'+item.price.toLocaleString()+' 기록됨');
+    showSyncToast(wName+' 지출 기록됨');
   } else if(!checked){
-    _walletItems = _walletItems.filter(function(w){ return w.shopId!==item.id; });
+    _walletItems = _walletItems.filter(function(i){ return i.shopId !== item.id; });
     saveWallet();
-    showSyncToast('지갑 지출 기록 삭제됨');
   }
 }
 
@@ -4664,6 +4665,24 @@ var AIRLINE_DATA = {
   }
 };
 
+
+function buildPayOptions(selected){
+  loadCards();
+  var opts = '';
+  _cashMembers.forEach(function(m){
+    var val = 'cash:'+m;
+    opts += '<option value="'+val+'"'+(selected===val?' selected':'')+'>💴 '+m+' 현금</option>';
+  });
+  _cards.forEach(function(c){
+    var val = 'card:'+c;
+    opts += '<option value="'+val+'"'+(selected===val?' selected':'')+'>💳 '+c+'</option>';
+  });
+  _icMembers.forEach(function(m){
+    var val = 'ic:'+m;
+    opts += '<option value="'+val+'"'+(selected===val?' selected':'')+'>⚡ '+m+' IC</option>';
+  });
+  return opts;
+}
 </script>
 
 <!-- 리무진 버스 시간표 모달 -->

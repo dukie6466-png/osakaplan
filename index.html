@@ -975,16 +975,20 @@ body.editing .edit-hint{display:flex}
 }
 .wallet-form-row{ display:flex; gap:7px; align-items:center; }
 .wallet-select{
-  flex:1; padding:9px 8px; border:1.5px solid var(--border);
+  flex:1; padding:0 8px;
+  border:1.5px solid var(--border);
   border-radius:var(--r-sm); font-size:var(--fsm); font-weight:600;
   color:var(--ink); background:var(--surface); outline:none;
   font-family:'Noto Sans KR',sans-serif;
+  height:36px; box-sizing:border-box;
+  -webkit-appearance:auto; appearance:auto;
 }
 .wallet-input{
-  flex:1; padding:9px 12px; border:1.5px solid var(--border);
+  flex:1; padding:0 12px; border:1.5px solid var(--border);
   border-radius:var(--r-sm); font-size:var(--fsm); color:var(--ink);
   background:var(--surface); outline:none;
   font-family:'Noto Sans KR',sans-serif;
+  height:36px; box-sizing:border-box;
 }
 .wallet-input:focus{ border-color:var(--gold); }
 .wallet-amount-wrap{
@@ -998,17 +1002,19 @@ body.editing .edit-hint{display:flex}
   border-right:1px solid var(--border);
 }
 .wallet-input.amount{
-  border:none; border-radius:0; flex:1;
+  flex:1;min-width:0;padding:9px 12px;
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
   font-family:'Noto Sans KR',sans-serif;
-  font-size:var(--fsm); font-weight:700; color:var(--ink);
-  background:transparent; outline:none;
-  padding:0 12px;
+  font-size:var(--fsm);font-weight:700;color:var(--ink);
+  background:var(--surface);outline:none;
+  height:36px;box-sizing:border-box;
 }
 .wallet-add-btn{
-  padding:9px 16px; background:linear-gradient(135deg,#FF8C42,#E8602A); color:#fff;
+  padding:0 16px; background:linear-gradient(135deg,#FF8C42,#E8602A); color:#fff;
   border:none; border-radius:var(--r-sm); font-size:var(--fsm);
   font-weight:700; cursor:pointer; white-space:nowrap;
   -webkit-tap-highlight-color:transparent;
+  height:36px; box-sizing:border-box; flex-shrink:0;
 }
 
 .wallet-list{ display:flex; flex-direction:column; gap:6px; min-height:60px; }
@@ -1084,7 +1090,7 @@ body.editing .edit-hint{display:flex}
 .w-bal-val{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);line-height:1}
 .w-bal-krw{font-size:9px;color:var(--ink3);margin-top:3px}
 .w-tabs{display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px}
-.w-tab{flex:1;padding:9px 4px;border:none;background:var(--bg2);font-size:10px;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.w-tab{flex:1;padding:9px 4px;border:none;background:var(--bg2);font-size:10px;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap;height:36px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;}
 .w-tab:not(:last-child){border-right:1px solid var(--border)}
 .w-tab.active{background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff}
 /* 쇼핑 결제수단 */
@@ -1209,13 +1215,15 @@ body.editing .edit-hint{display:flex}
 
 
 .wallet-cur-sel{
-  padding:0 8px;border:none;background:var(--bg2);
-  border-right:1px solid var(--border);
-  font-size:12px;font-weight:700;color:var(--gold);
-  outline:none;cursor:pointer;height:44px;
+  padding:0 4px 0 8px;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);
+  font-size:var(--fsm);font-weight:600;color:var(--ink);
+  background:var(--surface);outline:none;cursor:pointer;
   font-family:'Noto Sans KR',sans-serif;
-  min-width:76px;box-sizing:border-box;
-  display:none;
+  flex:0 0 auto;width:80px;box-sizing:border-box;
+  height:36px;display:none;
+  -webkit-appearance:auto;appearance:auto;
+  text-align:center;text-align-last:center;
 }
 .wallet-form-label{
   font-size:var(--fsm);font-weight:700;color:var(--gold);
@@ -4460,15 +4468,8 @@ function updateWalletForm(idx){
   var curSel   = document.getElementById('wCurrency');
   var curLabel = document.getElementById('wCurrencyLabel');
   if(idx===3){
-    if(curSel){
-      curSel.style.display='flex';
-      curSel.value='KRW';  // 기본값 원화
-      curSel.options[1].text=sym+' 현지통화';
-    }
-    if(curLabel) curLabel.style.display='none';
-    updateCurrencyLabel();
+    if(curLabel){ curLabel.style.display='inline'; curLabel.textContent='₩'; }
   } else {
-    if(curSel) curSel.style.display='none';
     if(curLabel){ curLabel.style.display='inline'; curLabel.textContent=sym; }
   }
 
@@ -4488,8 +4489,15 @@ function updateCurrencyLabel(){
   var curSel = document.getElementById('wCurrency');
   var val = curSel ? curSel.value : 'KRW';
   var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+  var lbl = document.getElementById('wCurrencyLabel');
   var amtInput = document.getElementById('wAmount');
-  if(amtInput) amtInput.placeholder = val==='KRW' ? '₩ 금액 입력' : sym+' 금액 입력';
+  if(val==='KRW'){
+    if(lbl) lbl.textContent='₩';
+    if(amtInput) amtInput.placeholder='금액 입력';
+  } else {
+    if(lbl) lbl.textContent=sym;
+    if(amtInput) amtInput.placeholder='금액 입력';
+  }
 }
 
 
@@ -5389,7 +5397,7 @@ var AIRLINE_DATA = {
         </div>
         <!-- 사전예매: 분류+내용 -->
         <div class="wallet-form-row" id="wDescRow" style="display:none;">
-          <select id="wPrepayType" class="wallet-select" style="flex:0 0 auto;width:110px;">
+          <select id="wPrepayType" class="wallet-select" style="flex:0 0 auto;width:80px;padding:0 4px 0 8px;text-align:center;text-align-last:center;">
             <option value="숙소">🏨 숙소</option>
             <option value="관광">🏯 관광</option>
             <option value="교통">🚇 교통</option>
@@ -5397,18 +5405,11 @@ var AIRLINE_DATA = {
             <option value="기타">📦 기타</option>
           </select>
           <input id="wDesc" class="wallet-input" type="text" placeholder="예매 내용 입력" style="flex:1;min-width:0;" />
-          <button style="width:64px;flex-shrink:0;height:44px;opacity:0;pointer-events:none;border:none;background:none;"></button>
         </div>
         <!-- 금액 입력 -->
         <div class="wallet-form-row">
-          <div class="wallet-amount-wrap">
-            <select id="wCurrency" class="wallet-cur-sel" style="display:none;" onchange="updateCurrencyLabel()">
-              <option value="KRW">₩ 원화</option>
-              <option value="LOCAL">현지통화</option>
-            </select>
-            <span class="wallet-currency" id="wCurrencyLabel">¥</span>
-            <input id="wAmount" class="wallet-input amount" type="number" placeholder="¥ 금액 입력" min="0" />
-          </div>
+          <span class="wallet-currency" id="wCurrencyLabel">¥</span>
+          <input id="wAmount" class="wallet-input amount" type="number" placeholder="금액 입력" min="0" style="flex:1;min-width:0;" />
           <button class="wallet-add-btn" onclick="addWalletItem()">+ 추가</button>
         </div>
         <!-- 숨겨진 필드 -->

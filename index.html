@@ -5269,22 +5269,22 @@ var AIRLINE_DATA = {
       <button class="modal-close" onclick="document.getElementById('dateModal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
-      <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
         <div>
-          <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">출발일</div>
+          <div style="font-size:var(--f2xs);letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;">출발일</div>
           <input type="date" id="dateStart" value="2026-06-14"
-            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);outline:none;text-align:center;">
+            style="width:100%;padding:10px 8px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);outline:none;box-sizing:border-box;text-align:center;">
         </div>
         <div>
-          <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">귀국일</div>
+          <div style="font-size:var(--f2xs);letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;">귀국일</div>
           <input type="date" id="dateEnd" value="2026-06-17"
-            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:15px;font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);outline:none;text-align:center;">
+            style="width:100%;padding:10px 8px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);outline:none;box-sizing:border-box;text-align:center;">
         </div>
-        <div id="datePreview" style="text-align:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink);background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px;">
-          2026.06.14~17
+        <div id="datePreview" style="text-align:center;font-family:'Playfair Display',serif;font-size:var(--flg);font-weight:700;color:var(--ink);background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px;box-sizing:border-box;">
+          2026.06.14~17 (3박4일)
         </div>
         <button onclick="applyDate()"
-          style="background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);padding:13px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;width:100%;">
+          style="background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);padding:13px;font-size:var(--fmd);font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;width:100%;box-sizing:border-box;">
           ✓ 적용하기
         </button>
       </div>

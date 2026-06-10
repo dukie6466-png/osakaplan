@@ -195,7 +195,12 @@ img{max-width:100%;height:auto}
   margin-top:2px;
   color:var(--ink3);
 }
-.tab.active{color:var(--red);background:var(--bg)}.tab.active .td{font-size:14px;}.tab.active .ts{font-size:9px;}
+.tab.active{color:var(--red);background:var(--bg)}
+.tab.active .td{font-size:14px;}
+.tab.active .ts{font-size:9px;}
+.shop-tab.active .td{font-size:20px;}
+.shop-tab.active .ts{font-size:10px;font-weight:700;color:var(--red);}
+.shop-tab.active{background:linear-gradient(160deg,#FFF5F0,#FFE8DC);}
 .tab.active .ts{color:var(--red);opacity:.7}
 .tab.active::after{
   content:'';
@@ -1086,7 +1091,17 @@ body.editing .edit-hint{display:flex}
 .shop-pay-sel{font-size:10px;padding:2px 5px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--ink2);outline:none}
 
 .w-subtotal{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);margin-bottom:8px}
-.wfc-item.today{ background:var(--bg2); border-color:var(--border); }
+.wfc-item.today,.wfc-item.wfc-active{
+  background:linear-gradient(160deg,#FFF5F0,#FFE8DC);
+  border-color:var(--red)!important;
+  box-shadow:0 2px 8px rgba(184,50,40,.12);
+}
+.wfc-item.today .wfc-day,.wfc-item.wfc-active .wfc-day{font-size:11px;color:var(--red);}
+.wfc-item.today .wfc-date,.wfc-item.wfc-active .wfc-date{font-size:8px;color:var(--ink2);font-weight:600;}
+.wfc-item.today .wfc-icon,.wfc-item.wfc-active .wfc-icon{font-size:22px;}
+.wfc-item.today .wfc-desc,.wfc-item.wfc-active .wfc-desc{font-size:9px;color:var(--ink2);font-weight:700;}
+.wfc-item.today .wfc-temp,.wfc-item.wfc-active .wfc-temp{font-size:10px;font-weight:800;color:var(--ink);}
+.wfc-item.today .wfc-rain,.wfc-item.wfc-active .wfc-rain{font-size:9px;font-weight:700;}
 .wfc-item.today .wfc-day{ color:var(--gold); }
 .wfc-date{font-size:7px;color:var(--ink3);margin-top:1px;margin-bottom:2px;letter-spacing:.3px;white-space:nowrap;}
 .wfc-item.today .wfc-date{color:var(--ink3);}
@@ -3168,6 +3183,7 @@ function switchDay(i) {
 function highlightWeatherDay(dayIdx) {
   var items = document.querySelectorAll('.wfc-item');
   items.forEach(function(el, i){
+    el.classList.remove('today');  // today 클래스도 제거
     if (i === dayIdx) {
       el.classList.add('wfc-active');
     } else {

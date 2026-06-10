@@ -4506,9 +4506,100 @@ function selectAirline(name, key){
   if(chk) chk.style.display='block';
   // 헤더 버튼 텍스트 업데이트
   var chip = document.querySelector('.airline-chip');
-  if(chip) chip.innerHTML = '✈ ' + name;
+  if(chip) chip.innerHTML = '✈ ' + name.replace('항공','').replace('에어','에어 ');
+  // 규정 모달 열기
   document.getElementById('airlineSelectModal').classList.remove('open');
+  showAirlineRule(key);
 }
+
+function showAirlineRule(key){
+  var d = AIRLINE_DATA[key];
+  if(!d) return;
+  // 규정 내용 업데이트
+  var title = document.getElementById('airlineRuleTitle');
+  var carry = document.getElementById('airlineRuleCarry');
+  var check = document.getElementById('airlineRuleCheck');
+  var liquid = document.getElementById('airlineRuleLiquid');
+  var extra = document.getElementById('airlineRuleExtra');
+  var tip   = document.getElementById('airlineRuleTip');
+  if(title) title.textContent = d.name + ' (' + d.code + ') 탑승 규정';
+  if(carry) carry.textContent = d.carry;
+  if(check) check.textContent = d.check;
+  if(liquid) liquid.textContent = d.liquid;
+  if(extra) extra.textContent = d.extra;
+  if(tip) tip.textContent = d.tip;
+  var modal = document.getElementById('airlineRuleModal');
+  if(modal) modal.classList.add('open');
+}
+
+
+/* ══ 항공사 데이터 ══ */
+var AIRLINE_DATA = {
+  asiana: {
+    name:'아시아나항공', code:'OZ',
+    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
+    check: '위탁 수하물: 23kg × 1개 (이코노미)',
+    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
+    extra: '스마트백: 배터리 분리 후 기내 반입 가능',
+    tip: '✈ OZ111 (인천→간사이) · OZ112 (간사이→김포)'
+  },
+  koreanair: {
+    name:'대한항공', code:'KE',
+    carry: '기내 반입: 12kg 이하 · 3변합 115cm 이하',
+    check: '위탁 수하물: 23kg × 1개 (이코노미)',
+    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
+    extra: '노트북: 기내 반입 권장',
+    tip: '✈ 대한항공 국제선 기준'
+  },
+  jeju: {
+    name:'제주항공', code:'7C',
+    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
+    check: '위탁 수하물: 별도 구매 필요',
+    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
+    extra: '추가 수하물 사전 구매 시 할인',
+    tip: '✈ 제주항공 7C 기준'
+  },
+  jinair: {
+    name:'진에어', code:'LJ',
+    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
+    check: '위탁 수하물: 별도 구매 필요',
+    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
+    extra: '진에어 LJ 규정 기준',
+    tip: '✈ 진에어 LJ 기준'
+  },
+  tway: {
+    name:'티웨이항공', code:'TW',
+    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
+    check: '위탁 수하물: 별도 구매 필요',
+    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
+    extra: '사전 구매 시 저렴',
+    tip: '✈ 티웨이항공 TW 기준'
+  },
+  airseoul: {
+    name:'에어서울', code:'RS',
+    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
+    check: '위탁 수하물: 별도 구매 필요',
+    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
+    extra: '에어서울 RS 규정 기준',
+    tip: '✈ 에어서울 RS 기준'
+  },
+  airbusan: {
+    name:'에어부산', code:'BX',
+    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
+    check: '위탁 수하물: 별도 구매 필요',
+    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
+    extra: '에어부산 BX 규정 기준',
+    tip: '✈ 에어부산 BX 기준'
+  },
+  eaststar: {
+    name:'이스타항공', code:'ZE',
+    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
+    check: '위탁 수하물: 별도 구매 필요',
+    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
+    extra: '이스타항공 ZE 규정 기준',
+    tip: '✈ 이스타항공 ZE 기준'
+  }
+};
 
 </script>
 
@@ -5468,6 +5559,29 @@ function selectAirline(name, key){
           <div class="air-check" id="airCheck-eaststar" style="display:none;">✓</div>
         </button>
 
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="airlineRuleModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="airlineRuleTitle">탑승 규정</h3>
+      <button class="modal-close" onclick="document.getElementById('airlineRuleModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="timetable-label">🧳 수하물 규정</div>
+      <div class="stop-card" style="margin-bottom:12px;">
+        <div class="stop-item" id="airlineRuleCarry">-</div>
+        <div class="stop-item" id="airlineRuleCheck">-</div>
+        <div class="stop-item" id="airlineRuleLiquid">-</div>
+        <div class="stop-item" id="airlineRuleExtra">-</div>
+      </div>
+      <div class="timetable-label">💡 탑승 팁</div>
+      <div class="stop-card">
+        <div class="stop-item" id="airlineRuleTip">-</div>
       </div>
     </div>
   </div>

@@ -4143,7 +4143,7 @@ var _walletTab = 0; // 0:현금 1:카드 2:IC 3:사전예매
 var W_TAB_MAP = {0:'cash', 1:'card', 2:'ic', 3:'prepay'};
 var W_TAB_LABELS = {0:'💴 현금', 1:'💳 카드', 2:'🚇 교통IC', 3:'🎟 사전예매'};
 var W_COLORS = {cash:'#1565C0', card:'#8A6818', ic:'#2E7D32', prepay:'#C62828'};
-var CAT_ICON = {교통:'🚇', 식사:'🍜', 쇼핑:'🛍', 관광:'🏯', 숙소:'🏨', 환전:'💱', 예매:'🎟', 기타:'📦'};
+var CAT_ICON = {교통:'🚇', 식사:'🍜', 쇼핑:'🛍', 관광:'🏯', 숙소:'🏨', 환전:'💴', 예매:'🎟', 기타:'📦', 충전:'⚡', 입금:'💳', 카드:'💳', IC:'🚇'};
 
 function openWallet() {
   loadWallet();
@@ -4282,7 +4282,8 @@ function renderWallet() {
       '<span>지출 <b style="color:var(--red)">'+(wKey==='prepay'?'-₩':'-¥')+exp.toLocaleString()+'</b></span>'+
     '</div>' +
     filtered.map(function(item){
-      var icon = CAT_ICON[item.cat]||'📦';
+      var tabIcons = {cash:'💴', card:'💳', ic:'⚡', prepay:'🎟'};
+      var icon = CAT_ICON[item.cat] || tabIcons[item.wallet] || '📦';
       var sign = item.type==='income' ? '+' : '-';
       var col  = item.type==='income' ? W_COLORS[wKey] : 'var(--red)';
       return '<div class="wallet-item '+item.type+'">'+

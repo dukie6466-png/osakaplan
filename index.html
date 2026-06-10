@@ -2903,7 +2903,7 @@ body.editing .edit-hint{display:flex}
       <button class="shop-cat" onclick="switchShopCat(this,'food')">🍱 식품/간식</button>
       <button class="shop-cat" onclick="switchShopCat(this,'beauty')">👗 패션/뷰티</button>
       <button class="shop-cat" onclick="switchShopCat(this,'cvs')">🏪 편의점·마트</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'drug')">💊 드럭스토어</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'drug')">🏷 할인 잡화점</button>
       <button class="shop-cat" onclick="switchShopCat(this,'transport')">🚇 교통비</button>
       <button class="shop-cat" onclick="switchShopCat(this,'duty')">🛫 공항면세</button>
       <button class="shop-cat" onclick="switchShopCat(this,'etc')">📦 기타</button>
@@ -3739,7 +3739,7 @@ function switchRecTab(btn,area,idx){
    쇼핑 리스트
 ══════════════════════════════════════ */
 var _shopItems=[], _shopCat='all', _shopShowAll=false;
-var CAT_LABELS={food:'🍱 식품/간식',beauty:'👗 패션/뷰티',cvs:'🏪 편의점',drug:'💊 드럭스토어',transport:'🚇 교통비',duty:'🛫 면세',etc:'📦 기타'};
+var CAT_LABELS={food:'🍱 식품/간식',beauty:'👗 패션/뷰티',cvs:'🏪 편의점·마트',drug:'🏷 할인 잡화점',transport:'🚇 교통비',duty:'🛫 공항면세',etc:'📦 기타'};
 var DEFAULT_ITEMS=[];
 function initShop(){
   try{
@@ -3833,8 +3833,19 @@ function deleteItem(id){
   saveShop(); renderShop();
 }
 function addShopItem(){
-  var nid=Date.now(); _shopItems.unshift({id:nid,name:'',cat:'etc',price:0,pay:'cash:본인',done:false}); saveShop(); _shopShowAll=true; _shopCat='all'; renderShop();
-  setTimeout(function(){ var el=document.querySelector('#si'+nid+' .shop-item-name'); if(el)el.focus(); },100);
+  var nid=Date.now();
+  // 현재 선택된 카테고리로 새 항목 추가
+  var currentCat = _shopCat==='all' ? 'etc' : _shopCat;
+  _shopItems.unshift({id:nid,name:'',cat:currentCat,price:0,pay:'cash:본인',done:false});
+  saveShop();
+  _shopShowAll=true;
+  _shopCat='all';
+  // 전체 탭 버튼 active
+  document.querySelectorAll('.shop-cat').forEach(function(b){ b.classList.remove('active'); });
+  var allBtn = document.querySelector('.shop-cat[onclick*="all"]');
+  if(allBtn) allBtn.classList.add('active');
+  renderShop();
+  setTimeout(function(){ var el=document.querySelector('#si'+nid+' .shop-item-name'); if(el){ el.focus(); el.scrollIntoView({behavior:'smooth', block:'center'}); } },150);
 }
 function clearChecked(){ _shopItems=_shopItems.filter(function(i){return !i.done;}); saveShop();renderShop(); }
 function switchShopCat(btn,cat){

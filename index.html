@@ -94,15 +94,16 @@ img{max-width:100%;height:auto}
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  font-size:12px;
-  letter-spacing:.3px;
+  font-size:11px;
+  letter-spacing:-.2px;
   color:var(--ink);
   border:1.5px solid var(--border);
-  padding:0 8px;
+  padding:0 4px;
   border-radius:12px;
   background:linear-gradient(135deg,#FFF5F0,#FFE8DC);
   font-weight:700;
   white-space:nowrap;
+  overflow:hidden;
   height:44px!important;
   min-height:44px!important;
   line-height:1;
@@ -112,7 +113,7 @@ img{max-width:100%;height:auto}
   -webkit-appearance:none;
   appearance:none;
   text-align:center;
-  gap:5px;
+  gap:3px;
 }
 .location-btn{
   border:1.5px solid #E8602A!important;
@@ -1235,7 +1236,7 @@ body.editing .edit-hint{display:flex}
   <div class="header-meta">
     <button class="meta-chip date-chip" onclick="openDateModal()">📅 <span id="dateChipText">2026.06.14~17</span></button>
     <button class="meta-chip airline-chip" onclick="openAirlineModal()">✈ 아시아나항공</button>
-    <button class="meta-chip pax-chip" onclick="openPaxModal()">👫 <span id="paxChipText">2인 여행</span></button>
+    <button class="meta-chip pax-chip" onclick="openPaxModal()">👫 <span id="paxChipText">2인</span></button>
     <button class="meta-chip location-btn" onclick="openWallet()">👛 지갑</button>
     <button class="meta-chip atm-chip-btn" onclick="openAtmModal(0)">🏧 ATM 정보</button>
     <button class="meta-chip smoking-btn" onclick="openClubJT()">🚬 흡연 구역</button>

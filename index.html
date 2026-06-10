@@ -4149,8 +4149,8 @@ function openWallet() {
   loadWallet();
   _walletTab = 0; _walletShowAll = false;
   updateWalletForm(0);
-  var list=document.getElementById('walletList'); if(list) list.style.display='none';
-  var btn=document.getElementById('wListToggleBtn'); if(btn) btn.textContent='▼ 내역 보기';
+  var list=document.getElementById('walletList'); if(list) list.style.display='block';
+  var btn=document.getElementById('wListToggleBtn'); if(btn) btn.textContent='▲ 내역 숨기기';
   var moreBtn=document.getElementById('walletMoreBtn'); if(moreBtn) moreBtn.style.display='none';
   updateBalances();
   document.getElementById('walletModal').classList.add('open');
@@ -4171,8 +4171,8 @@ function switchWalletTab(idx) {
   var list    = document.getElementById('walletList');
   var btn     = document.getElementById('wListToggleBtn');
   var moreBtn = document.getElementById('walletMoreBtn');
-  if(list) list.style.display = 'none';
-  if(btn)  btn.textContent = '▼ 내역 보기';
+  if(list) list.style.display = 'block';
+  if(btn)  btn.textContent = '▲ 내역 숨기기';
   if(moreBtn) moreBtn.style.display = 'none';
   // 폼 업데이트
   updateWalletForm(idx);
@@ -4431,7 +4431,7 @@ var _walletTab = 0;
 var _walletShowAll = false;
 
 function updateWalletForm(idx){
-  var sym = CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥';
+  var sym = (_walletTab===3) ? '₩' : (CURRENT_CURRENCY ? CURRENT_CURRENCY.symbol : '¥');
   var labels = ['💱 현금 환전','💳 카드 입금','⚡ 교통IC 충전','🎟 사전예매'];
   var lbl = document.getElementById('wFormLabel');
   if(lbl) lbl.textContent = labels[idx]||labels[0];
@@ -4508,15 +4508,15 @@ function toggleWalletList(){
   var btn     = document.getElementById('wListToggleBtn');
   var moreBtn = document.getElementById('walletMoreBtn');
   if(!list) return;
-  var isHidden = list.style.display === 'none';
-  if(isHidden){
-    list.style.display = 'block';
-    if(btn) btn.textContent = '▲ 내역 숨기기';
-    renderWallet();
-  } else {
+  var isVisible = list.style.display !== 'none';
+  if(isVisible){
     list.style.display = 'none';
     if(moreBtn) moreBtn.style.display = 'none';
     if(btn) btn.textContent = '▼ 내역 보기';
+  } else {
+    list.style.display = 'block';
+    if(btn) btn.textContent = '▲ 내역 숨기기';
+    renderWallet();
   }
 }
 
@@ -5270,15 +5270,19 @@ var AIRLINE_DATA = {
     </div>
     <div class="modal-body">
       <div style="display:flex;flex-direction:column;gap:12px;">
-        <div>
+        <div style="position:relative;">
           <div style="font-size:var(--f2xs);letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;">출발일</div>
-          <input type="date" id="dateStart" value="2026-06-14"
-            style="width:100%;padding:10px 8px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);outline:none;box-sizing:border-box;text-align:center;">
+          <div style="position:relative;width:100%;">
+            <div id="dateStartDisplay" onclick="document.getElementById('dateStart').showPicker&&document.getElementById('dateStart').showPicker()" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);box-sizing:border-box;text-align:center;cursor:pointer;font-weight:600;">2026.06.14</div>
+            <input type="date" id="dateStart" value="2026-06-14" onchange="updateDateDisplay()" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;box-sizing:border-box;">
+          </div>
         </div>
-        <div>
+        <div style="position:relative;">
           <div style="font-size:var(--f2xs);letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;">귀국일</div>
-          <input type="date" id="dateEnd" value="2026-06-17"
-            style="width:100%;padding:10px 8px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);outline:none;box-sizing:border-box;text-align:center;">
+          <div style="position:relative;width:100%;">
+            <div id="dateEndDisplay" onclick="document.getElementById('dateEnd').showPicker&&document.getElementById('dateEnd').showPicker()" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--bg2);box-sizing:border-box;text-align:center;cursor:pointer;font-weight:600;">2026.06.17</div>
+            <input type="date" id="dateEnd" value="2026-06-17" onchange="updateDateDisplay()" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;box-sizing:border-box;">
+          </div>
         </div>
         <div id="datePreview" style="text-align:center;font-family:'Playfair Display',serif;font-size:var(--flg);font-weight:700;color:var(--ink);background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px;box-sizing:border-box;">
           2026.06.14~17 (3박4일)
@@ -5427,8 +5431,8 @@ var AIRLINE_DATA = {
 
       <!-- 내역 -->
       <div class="timetable-label" id="wListLabel" style="margin-bottom:6px;">💴 현금 내역</div>
-      <button id="wListToggleBtn" onclick="toggleWalletList()" style="display:flex;align-items:center;justify-content:center;gap:5px;width:100%;margin-bottom:8px;padding:9px;background:var(--bg2);border:1.5px dashed var(--gold);border-radius:var(--r-sm);font-size:12px;font-weight:700;color:var(--gold);cursor:pointer;-webkit-tap-highlight-color:transparent;">▼ 내역 보기</button>
-      <div id="walletList" class="wallet-list" style="display:none;">
+      <button id="wListToggleBtn" onclick="toggleWalletList()" style="display:flex;align-items:center;justify-content:center;gap:5px;width:100%;margin-bottom:8px;padding:9px;background:var(--bg2);border:1.5px dashed var(--gold);border-radius:var(--r-sm);font-size:12px;font-weight:700;color:var(--gold);cursor:pointer;-webkit-tap-highlight-color:transparent;">▲ 내역 숨기기</button>
+      <div id="walletList" class="wallet-list" style="display:block;">
         <div class="wallet-empty">내역이 없어요.</div>
       </div>
 

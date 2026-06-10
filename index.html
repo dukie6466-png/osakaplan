@@ -844,11 +844,11 @@ body.editing .edit-hint{display:flex}
 .store-edit-input.sm{width:56px;flex:none}
 .store-edit-select{padding:7px 8px;border-radius:var(--r-sm);border:1.5px solid var(--border);font-size:10px;color:var(--ink2);background:var(--surface);outline:none}
 .store-edit-del{font-size:14px;color:var(--ink3);cursor:pointer;border:none;background:none;padding:5px;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
-.store-search-wrap{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:13px}
+.store-search-wrap{margin-bottom:12px;}
 .store-search-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:9px}
 .store-search-row{display:flex;gap:7px}
 .store-search-input{flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:'Noto Sans KR',sans-serif;color:var(--ink);background:var(--surface);outline:none}
-.store-search-btn{padding:10px 15px;border-radius:var(--r-sm);background:linear-gradient(135deg,#FF8C42,#E8602A);color:#fff;border:none;font-size:var(--fsm);font-weight:700;cursor:pointer;min-height:42px;-webkit-tap-highlight-color:transparent;}
+.store-search-btn{padding:0 16px;height:44px;flex-shrink:0;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;font-size:var(--fsm);font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
 
 /* ═══════════════════════════════════════════
    ATM TRIGGER / SCROLL TOP / TOAST
@@ -1151,16 +1151,17 @@ body.editing .edit-hint{display:flex}
   display:flex;align-items:center;gap:0;
   border:1.5px solid var(--border);border-radius:var(--r-sm);
   background:var(--surface);overflow:hidden;height:44px;
+  width:100%;box-sizing:border-box;
 }
 .store-search-icon{
   padding:0 10px;font-size:16px;flex-shrink:0;
   color:var(--ink3);
 }
 .store-search-input{
-  flex:1;border:none;outline:none;font-size:var(--fsm);
+  flex:1;min-width:0;border:none;outline:none;font-size:var(--fsm);
   color:var(--ink);background:transparent;
   font-family:'Noto Sans KR',sans-serif;
-  padding:0 4px;
+  padding:0 8px;
 }
 .store-search-btn{
   padding:0 16px;height:100%;
@@ -4515,19 +4516,20 @@ function selectAirline(name, key){
 function showAirlineRule(key){
   var d = AIRLINE_DATA[key];
   if(!d) return;
-  // 규정 내용 업데이트
   var title = document.getElementById('airlineRuleTitle');
-  var carry = document.getElementById('airlineRuleCarry');
-  var check = document.getElementById('airlineRuleCheck');
-  var liquid = document.getElementById('airlineRuleLiquid');
-  var extra = document.getElementById('airlineRuleExtra');
-  var tip   = document.getElementById('airlineRuleTip');
-  if(title) title.textContent = d.name + ' (' + d.code + ') 탑승 규정';
-  if(carry) carry.textContent = d.carry;
-  if(check) check.textContent = d.check;
-  if(liquid) liquid.textContent = d.liquid;
-  if(extra) extra.textContent = d.extra;
-  if(tip) tip.textContent = d.tip;
+  if(title) title.textContent = '✈ ' + d.name + ' (' + d.code + ') 탑승 규정';
+  var body = document.getElementById('airlineRuleBody');
+  if(body && d.rows){
+    body.innerHTML = d.rows.map(function(r){
+      return '<div class="stop-item" style="display:flex;align-items:flex-start;gap:8px;padding:10px 14px;">'+
+        '<span style="flex-shrink:0;font-size:16px;">'+r.icon+'</span>'+
+        '<div>'+
+          '<div style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-bottom:2px;">'+r.label+'</div>'+
+          '<div style="font-size:13px;color:var(--ink);font-weight:600;">'+r.val+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('<div style="height:1px;background:var(--border);margin:0 14px;"></div>');
+  }
   var modal = document.getElementById('airlineRuleModal');
   if(modal) modal.classList.add('open');
 }
@@ -4537,67 +4539,99 @@ function showAirlineRule(key){
 var AIRLINE_DATA = {
   asiana: {
     name:'아시아나항공', code:'OZ',
-    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
-    check: '위탁 수하물: 23kg × 1개 (이코노미)',
-    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
-    extra: '스마트백: 배터리 분리 후 기내 반입 가능',
-    tip: '✈ OZ111 (인천→간사이) · OZ112 (간사이→김포)'
+    rows: [
+      {icon:'🎒', label:'기내 수하물', val:'10kg 이하 · 3변합 115cm · 1개'},
+      {icon:'🧳', label:'위탁 수하물', val:'23kg × 1개 무료 (일본 이코노미 기준)'},
+      {icon:'📏', label:'위탁 크기', val:'3변합 158cm 이하 · 32kg 초과 위탁 불가'},
+      {icon:'💧', label:'액체류', val:'100ml 이하 · 투명 지퍼백 1L · 1봉지'},
+      {icon:'🔋', label:'보조배터리', val:'100Wh 이하 기내 반입 · 위탁 불가'},
+      {icon:'⚠️', label:'초과요금', val:'무게초과 kg당 ₩2,000 · 32kg 초과 위탁 불가'},
+      {icon:'💡', label:'꿀팁', val:'웹체크인 시 수하물 혼잡 방지 · 사전 구매 할인'},
+    ]
   },
   koreanair: {
     name:'대한항공', code:'KE',
-    carry: '기내 반입: 12kg 이하 · 3변합 115cm 이하',
-    check: '위탁 수하물: 23kg × 1개 (이코노미)',
-    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
-    extra: '노트북: 기내 반입 권장',
-    tip: '✈ 대한항공 국제선 기준'
+    rows: [
+      {icon:'🎒', label:'기내 수하물', val:'12kg 이하 · 3변합 115cm · 1개'},
+      {icon:'🧳', label:'위탁 수하물', val:'23kg × 1개 무료 (일본 이코노미 기준)'},
+      {icon:'📏', label:'위탁 크기', val:'3변합 158cm 이하 · 32kg 초과 위탁 불가'},
+      {icon:'💧', label:'액체류', val:'100ml 이하 · 투명 지퍼백 1L · 1봉지'},
+      {icon:'🔋', label:'보조배터리', val:'160Wh 이하 기내 반입 · 위탁 불가'},
+      {icon:'⚠️', label:'초과요금', val:'무게초과 kg당 ₩1만~₩2.5만'},
+      {icon:'💡', label:'꿀팁', val:'노트북은 기내 반입 권장 · 미주는 2개 무료'},
+    ]
   },
   jeju: {
     name:'제주항공', code:'7C',
-    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
-    check: '위탁 수하물: 별도 구매 필요',
-    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
-    extra: '추가 수하물 사전 구매 시 할인',
-    tip: '✈ 제주항공 7C 기준'
+    rows: [
+      {icon:'🎒', label:'기내 수하물', val:'10kg 이하 · 3변합 115cm · 1개'},
+      {icon:'🧳', label:'위탁 수하물', val:'기본 미포함 · 운임에 따라 상이 (별도 구매)'},
+      {icon:'📏', label:'위탁 크기', val:'3변합 203cm 이하 · 23kg 기준 (1개당)'},
+      {icon:'💧', label:'액체류', val:'100ml 이하 · 투명 지퍼백 1L · 1봉지'},
+      {icon:'🔋', label:'보조배터리', val:'100Wh 이하 기내 반입 · 위탁 불가'},
+      {icon:'⚠️', label:'초과요금', val:'개수초과 ₩5만 · 무게초과(23~32kg) ₩5만'},
+      {icon:'💡', label:'꿀팁', val:'홈페이지 사전 구매 시 공항보다 저렴 · 최대 40kg 구매 가능'},
+    ]
   },
   jinair: {
     name:'진에어', code:'LJ',
-    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
-    check: '위탁 수하물: 별도 구매 필요',
-    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
-    extra: '진에어 LJ 규정 기준',
-    tip: '✈ 진에어 LJ 기준'
+    rows: [
+      {icon:'🎒', label:'기내 수하물', val:'10kg 이하 · 3변합 115cm · 1개 + 소형 개인물품'},
+      {icon:'🧳', label:'위탁 수하물', val:'노선별 15~23kg · 운임 종류에 따라 상이'},
+      {icon:'📏', label:'위탁 크기', val:'3변합 203cm 이하 · 32kg 초과 불가'},
+      {icon:'💧', label:'액체류', val:'100ml 이하 · 투명 지퍼백 1L · 1봉지'},
+      {icon:'🔋', label:'보조배터리', val:'100Wh 이하 기내 반입 · 위탁 불가'},
+      {icon:'⚠️', label:'초과요금', val:'사전 구매가 공항 현장보다 저렴'},
+      {icon:'💡', label:'꿀팁', val:'진에어 홈페이지·앱 사전 수하물 구매 추천'},
+    ]
   },
   tway: {
     name:'티웨이항공', code:'TW',
-    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
-    check: '위탁 수하물: 별도 구매 필요',
-    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
-    extra: '사전 구매 시 저렴',
-    tip: '✈ 티웨이항공 TW 기준'
+    rows: [
+      {icon:'🎒', label:'기내 수하물', val:'10kg 이하 · 3변합 115cm · 1개'},
+      {icon:'🧳', label:'위탁 수하물', val:'운임에 따라 15~20kg · 기본 미포함 운임 있음'},
+      {icon:'📏', label:'위탁 크기', val:'3변합 203cm 이하 · 32kg 초과 불가'},
+      {icon:'💧', label:'액체류', val:'100ml 이하 · 투명 지퍼백 1L · 1봉지'},
+      {icon:'🔋', label:'보조배터리', val:'100Wh 이하 기내 반입 · 위탁 불가'},
+      {icon:'⚠️', label:'초과요금', val:'kg당 ₩1만~₂.5만 · 사전 구매 할인'},
+      {icon:'💡', label:'꿀팁', val:'티웨이 앱 사전 구매 시 최대 50% 할인'},
+    ]
   },
   airseoul: {
     name:'에어서울', code:'RS',
-    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
-    check: '위탁 수하물: 별도 구매 필요',
-    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
-    extra: '에어서울 RS 규정 기준',
-    tip: '✈ 에어서울 RS 기준'
+    rows: [
+      {icon:'🎒', label:'기내 수하물', val:'10kg 이하 · 3변합 115cm · 1개'},
+      {icon:'🧳', label:'위탁 수하물', val:'운임에 따라 15~20kg · 일부 운임 미포함'},
+      {icon:'📏', label:'위탁 크기', val:'3변합 203cm 이하 · 32kg 초과 불가'},
+      {icon:'💧', label:'액체류', val:'100ml 이하 · 투명 지퍼백 1L · 1봉지'},
+      {icon:'🔋', label:'보조배터리', val:'100Wh 이하 기내 반입 · 위탁 불가'},
+      {icon:'⚠️', label:'초과요금', val:'사전 구매 시 공항보다 저렴'},
+      {icon:'💡', label:'꿀팁', val:'에어서울 홈페이지 사전 수하물 구매 추천'},
+    ]
   },
   airbusan: {
     name:'에어부산', code:'BX',
-    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
-    check: '위탁 수하물: 별도 구매 필요',
-    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
-    extra: '에어부산 BX 규정 기준',
-    tip: '✈ 에어부산 BX 기준'
+    rows: [
+      {icon:'🎒', label:'기내 수하물', val:'10kg 이하 · 3변합 115cm · 1개'},
+      {icon:'🧳', label:'위탁 수하물', val:'운임에 따라 15~23kg · 일부 운임 미포함'},
+      {icon:'📏', label:'위탁 크기', val:'3변합 203cm 이하 · 32kg 초과 불가'},
+      {icon:'💧', label:'액체류', val:'100ml 이하 · 투명 지퍼백 1L · 1봉지'},
+      {icon:'🔋', label:'보조배터리', val:'100Wh 이하 기내 반입 · 위탁 불가'},
+      {icon:'⚠️', label:'초과요금', val:'개수초과 ₩5만(23kg/1개) · 무게초과 ₩5만'},
+      {icon:'💡', label:'꿀팁', val:'에어부산 홈페이지 사전 구매 권장 · 탑승구 위탁 시 추가 수수료'},
+    ]
   },
   eaststar: {
     name:'이스타항공', code:'ZE',
-    carry: '기내 반입: 10kg 이하 · 3변합 115cm 이하',
-    check: '위탁 수하물: 별도 구매 필요',
-    liquid: '액체류: 100ml 이하 · 투명 지퍼백 1L',
-    extra: '이스타항공 ZE 규정 기준',
-    tip: '✈ 이스타항공 ZE 기준'
+    rows: [
+      {icon:'🎒', label:'기내 수하물', val:'10kg 이하 · 3변합 115cm · 1개'},
+      {icon:'🧳', label:'위탁 수하물', val:'운임에 따라 상이 · LCC 기본 미포함'},
+      {icon:'📏', label:'위탁 크기', val:'3변합 203cm 이하 · 32kg 초과 불가'},
+      {icon:'💧', label:'액체류', val:'100ml 이하 · 투명 지퍼백 1L · 1봉지'},
+      {icon:'🔋', label:'보조배터리', val:'100Wh 이하 기내 반입 · 위탁 불가'},
+      {icon:'⚠️', label:'초과요금', val:'kg당 ₩1만~₂.5만 · 공항 현장보다 사전 구매 저렴'},
+      {icon:'💡', label:'꿀팁', val:'이스타 앱·홈페이지 사전 수하물 구매 추천'},
+    ]
   }
 };
 
@@ -5571,18 +5605,7 @@ var AIRLINE_DATA = {
       <h3 id="airlineRuleTitle">탑승 규정</h3>
       <button class="modal-close" onclick="document.getElementById('airlineRuleModal').classList.remove('open')">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="timetable-label">🧳 수하물 규정</div>
-      <div class="stop-card" style="margin-bottom:12px;">
-        <div class="stop-item" id="airlineRuleCarry">-</div>
-        <div class="stop-item" id="airlineRuleCheck">-</div>
-        <div class="stop-item" id="airlineRuleLiquid">-</div>
-        <div class="stop-item" id="airlineRuleExtra">-</div>
-      </div>
-      <div class="timetable-label">💡 탑승 팁</div>
-      <div class="stop-card">
-        <div class="stop-item" id="airlineRuleTip">-</div>
-      </div>
+    <div class="modal-body" id="airlineRuleBody" style="padding:0;">
     </div>
   </div>
 </div>

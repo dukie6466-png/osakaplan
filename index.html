@@ -1249,6 +1249,28 @@ body.editing .edit-hint{display:flex}
 .air-check{ font-size:16px;color:var(--gold);font-weight:700; }
 .air-watermark{ position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:52px;font-weight:900;letter-spacing:-3px;opacity:0.12;pointer-events:none;z-index:0;font-family:'Playfair Display',serif;line-height:1; }
 
+
+.store-drag-handle{font-size:16px;color:var(--ink3);cursor:grab;margin-right:4px;flex-shrink:0;}
+.store-custom-item{border:1.5px dashed var(--gold)!important;background:linear-gradient(135deg,#fffbf0,#fff8e8)!important;}
+
+
+.store-arrow-btn{
+  flex-shrink:0;
+  width:36px;height:36px;
+  border:none;border-radius:50%;
+  background:linear-gradient(135deg,#42A5F5,#1565C0);color:#fff;
+  font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+  box-shadow:0 2px 6px rgba(21,101,192,.3);
+}
+.store-card{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.store-card:last-child{border-bottom:none;}
+
 </style>
 </head>
 <body>
@@ -2864,7 +2886,7 @@ body.editing .edit-hint{display:flex}
     </div>
 
     <!-- 리스트 뷰 -->
-    <div id="shopMainList">
+    <div id="shopMainList" style="display:block;">
     <div class="shop-head">
       <div>
         <div class="shop-title">🛍 구매 목록</div>
@@ -2880,10 +2902,10 @@ body.editing .edit-hint{display:flex}
       <button class="shop-cat active" onclick="switchShopCat(this,'all')">전체</button>
       <button class="shop-cat" onclick="switchShopCat(this,'food')">🍱 식품/간식</button>
       <button class="shop-cat" onclick="switchShopCat(this,'beauty')">👗 패션/뷰티</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'cvs')">🏪 편의점</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'cvs')">🏪 편의점·마트</button>
       <button class="shop-cat" onclick="switchShopCat(this,'drug')">💊 드럭스토어</button>
       <button class="shop-cat" onclick="switchShopCat(this,'transport')">🚇 교통비</button>
-      <button class="shop-cat" onclick="switchShopCat(this,'duty')">🛫 면세</button>
+      <button class="shop-cat" onclick="switchShopCat(this,'duty')">🛫 공항면세</button>
       <button class="shop-cat" onclick="switchShopCat(this,'etc')">📦 기타</button>
     </div>
 
@@ -2916,6 +2938,9 @@ body.editing .edit-hint{display:flex}
           <div class="shop-title">📍 매장 찾기</div>
           <div class="shop-sub">카드를 탭하면 구글맵 검색</div>
         </div>
+        <div class="shop-head-actions">
+          <button class="shop-add-btn" onclick="openAddStoreCurrent()">+ 추가</button>
+        </div>
       </div>
       <!-- 직접 찾기 -->
       <div class="store-search-wrap">
@@ -2926,105 +2951,138 @@ body.editing .edit-hint{display:flex}
         </div>
       </div>
       <div class="store-cats">
-        <button class="store-cat-btn active" onclick="switchStoreCat(this,'cvs')">🏪 편의점</button>
-        <button class="store-cat-btn " onclick="switchStoreCat(this,'drug')">💊 드럭스토어</button>
+        <button class="store-cat-btn active" onclick="switchStoreCat(this,'cvs')">🏪 편의점·마트</button>
+        <button class="store-cat-btn " onclick="switchStoreCat(this,'discount')">🏷 할인 잡화점</button>
         <button class="store-cat-btn " onclick="switchStoreCat(this,'dept')">🏬 백화점·쇼핑몰</button>
-        <button class="store-cat-btn " onclick="switchStoreCat(this,'fashion')">👗 패션</button>
+        <button class="store-cat-btn " onclick="switchStoreCat(this,'fashion')">👗 패션·뷰티</button>
         <button class="store-cat-btn " onclick="switchStoreCat(this,'select')">🛍 편집샵</button>
         <button class="store-cat-btn " onclick="switchStoreCat(this,'goods')">🎁 굿즈</button>
-        <button class="store-cat-btn " onclick="switchStoreCat(this,'duty')">🛫 면세</button>
+        <button class="store-cat-btn " onclick="switchStoreCat(this,'duty')">🛫 공항면세</button>
         <button class="store-cat-btn " onclick="switchStoreCat(this,'etc')">📦 기타</button>
       </div>
       
-      <div class="store-panel" id="store-cat-cvs" style="">
-        <div class="store-cards-wrap collapsed" id="store-wrap-cvs">
-          <a class="store-card" href="https://www.google.com/maps/search/セブンイレブン+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">세븐일레븐 우메다역점</div><div class="store-area">우메다</div><div class="store-desc">ATM·도시락·세금환급</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ローソン+道頓堀+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">로손 도톤보리점</div><div class="store-area">도톤보리</div><div class="store-desc">마치카도 치킨·디저트</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ファミリーマート+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">패밀리마트 신사이바시점</div><div class="store-area">신사이바시</div><div class="store-desc">파미치키·면세 가능</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/セブンイレブン+難波+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">세븐일레븐 난바점</div><div class="store-area">난바</div><div class="store-desc">ATM·24시간 운영</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ローソン+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">로손 우메다점</div><div class="store-area">우메다</div><div class="store-desc">빵·디저트 다양</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ファミリーマート+ユニバーサルシティ+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">패밀리마트 USJ 근처</div><div class="store-area">유니버셜시티</div><div class="store-desc">파크 입구 편의점</div></div><div class="store-arrow">→</div></a>
+      <div class="store-panel" id="store-cat-cvs" style="display:none;">
+        <div class="store-cards-wrap" id="store-wrap-cvs">
+          <div class="store-card"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">세븐일레븐</div><div class="store-desc">ATM·도시락·세금환급·24시간</div></div><button class="store-arrow-btn" onclick="openNearby('セブンイレブン')">→</button></div>
+          <div class="store-card"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">로손</div><div class="store-desc">마치카도 치킨·디저트·24시간</div></div><button class="store-arrow-btn" onclick="openNearby('ローソン')">→</button></div>
+          <div class="store-card"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">훼밀리마트</div><div class="store-desc">파미치키·면세 가능·24시간</div></div><button class="store-arrow-btn" onclick="openNearby('ファミリーマート')">→</button></div>
         </div>
-        <button class="store-more-btn" id="store-more-cvs" onclick="toggleStoreMore(this,'cvs')">▼ 더보기 (3개 더)</button>
+        <div class="store-more-wrap">
+          <button class="store-more-btn" id="store-more-cvs" onclick="toggleStoreMore(this,'cvs')">▼ 더보기 (2개 더)</button>
+        </div>
+        <div class="store-more-items" id="store-more-items-cvs" style="display:none;">
+          <div class="store-card"><div class="store-emoji">🛒</div><div class="store-info"><div class="store-name">이온 푸드스타일</div><div class="store-desc">신선식품·도시락·반찬 전문</div></div><button class="store-arrow-btn" onclick="openNearby('イオンフードスタイル')">→</button></div>
+          <div class="store-card"><div class="store-emoji">🛒</div><div class="store-info"><div class="store-name">라이프마트</div><div class="store-desc">현지 슈퍼마켓·신선식품·저렴</div></div><button class="store-arrow-btn" onclick="openNearby('ライフ スーパーマーケット')">→</button></div>
+        </div>
+        <div id="store-custom-cvs" style="margin-top:4px;"></div>
       </div>
-      <div class="store-panel" id="store-cat-drug" style="display:none;">
-        <div class="store-cards-wrap collapsed" id="store-wrap-drug">
-          <a class="store-card" href="https://www.google.com/maps/search/マツキヨ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">💊</div><div class="store-info"><div class="store-name">마츠키요 우메다점</div><div class="store-area">우메다</div><div class="store-desc">약국+화장품·면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/大黒ドラッグ+道頓堀+大阪" target="_blank" rel="noopener"><div class="store-emoji">💊</div><div class="store-info"><div class="store-name">다이코쿠 드럭 도톤보리</div><div class="store-area">도톤보리</div><div class="store-desc">저렴·24시간</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ococara+難波+大阪" target="_blank" rel="noopener"><div class="store-emoji">💊</div><div class="store-info"><div class="store-name">코코카라파인 난바점</div><div class="store-area">난바</div><div class="store-desc">약국+미용·면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/サンドラッグ+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">💊</div><div class="store-info"><div class="store-name">선드럭 신사이바시</div><div class="store-area">신사이바시</div><div class="store-desc">화장품·의약품</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ツルハドラッグ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">💊</div><div class="store-info"><div class="store-name">쓰루하 드럭 우메다</div><div class="store-area">우메다</div><div class="store-desc">생활용품·화장품</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/マツキヨ+道頓堀+大阪" target="_blank" rel="noopener"><div class="store-emoji">💊</div><div class="store-info"><div class="store-name">마츠키요 도톤보리점</div><div class="store-area">도톤보리</div><div class="store-desc">관광지 중심·면세</div></div><div class="store-arrow">→</div></a>
+              <div class="store-panel" id="store-cat-discount" style="display:none;">
+        <div class="store-cards-wrap" id="store-wrap-discount">
+          <div class="store-card"><div class="store-emoji">🦆</div><div class="store-info"><div class="store-name">돈키호테</div><div class="store-desc">24시간·면세·잡화·식품·코스메</div></div><button class="store-arrow-btn" onclick="openNearby('ドン・キホーテ')">→</button></div>
+          <div class="store-card"><div class="store-emoji">💴</div><div class="store-info"><div class="store-name">다이소</div><div class="store-desc">100엔 균일·생활잡화·여행소품</div></div><button class="store-arrow-btn" onclick="openNearby('ダイソー')">→</button></div>
+          <div class="store-card"><div class="store-emoji">⬜</div><div class="store-info"><div class="store-name">무인양품</div><div class="store-desc">생활잡화·의류·음식·심플 디자인</div></div><button class="store-arrow-btn" onclick="openNearby('無印良品')">→</button></div>
         </div>
-        <button class="store-more-btn" id="store-more-drug" onclick="toggleStoreMore(this,'drug')">▼ 더보기 (3개 더)</button>
+        <div class="store-more-wrap">
+          <button class="store-more-btn" id="store-more-discount" onclick="toggleStoreMore(this,'discount')">▼ 더보기 (1개 더)</button>
+        </div>
+        <div class="store-more-items" id="store-more-items-discount" style="display:none;">
+          <div class="store-card"><div class="store-emoji">💊</div><div class="store-info"><div class="store-name">스기약국</div><div class="store-desc">드럭스토어·화장품·의약품·면세</div></div><button class="store-arrow-btn" onclick="openNearby('スギ薬局')">→</button></div>
+        </div>
+        <div id="store-custom-discount" style="margin-top:4px;"></div>
+      </div>
       </div>
       <div class="store-panel" id="store-cat-dept" style="display:none;">
-        <div class="store-cards-wrap collapsed" id="store-wrap-dept">
-          <a class="store-card" href="https://www.google.com/maps/search/大丸+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">다이마루 우메다점</div><div class="store-area">우메다 · 백화점</div><div class="store-desc">지하 식품관·면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/阪急百貨店+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">한큐 백화점 우메다본점</div><div class="store-area">우메다 · 백화점</div><div class="store-desc">일본 최대 백화점</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ルクア+大阪+梅田" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">루쿠아 오사카</div><div class="store-area">우메다 · 쇼핑몰</div><div class="store-desc">JR역 직결·트렌디</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/なんばパークス+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">난바 파크스</div><div class="store-area">난바 · 쇼핑몰</div><div class="store-desc">루프탑·패션·식당</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/阪神百貨店+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">한신 백화점 우메다</div><div class="store-area">우메다 · 백화점</div><div class="store-desc">지하 식품·식당가</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/なんばCITY+大阪" target="_blank" rel="noopener"><div class="store-emoji">🏪</div><div class="store-info"><div class="store-name">난바 시티</div><div class="store-area">난바 · 쇼핑몰</div><div class="store-desc">지하철 직결·쇼핑</div></div><div class="store-arrow">→</div></a>
+        <div class="store-cards-wrap" id="store-wrap-dept">
+          <div class="store-card"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">다이마루 우메다</div><div class="store-desc">지하 식품관·기념품·면세·B2~B1</div></div><button class="store-arrow-btn" onclick="openNearby('大丸梅田店')">→</button></div>
+          <div class="store-card"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">루쿠아 오사카</div><div class="store-desc">JR역 직결·트렌디 쇼핑몰·루쿠아1100</div></div><button class="store-arrow-btn" onclick="openNearby('ルクア大阪')">→</button></div>
+          <div class="store-card"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">한큐백화점</div><div class="store-desc">우메다 본점·화장품·패션·식품관</div></div><button class="store-arrow-btn" onclick="openNearby('阪急百貨店梅田本店')">→</button></div>
         </div>
-        <button class="store-more-btn" id="store-more-dept" onclick="toggleStoreMore(this,'dept')">▼ 더보기 (3개 더)</button>
-      </div>
-      <div class="store-panel" id="store-cat-fashion" style="display:none;">
-        <div class="store-cards-wrap collapsed" id="store-wrap-fashion">
-          <a class="store-card" href="https://www.google.com/maps/search/ユニクロ+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">유니클로 신사이바시점</div><div class="store-area">신사이바시</div><div class="store-desc">글로벌 SPA·면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/GU+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">GU 우메다점</div><div class="store-area">우메다</div><div class="store-desc">저렴한 트렌드 패션</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ZARA+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">ZARA 신사이바시점</div><div class="store-area">신사이바시</div><div class="store-desc">스페인 SPA</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ABCマート+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">ABC마트 우메다점</div><div class="store-area">우메다</div><div class="store-desc">신발 전문·면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/H&M+難波+大阪" target="_blank" rel="noopener"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">H&M 난바점</div><div class="store-area">난바</div><div class="store-desc">유럽 SPA 패션</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/アメリカンイーグル+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">아메리칸 이글 신사이바시</div><div class="store-area">신사이바시</div><div class="store-desc">미국 캐주얼</div></div><div class="store-arrow">→</div></a>
+        <div class="store-more-wrap">
+          <button class="store-more-btn" id="store-more-dept" onclick="toggleStoreMore(this,'dept')">▼ 더보기 (3개 더)</button>
         </div>
-        <button class="store-more-btn" id="store-more-fashion" onclick="toggleStoreMore(this,'fashion')">▼ 더보기 (3개 더)</button>
+        <div class="store-more-items" id="store-more-items-dept" style="display:none;">
+          <div class="store-card"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">난바 파크스</div><div class="store-desc">쇼핑·레스토랑·옥상정원</div></div><button class="store-arrow-btn" onclick="openNearby('なんばパークス')">→</button></div>
+          <div class="store-card"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">킨테츠 백화점 아베노</div><div class="store-desc">하루카스 내·전층 쇼핑·면세</div></div><button class="store-arrow-btn" onclick="openNearby('近鉄百貨店あべのハルカス')">→</button></div>
+          <div class="store-card"><div class="store-emoji">🏬</div><div class="store-info"><div class="store-name">이온몰 오사카 도바시</div><div class="store-desc">대형 쇼핑몰·슈퍼·푸드코트</div></div><button class="store-arrow-btn" onclick="openNearby('イオンモール大阪ドームシティ')">→</button></div>
+        </div>
+        <div id="store-custom-dept" style="margin-top:4px;"></div>
       </div>
+              <div class="store-panel" id="store-cat-fashion" style="display:none;">
+        <div class="store-cards-wrap" id="store-wrap-fashion">
+          <div class="store-card"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">유니클로</div><div class="store-desc">글로벌 기함점·전 라인업·면세</div></div><button class="store-arrow-btn" onclick="openNearby('ユニクロ')">→</button></div>
+          <div class="store-card"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">GU</div><div class="store-desc">유니클로 자매브랜드·트렌디·저가</div></div><button class="store-arrow-btn" onclick="openNearby('GU ジーユー')">→</button></div>
+          <div class="store-card"><div class="store-emoji">👗</div><div class="store-info"><div class="store-name">자라</div><div class="store-desc">스페인 패스트패션·남녀아동</div></div><button class="store-arrow-btn" onclick="openNearby('ZARA')">→</button></div>
+        </div>
+        <div class="store-more-wrap">
+          <button class="store-more-btn" id="store-more-fashion" onclick="toggleStoreMore(this,'fashion')">▼ 더보기 (3개 더)</button>
+        </div>
+        <div class="store-more-items" id="store-more-items-fashion" style="display:none;">
+          <div class="store-card"><div class="store-emoji">👟</div><div class="store-info"><div class="store-name">뉴발란스</div><div class="store-desc">스니커즈·한국미출시 모델·면세</div></div><button class="store-arrow-btn" onclick="openNearby('ニューバランス')">→</button></div>
+          <div class="store-card"><div class="store-emoji">👟</div><div class="store-info"><div class="store-name">ABC마트</div><div class="store-desc">스니커즈·신발 편집샵·면세</div></div><button class="store-arrow-btn" onclick="openNearby('ABCマート')">→</button></div>
+          <div class="store-card"><div class="store-emoji">🐯</div><div class="store-info"><div class="store-name">오니츠카타이거</div><div class="store-desc">일본 스포츠 브랜드·레트로 감성</div></div><button class="store-arrow-btn" onclick="openNearby('オニツカタイガー')">→</button></div>
+        </div>
+        <div id="store-custom-fashion" style="margin-top:4px;"></div>
+      </div>
+              
       <div class="store-panel" id="store-cat-select" style="display:none;">
         <div class="store-cards-wrap collapsed" id="store-wrap-select">
-          <a class="store-card" href="https://www.google.com/maps/search/BEAMS+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">빔즈 오사카 신사이바시</div><div class="store-area">신사이바시</div><div class="store-desc">일본 대표 셀렉트샵</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ユナイテッドアローズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">유나이티드 애로우즈 우메다</div><div class="store-area">우메다</div><div class="store-desc">세련된 셀렉트샵</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/SHIPS+難波+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">쉽스 난바점</div><div class="store-area">난바</div><div class="store-desc">트렌디 편집샵</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ジャーナルスタンダード+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">저널 스탠다드 신사이바시</div><div class="store-area">신사이바시</div><div class="store-desc">라이프스타일 셀렉트</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/アーバンリサーチ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">어반리서치 우메다</div><div class="store-area">우메다</div><div class="store-desc">일본 편집샵</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/TOGA+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">토가 빌리지 오사카</div><div class="store-area">신사이바시</div><div class="store-desc">아방가르드 편집샵</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/BEAMS+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">빔스 오사카</div><div class="store-desc">일본 대표 편집샵 · 남녀의류</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/ユナイテッドアローズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">유나이티드 애로우즈</div><div class="store-desc">고급 편집샵 · 셀렉트 아이템</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/nanamica+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">나나미카 오사카</div><div class="store-desc">아웃도어·캐주얼 편집샵</div></div><div class="store-arrow">→</div></a>
         </div>
-        <button class="store-more-btn" id="store-more-select" onclick="toggleStoreMore(this,'select')">▼ 더보기 (3개 더)</button>
+        <div class="store-more-wrap">
+          <button class="store-more-btn" id="store-more-select" onclick="toggleStoreMore(this,'select')">▼ 더보기 (3개 더)</button>
+        </div>
+        <div class="store-more-items" id="store-more-items-select" style="display:none;">
+          <a class="store-card" href="https://www.google.com/maps/search/Handsome+アメリカ村+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">핸즈옴 오사카</div><div class="store-desc">빈티지·하이엔드 편집샵</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/ジャーナルスタンダード+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">저널 스탠다드</div><div class="store-desc">캐주얼 편집샵·라이프스타일</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/Ships+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛍</div><div class="store-info"><div class="store-name">쉽스 오사카</div><div class="store-desc">일본 인기 편집샵 셀렉트</div></div><div class="store-arrow">→</div></a>
+        </div>
+        <!-- 커스텀 매장 -->
+        <div id="store-custom-select" style="margin-top:4px;"></div>
       </div>
       <div class="store-panel" id="store-cat-goods" style="display:none;">
         <div class="store-cards-wrap collapsed" id="store-wrap-goods">
-          <a class="store-card" href="https://www.google.com/maps/search/任天堂+大阪+難波" target="_blank" rel="noopener"><div class="store-emoji">🎮</div><div class="store-info"><div class="store-name">닌텐도 오사카</div><div class="store-area">난바</div><div class="store-desc">닌텐도 공식 스토어</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ディズニーストア+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🧸</div><div class="store-info"><div class="store-name">디즈니 스토어 신사이바시</div><div class="store-area">신사이바시</div><div class="store-desc">디즈니 캐릭터 굿즈</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/蔦屋書店+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">📚</div><div class="store-info"><div class="store-name">츠타야 우메다</div><div class="store-area">우메다</div><div class="store-desc">책·음반·굿즈</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ジャンプショップ+大阪+難波" target="_blank" rel="noopener"><div class="store-emoji">🎌</div><div class="store-info"><div class="store-name">점프샵 오사카</div><div class="store-area">난바</div><div class="store-desc">원피스·나루토·DBZ</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/サンリオ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🐱</div><div class="store-info"><div class="store-name">산리오 갤러리 우메다</div><div class="store-area">우메다</div><div class="store-desc">헬로키티·산리오 굿즈</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/東急ハンズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">도큐핸즈 우메다</div><div class="store-area">우메다</div><div class="store-desc">생활잡화·아이디어</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/ポケモンセンターオーサカ+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">포켓몬 센터 오사카</div><div class="store-desc">공식 굿즈 전문점</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/ジャンプショップ+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">점프 샵 오사카</div><div class="store-desc">원피스·나루토·귀멸 굿즈</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/ヴィレッジヴァンガード+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">빌리지 반가드</div><div class="store-desc">유니크 잡화·서브컬처</div></div><div class="store-arrow">→</div></a>
         </div>
-        <button class="store-more-btn" id="store-more-goods" onclick="toggleStoreMore(this,'goods')">▼ 더보기 (3개 더)</button>
-      </div>
-      <div class="store-panel" id="store-cat-duty" style="display:none;">
-        <div class="store-cards-wrap collapsed" id="store-wrap-duty">
-          <a class="store-card" href="https://www.google.com/maps/search/関西空港+免税店" target="_blank" rel="noopener"><div class="store-emoji">🛫</div><div class="store-info"><div class="store-name">간사이공항 면세점</div><div class="store-area">간사이공항 1터미널</div><div class="store-desc">출국 후 면세구역·주류</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ラオックス+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛫</div><div class="store-info"><div class="store-name">라옥스 우메다점</div><div class="store-area">우메다</div><div class="store-desc">외국인 전용 면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ドン・キホーテ+道頓堀+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛫</div><div class="store-info"><div class="store-name">돈키호테 도톤보리점</div><div class="store-area">도톤보리</div><div class="store-desc">24시간·면세·약품</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ビックカメラ+難波+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛫</div><div class="store-info"><div class="store-name">빅카메라 난바점</div><div class="store-area">난바</div><div class="store-desc">전자제품 면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ヨドバシカメラ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🛫</div><div class="store-info"><div class="store-name">요도바시 카메라 우메다</div><div class="store-area">우메다</div><div class="store-desc">전자제품 대형 면세</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/マツキヨ+関西空港" target="_blank" rel="noopener"><div class="store-emoji">🛫</div><div class="store-info"><div class="store-name">마츠키요 공항점</div><div class="store-area">간사이공항</div><div class="store-desc">출국 전 드럭스토어</div></div><div class="store-arrow">→</div></a>
+        <div class="store-more-wrap">
+          <button class="store-more-btn" id="store-more-goods" onclick="toggleStoreMore(this,'goods')">▼ 더보기 (3개 더)</button>
         </div>
-        <button class="store-more-btn" id="store-more-duty" onclick="toggleStoreMore(this,'duty')">▼ 더보기 (3개 더)</button>
+        <div class="store-more-items" id="store-more-items-goods" style="display:none;">
+          <a class="store-card" href="https://www.google.com/maps/search/キデイランド+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">키디랜드 오사카</div><div class="store-desc">산리오·카피바라산·캐릭터</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/アニメイト+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">애니메이트 우메다</div><div class="store-desc">애니메이션 굿즈 전문</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/ロフト+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">로프트 우메다</div><div class="store-desc">문구·라이프스타일·잡화</div></div><div class="store-arrow">→</div></a>
+        </div>
+        <!-- 커스텀 매장 -->
+        <div id="store-custom-goods" style="margin-top:4px;"></div>
       </div>
+              <div class="store-panel" id="store-cat-duty" style="display:none;">
+        <div class="store-cards-wrap" id="store-wrap-duty">
+          <div class="store-card"><div class="store-emoji">🛫</div><div class="store-info"><div class="store-name">간사이 공항 면세점</div><div class="store-desc">출국 후 면세 쇼핑·주류·화장품·과자</div></div><button class="store-arrow-btn" onclick="openNearby('関西空港 免税店')">→</button></div>
+        </div>
+        <div id="store-custom-duty" style="margin-top:4px;"></div>
+      </div>
+              
       <div class="store-panel" id="store-cat-etc" style="display:none;">
         <div class="store-cards-wrap collapsed" id="store-wrap-etc">
-          <a class="store-card" href="https://www.google.com/maps/search/ロイズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🍫</div><div class="store-info"><div class="store-name">로이스 초콜릿 우메다</div><div class="store-area">우메다</div><div class="store-desc">홋카이도 초콜릿</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/民芸品+三年坂+京都" target="_blank" rel="noopener"><div class="store-emoji">🏺</div><div class="store-info"><div class="store-name">민예품점 산넨자카</div><div class="store-area">교토</div><div class="store-desc">교토 전통 공예품</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/Aesop+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">🧴</div><div class="store-info"><div class="store-name">이솝 신사이바시</div><div class="store-area">신사이바시</div><div class="store-desc">호주 뷰티 브랜드</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/ブルーボトル+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">☕</div><div class="store-info"><div class="store-name">블루보틀 오사카</div><div class="store-area">신사이바시</div><div class="store-desc">블루보틀 커피 원두</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/東急ハンズ+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">🎁</div><div class="store-info"><div class="store-name">도큐핸즈 우메다</div><div class="store-area">우메다</div><div class="store-desc">생활잡화·아이디어</div></div><div class="store-arrow">→</div></a>
-          <a class="store-card" href="https://www.google.com/maps/search/道頓堀+お土産+大阪" target="_blank" rel="noopener"><div class="store-emoji">🥢</div><div class="store-info"><div class="store-name">도톤보리 기념품점</div><div class="store-area">도톤보리</div><div class="store-desc">오사카 전통 기념품</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/東急ハンズ+心斎橋+大阪" target="_blank" rel="noopener"><div class="store-emoji">📦</div><div class="store-info"><div class="store-name">도큐핸즈 신사이바시</div><div class="store-desc">DIY·잡화·여행용품</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/無印良品+梅田+大阪" target="_blank" rel="noopener"><div class="store-emoji">📦</div><div class="store-info"><div class="store-name">무인양품 우메다</div><div class="store-desc">생활잡화·의류·음식</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/日本橋+でんでんタウン+大阪" target="_blank" rel="noopener"><div class="store-emoji">📦</div><div class="store-info"><div class="store-name">니혼바시 덴덴타운</div><div class="store-desc">전자·게임·아키하바라 느낌</div></div><div class="store-arrow">→</div></a>
         </div>
-        <button class="store-more-btn" id="store-more-etc" onclick="toggleStoreMore(this,'etc')">▼ 더보기 (3개 더)</button>
+        <div class="store-more-wrap">
+          <button class="store-more-btn" id="store-more-etc" onclick="toggleStoreMore(this,'etc')">▼ 더보기 (3개 더)</button>
+        </div>
+        <div class="store-more-items" id="store-more-items-etc" style="display:none;">
+          <a class="store-card" href="https://www.google.com/maps/search/大阪+ヴィンテージ+マーケット" target="_blank" rel="noopener"><div class="store-emoji">📦</div><div class="store-info"><div class="store-name">오사카 빈티지 시장</div><div class="store-desc">레트로·빈티지 잡화</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/スーパーキッズランド+大阪" target="_blank" rel="noopener"><div class="store-emoji">📦</div><div class="store-info"><div class="store-name">슈퍼 키즈랜드</div><div class="store-desc">피규어·프라모델·게임</div></div><div class="store-arrow">→</div></a>
+          <a class="store-card" href="https://www.google.com/maps/search/堀江+カフェ+大阪" target="_blank" rel="noopener"><div class="store-emoji">📦</div><div class="store-info"><div class="store-name">커피 전문점 거리</div><div class="store-desc">호리에 카페·잡화 골목</div></div><div class="store-arrow">→</div></a>
+        </div>
+        <!-- 커스텀 매장 -->
+        <div id="store-custom-etc" style="margin-top:4px;"></div>
       </div>
-    </div>
+            </div>
     </div><!-- /shopMainStore -->
 
   </div>
@@ -3698,21 +3756,21 @@ function initShop(){
 function saveShop(){ try{localStorage.setItem('osaka_shop',JSON.stringify(_shopItems));}catch(e){} }
 function escH(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 function renderShop(){
-  var list=document.getElementById('shopList'); if(!list) return;
-  var filtered=_shopCat==='all'?_shopItems:_shopItems.filter(function(i){return i.cat===_shopCat;});
+  var list = document.getElementById('shopList');
+  if(!list) return;
+
+  var filtered = _shopCat==='all' ? _shopItems : _shopItems.filter(function(i){ return i.cat===_shopCat; });
 
   if(!filtered.length){
-    list.innerHTML='<div class="shop-empty">항목이 없어요<br>+ 추가 버튼으로 새 항목을 추가하세요</div>';
-    var btn=document.getElementById('shopMoreBtn');
-    if(btn) btn.style.display='none';
+    list.innerHTML = '<div class="shop-empty">항목이 없어요<br>+ 추가 버튼으로 새 항목을 추가하세요</div>';
     return;
   }
 
   var SHOW = 3;
-  var showItems = _shopShowAll ? filtered : filtered.slice(0, SHOW);
   var hasMore = filtered.length > SHOW;
+  var showItems = (_shopShowAll || !hasMore) ? filtered : filtered.slice(0, SHOW);
 
-  list.innerHTML = showItems.map(function(item){
+  function makeItem(item){
     return '<div class="shop-item'+(item.done?' done':'')+'" id="si'+item.id+'">'+
       '<div class="shop-item-check" onclick="toggleItem('+item.id+')">'+(item.done?'✓':'')+' </div>'+
       '<div class="shop-item-body">'+
@@ -3735,32 +3793,19 @@ function renderShop(){
         '</div>'+
       '</div>'+
       '<button class="shop-item-del" onclick="deleteItem('+item.id+')">✕</button>'+
-      '</div>';
-  }).join('');
-
-  // 더보기 버튼
-  var moreBtn = document.getElementById('shopMoreBtn');
-  if(!moreBtn){
-    moreBtn = document.createElement('button');
-    moreBtn.id = 'shopMoreBtn';
-    moreBtn.className = 'shop-more-btn';
-    moreBtn.onclick = function(){
-      _shopShowAll = !_shopShowAll;
-      renderShop();
-    };
-    list.parentNode.insertBefore(moreBtn, list.nextSibling);
+    '</div>';
   }
+
+  var html = showItems.map(makeItem).join('');
 
   if(hasMore){
-    moreBtn.style.display = 'flex';
-    moreBtn.textContent = _shopShowAll
+    var label = _shopShowAll
       ? '▲ 접기'
       : '▼ 더보기 (' + (filtered.length - SHOW) + '개 더)';
-  } else {
-    moreBtn.style.display = 'none';
-    _shopShowAll = false;
+    html += '<button class="shop-more-btn" style="margin-top:8px;" onclick="_shopShowAll=!_shopShowAll;renderShop();">'+label+'</button>';
   }
 
+  list.innerHTML = html;
   updateTotal();
 }
 
@@ -3929,9 +3974,9 @@ function toggleStoreEdit(){
 function switchShopMain(idx){
   document.getElementById('smTab0').classList.toggle('active',idx===0);
   document.getElementById('smTab1').classList.toggle('active',idx===1);
-  document.getElementById('shopMainList').style.display=idx===0?'':'none';
-  document.getElementById('shopMainStore').style.display=idx===1?'':'none';
-  if(idx===1) initStoreList();
+  document.getElementById('shopMainList').style.display = (idx===0) ? 'block' : 'none';
+  document.getElementById('shopMainStore').style.display = (idx===1) ? 'block' : 'none';
+  if(idx===1){ switchStoreCat(document.querySelector('.store-cat-btn.active')||document.querySelector('.store-cat-btn'), 'cvs'); }
 }
 
 /* ══════════════════════════════════════
@@ -4530,13 +4575,37 @@ function switchStoreCat(btn, cat){
   if(wrap){wrap.classList.add('collapsed');}
   var moreBtn=document.getElementById('store-more-'+cat);
   if(moreBtn){moreBtn.textContent='▼ 더보기 (3개 더)';}
+  var moreItems=document.getElementById('store-more-items-'+cat);
+  if(moreItems){moreItems.style.display='none';}
+  renderCustomStores(cat);
 }
 function toggleStoreMore(btn, cat){
-  var wrap=document.getElementById('store-wrap-'+cat);
-  if(!wrap) return;
-  var collapsed=wrap.classList.contains('collapsed');
-  if(collapsed){wrap.classList.remove('collapsed'); btn.textContent='▲ 접기';}
-  else{wrap.classList.add('collapsed'); btn.textContent='▼ 더보기 (3개 더)';}
+  var moreItems = document.getElementById('store-more-items-'+cat);
+  var moreWrap  = document.getElementById('store-morewrap-'+cat);
+  if(!moreItems) return;
+  var hidden = moreItems.style.display === 'none';
+  if(hidden){
+    moreItems.style.display = 'block';
+    btn.style.display = 'none'; // 더보기 버튼 숨김
+    // 접기 버튼을 store-more-items 아래에 추가
+    var closeBtn = document.getElementById('store-closebtn-'+cat);
+    if(!closeBtn){
+      closeBtn = document.createElement('button');
+      closeBtn.id = 'store-closebtn-'+cat;
+      closeBtn.className = 'store-more-btn';
+      closeBtn.style.marginTop = '8px';
+      closeBtn.textContent = '▲ 접기';
+      closeBtn.onclick = function(){ toggleStoreMore(btn, cat); };
+      moreItems.parentNode.insertBefore(closeBtn, moreItems.nextSibling);
+    } else {
+      closeBtn.style.display = 'block';
+    }
+  } else {
+    moreItems.style.display = 'none';
+    btn.style.display = 'block'; // 더보기 버튼 다시 표시
+    var closeBtn = document.getElementById('store-closebtn-'+cat);
+    if(closeBtn) closeBtn.style.display = 'none';
+  }
 }
 
 
@@ -4812,6 +4881,127 @@ function buildPayOptions(selected){
   });
   return opts;
 }
+
+/* ══ 매장찾기 커스텀 매장 ══ */
+var _customStores = {};
+
+function loadCustomStores(){
+  try{ _customStores = JSON.parse(localStorage.getItem('_customStores')||'{}'); }catch(e){ _customStores={}; }
+}
+function saveCustomStores(){
+  localStorage.setItem('_customStores', JSON.stringify(_customStores));
+}
+
+function renderCustomStores(cat){
+  loadCustomStores();
+  var arr = _customStores[cat] || [];
+  var wrap = document.getElementById('store-custom-'+cat);
+  if(!wrap) return;
+  wrap.innerHTML = arr.map(function(s,i){
+    return '<div class="store-card store-custom-item" draggable="true" '+
+      'ondragstart="storeDragStart(event,\''+cat+'\','+i+')" '+
+      'ondragover="event.preventDefault()" '+
+      'ondrop="storeDrop(event,\''+cat+'\','+i+')" '+
+      'style="cursor:grab;position:relative;">'+
+      '<div class="store-drag-handle">⠿</div>'+
+      '<div class="store-emoji">📍</div>'+
+      '<div class="store-info">'+
+        '<div class="store-name">'+s.name+'</div>'+
+        ''+
+        '<div class="store-desc">'+s.desc+'</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:6px;align-items:center;">'+
+        (s.url ? '<a href="'+s.url+'" target="_blank" class="store-arrow" style="text-decoration:none;">→</a>' : '')+
+        '<button onclick="deleteCustomStore(\''+cat+'\','+i+')" '+
+          'style="border:none;background:none;color:var(--red);font-size:16px;cursor:pointer;padding:0 4px;">✕</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+var _dragSrcCat='', _dragSrcIdx=-1;
+function storeDragStart(e, cat, idx){
+  _dragSrcCat=cat; _dragSrcIdx=idx;
+  e.dataTransfer.effectAllowed='move';
+}
+function storeDrop(e, cat, toIdx){
+  e.preventDefault();
+  if(_dragSrcCat!==cat) return;
+  var arr = _customStores[cat]||[];
+  var item = arr.splice(_dragSrcIdx,1)[0];
+  arr.splice(toIdx,0,item);
+  _customStores[cat]=arr;
+  saveCustomStores();
+  renderCustomStores(cat);
+}
+
+function openAddStore(cat){
+  document.getElementById('addStoreCat').value=cat;
+  document.getElementById('addStoreName').value='';
+  document.getElementById('addStoreArea').value='';
+  document.getElementById('addStoreDesc').value='';
+  document.getElementById('addStoreUrl').value='';
+  document.getElementById('addStoreModal').classList.add('open');
+  setTimeout(function(){ document.getElementById('addStoreName').focus(); },200);
+}
+
+function saveNewStore(){
+  var cat  = document.getElementById('addStoreCat').value;
+  var name = document.getElementById('addStoreName').value.trim();
+  if(!name) return;
+  loadCustomStores();
+  if(!_customStores[cat]) _customStores[cat]=[];
+  _customStores[cat].unshift({
+    name: name,
+    area: document.getElementById('addStoreArea').value.trim(),
+    desc: document.getElementById('addStoreDesc').value.trim(),
+    url:  document.getElementById('addStoreUrl').value.trim()
+  });
+  saveCustomStores();
+  document.getElementById('addStoreModal').classList.remove('open');
+  renderCustomStores(cat);
+}
+
+function deleteCustomStore(cat, idx){
+  loadCustomStores();
+  (_customStores[cat]||[]).splice(idx,1);
+  saveCustomStores();
+  renderCustomStores(cat);
+}
+
+function openAddStoreCurrent(){
+  var activeCat = 'cvs';
+  document.querySelectorAll('.store-cat-btn').forEach(function(b){
+    if(b.classList.contains('active')){
+      var onclick = b.getAttribute('onclick');
+      var m = onclick.match(/'([^']+)'\)/);
+      if(m) activeCat = m[1];
+    }
+  });
+  openAddStore(activeCat);
+}
+
+function openNearby(query){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        var lat = pos.coords.latitude;
+        var lng = pos.coords.longitude;
+        var url = 'https://www.google.com/maps/search/' + encodeURIComponent(query) + '/@' + lat + ',' + lng + ',15z';
+        window.open(url, '_blank');
+      },
+      function(){
+        // 위치 거부 시 오사카 중심으로 검색
+        var url = 'https://www.google.com/maps/search/' + encodeURIComponent(query) + '/@34.7024,135.4959,14z';
+        window.open(url, '_blank');
+      }
+    );
+  } else {
+    var url = 'https://www.google.com/maps/search/' + encodeURIComponent(query) + '/@34.7024,135.4959,14z';
+    window.open(url, '_blank');
+  }
+}
+
 </script>
 
 <!-- 리무진 버스 시간표 모달 -->
@@ -5780,6 +5970,39 @@ function buildPayOptions(selected){
       <button class="modal-close" onclick="document.getElementById('airlineRuleModal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body" id="airlineRuleBody" style="padding:0;">
+    </div>
+  </div>
+</div>
+
+
+<!-- 매장 추가 모달 -->
+<div class="modal-overlay" id="addStoreModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>📍 매장 직접 추가</h3>
+      <button class="modal-close" onclick="document.getElementById('addStoreModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="addStoreCat">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">매장명 *</div>
+          <input id="addStoreName" class="wallet-input" type="text" placeholder="예) 마쓰모토키요시 도톤보리점" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">지역</div>
+          <input id="addStoreArea" class="wallet-input" type="text" placeholder="예) 도톤보리" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">메모</div>
+          <input id="addStoreDesc" class="wallet-input" type="text" placeholder="예) 드럭스토어 · 화장품 할인" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">구글맵 링크 (선택)</div>
+          <input id="addStoreUrl" class="wallet-input" type="text" placeholder="https://maps.google.com/..." style="width:100%;box-sizing:border-box;">
+        </div>
+        <button onclick="saveNewStore()" style="width:100%;padding:13px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;">✓ 추가하기</button>
+      </div>
     </div>
   </div>
 </div>

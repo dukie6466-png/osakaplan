@@ -4582,12 +4582,24 @@ function switchStoreCat(btn, cat){
   document.querySelectorAll('.store-panel').forEach(function(p){p.style.display='none';});
   var panel=document.getElementById('store-cat-'+cat);
   if(panel){panel.style.display='block';}
-  var wrap=document.getElementById('store-wrap-'+cat);
-  if(wrap){wrap.classList.add('collapsed');}
-  var moreBtn=document.getElementById('store-more-'+cat);
-  if(moreBtn){moreBtn.textContent='▼ 더보기 (3개 더)';}
-  var moreItems=document.getElementById('store-more-items-'+cat);
-  if(moreItems){moreItems.style.display='none';}
+  // 더보기 초기화 (모든 카테고리)
+  ['cvs','discount','dept','fashion','select','goods','duty','etc'].forEach(function(c){
+    var moreBtn  = document.getElementById('store-more-'+c);
+    var moreItems= document.getElementById('store-more-items-'+c);
+    var closeBtn = document.getElementById('store-closebtn-'+c);
+    if(moreBtn)  { moreBtn.style.display='block'; moreBtn.textContent='▼ 더보기'; }
+    if(moreItems){ moreItems.style.display='none'; }
+    if(closeBtn) { closeBtn.style.display='none'; }
+  });
+  // 현재 카테고리 더보기 버튼 텍스트 정확히 설정
+  var moreBtn = document.getElementById('store-more-'+cat);
+  if(moreBtn){
+    var items = document.getElementById('store-more-items-'+cat);
+    if(items){
+      var count = items.querySelectorAll('.store-card').length;
+      moreBtn.textContent = '▼ 더보기 (' + count + '개 더)';
+    }
+  }
   renderCustomStores(cat);
 }
 function toggleStoreMore(btn, cat){

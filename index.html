@@ -1271,13 +1271,27 @@ body.editing .edit-hint{display:flex}
 }
 .store-card:last-child{border-bottom:none;}
 
+
+#customsModal .timetable-label {
+  font-size: 13px !important;
+  letter-spacing: 0.5px !important;
+  text-transform: none !important;
+  color: var(--ink) !important;
+  font-weight: 800 !important;
+  margin: 14px 0 7px !important;
+  padding-bottom: 5px !important;
+  border-bottom: 2px solid var(--gold) !important;
+}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header class="header">
-  <p class="header-eyebrow">✦ Osaka Travel ✦</p>
+  <p class="header-eyebrow" onclick="clOpen()"
+  style="cursor:pointer;-webkit-tap-highlight-color:transparent;color:var(--red);">
+  ✦ Osaka Travel Checklist ✦
+</p>
   <div class="header-title-wrap">
     <h1 class="header-title" id="mainCityTitle" onclick="openCityModal()" style="cursor:pointer;" title="탭해서 도시 변경">오사카여행</h1>
     <div class="header-nights" id="headerNights">(3박4일)</div>
@@ -2889,7 +2903,13 @@ body.editing .edit-hint{display:flex}
     <div id="shopMainList" style="display:block;">
     <div class="shop-head">
       <div>
-        <div class="shop-title">🛍 구매 목록</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="shop-title">🛍 구매 목록</div>
+          <span onclick="document.getElementById('customsModal').classList.add('open')"
+            style="font-size:11px;font-weight:700;color:var(--red);cursor:pointer;
+            border:1.5px solid var(--red);border-radius:10px;padding:2px 8px;
+            background:#faeeed;white-space:nowrap;-webkit-tap-highlight-color:transparent;">⚠️ 주의</span>
+        </div>
         <div class="shop-sub">구매한 항목을 탭해서 체크 · + 버튼으로 추가</div>
       </div>
       <div class="shop-head-actions">
@@ -4917,31 +4937,24 @@ function saveCustomStores(){
 
 function renderCustomStores(cat){
   loadCustomStores();
-  var arr = _customStores[cat] || [];
-  var wrap = document.getElementById('store-custom-'+cat);
+  var arr=_customStores[cat]||[];
+  var wrap=document.getElementById('store-custom-'+cat);
   if(!wrap) return;
-  wrap.innerHTML = arr.map(function(s,i){
-    return '<div class="store-card store-custom-item" draggable="true" '+
-      'ondragstart="storeDragStart(event,\''+cat+'\','+i+')" '+
-      'ondragover="event.preventDefault()" '+
-      'ondrop="storeDrop(event,\''+cat+'\','+i+')" '+
-      'style="cursor:grab;position:relative;">'+
-      '<div class="store-drag-handle">⠿</div>'+
-      '<div class="store-emoji">📍</div>'+
-      '<div class="store-info">'+
-        '<div class="store-name">'+s.name+'</div>'+
-        ''+
-        '<div class="store-desc">'+s.desc+'</div>'+
+  var out='';
+  for(var i=0;i<arr.length;i++){
+    var s=arr[i];
+    out+='<div class="store-card store-custom-item">'+
+      '<div class="store-emoji">'+(s.emoji||'📍')+'</div>'+
+      '<div class="store-info"><div class="store-name">'+s.name+'</div>'+
+      (s.desc?'<div class="store-desc">'+s.desc+'</div>':'')+
       '</div>'+
       '<div style="display:flex;gap:6px;align-items:center;">'+
-        (s.url ? '<a href="'+s.url+'" target="_blank" class="store-arrow" style="text-decoration:none;">→</a>' : '')+
-        '<button onclick="deleteCustomStore(\''+cat+'\','+i+')" '+
-          'style="border:none;background:none;color:var(--red);font-size:16px;cursor:pointer;padding:0 4px;">✕</button>'+
-      '</div>'+
-    '</div>';
-  }).join('');
+        '<button class="store-arrow-btn" data-name="'+s.name+'" onclick="openNearby(this.dataset.name)">→</button>'+
+        '<button data-cat="'+cat+'" data-i="'+i+'" onclick="deleteCustomStore(this.dataset.cat,parseInt(this.dataset.i))" style="border:none;background:none;color:var(--red);font-size:16px;cursor:pointer;padding:0 4px;">✕</button>'+
+      '</div></div>';
+  }
+  wrap.innerHTML=out;
 }
-
 var _dragSrcCat='', _dragSrcIdx=-1;
 function storeDragStart(e, cat, idx){
   _dragSrcCat=cat; _dragSrcIdx=idx;
@@ -4969,22 +4982,24 @@ function openAddStore(cat){
 }
 
 function saveNewStore(){
-  var cat  = document.getElementById('addStoreCat').value;
-  var name = document.getElementById('addStoreName').value.trim();
-  if(!name) return;
+  var catEl=document.getElementById('addStoreCat');
+  var cat=catEl?catEl.value:'cvs';
+  var nameEl=document.getElementById('addStoreName');
+  var name=nameEl?nameEl.value.trim():'';
+  if(!name){if(nameEl) nameEl.focus(); return;}
+  var descEl=document.getElementById('addStoreDesc');
+  var emoEl=document.getElementById('addStoreEmoji');
   loadCustomStores();
   if(!_customStores[cat]) _customStores[cat]=[];
-  _customStores[cat].unshift({
-    name: name,
-    area: document.getElementById('addStoreArea').value.trim(),
-    desc: document.getElementById('addStoreDesc').value.trim(),
-    url:  document.getElementById('addStoreUrl').value.trim()
+  _customStores[cat].push({
+    name:name,
+    desc:descEl?descEl.value.trim():'',
+    emoji:emoEl?emoEl.textContent:'📍'
   });
   saveCustomStores();
   document.getElementById('addStoreModal').classList.remove('open');
   renderCustomStores(cat);
 }
-
 function deleteCustomStore(cat, idx){
   loadCustomStores();
   (_customStores[cat]||[]).splice(idx,1);
@@ -4993,17 +5008,29 @@ function deleteCustomStore(cat, idx){
 }
 
 function openAddStoreCurrent(){
-  var activeCat = 'cvs';
+  var cat='cvs';
   document.querySelectorAll('.store-cat-btn').forEach(function(b){
     if(b.classList.contains('active')){
-      var onclick = b.getAttribute('onclick');
-      var m = onclick.match(/'([^']+)'\)/);
-      if(m) activeCat = m[1];
+      var oc=b.getAttribute('onclick');
+      var m=oc?oc.match(/'([^']+)'/):null;
+      if(m) cat=m[1];
     }
   });
-  openAddStore(activeCat);
+  var catEl=document.getElementById('addStoreCat');
+  var nameEl=document.getElementById('addStoreName');
+  var descEl=document.getElementById('addStoreDesc');
+  var memoWrap=document.getElementById('addStoreMemoWrap');
+  var emoEl=document.getElementById('addStoreEmoji');
+  var modal=document.getElementById('addStoreModal');
+  if(!modal) return;
+  if(catEl) catEl.value=cat;
+  if(nameEl) nameEl.value='';
+  if(descEl) descEl.value='';
+  if(memoWrap) memoWrap.style.display='none';
+  if(emoEl) emoEl.textContent='📍';
+  modal.classList.add('open');
+  setTimeout(function(){if(nameEl) nameEl.focus();},200);
 }
-
 function openNearby(query){
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
@@ -5025,7 +5052,45 @@ function openNearby(query){
   }
 }
 
-</script>
+
+function onStoreNameInput(val){
+  var wrap=document.getElementById('addStoreMemoWrap');
+  var desc=document.getElementById('addStoreDesc');
+  var emoEl=document.getElementById('addStoreEmoji');
+  if(!val||!val.trim()){
+    if(wrap) wrap.style.display='none';
+    if(emoEl) emoEl.textContent='📍';
+    return;
+  }
+  if(wrap) wrap.style.display='block';
+  var memo='', emo='📍', v=val;
+  if(/세븐|seven/i.test(v))                  {memo='ATM·도시락·세금환급·24시간';emo='🏪';}
+  else if(/로손|lawson/i.test(v))            {memo='마치카도 치킨·디저트·24시간';emo='🏪';}
+  else if(/훼밀리|패밀리|family/i.test(v))   {memo='파미치키·면세 가능·24시간';emo='🏪';}
+  else if(/이온몰/i.test(v))                 {memo='대형 쇼핑몰·슈퍼·푸드코트';emo='🛒';}
+  else if(/이온|aeon/i.test(v))              {memo='신선식품·도시락·반찬 전문';emo='🛒';}
+  else if(/라이프/i.test(v))                 {memo='현지 슈퍼마켓·신선식품';emo='🛒';}
+  else if(/돈키|donki/i.test(v))             {memo='24시간·면세·잡화·식품·코스메';emo='🦆';}
+  else if(/다이소|daiso/i.test(v))            {memo='100엔 균일·생활잡화·여행소품';emo='💴';}
+  else if(/무인양품|muji/i.test(v))           {memo='생활잡화·의류·음식·심플 디자인';emo='⬜';}
+  else if(/마츠모토|마쓰모토/i.test(v))        {memo='드럭스토어·화장품·의약품·면세';emo='💊';}
+  else if(/스기|sugi/i.test(v))              {memo='드럭스토어·화장품·의약품·면세';emo='💊';}
+  else if(/약국|드럭/i.test(v))              {memo='드럭스토어·화장품·의약품';emo='💊';}
+  else if(/다이마루/i.test(v))               {memo='지하식품관·기념품·면세';emo='🏬';}
+  else if(/루쿠아/i.test(v))                 {memo='JR역 직결·트렌디 쇼핑몰';emo='🏬';}
+  else if(/한큐/i.test(v))                   {memo='우메다 본점·화장품·패션';emo='🏬';}
+  else if(/유니클로|uniqlo/i.test(v))         {memo='글로벌 기함점·전 라인업·면세';emo='👗';}
+  else if(/자라|zara/i.test(v))              {memo='스페인 패스트패션·남녀아동';emo='👗';}
+  else if(/뉴발란스/i.test(v))               {memo='스니커즈·한국미출시 모델·면세';emo='👟';}
+  else if(/abc/i.test(v))                    {memo='스니커즈·신발 편집샵·면세';emo='👟';}
+  else if(/오니츠카/i.test(v))               {memo='일본 스포츠 브랜드·레트로 감성';emo='🐯';}
+  else if(/빔스|beams/i.test(v))             {memo='일본 대표 편집샵·남녀의류';emo='🛍';}
+  else if(/포켓몬|pokemon/i.test(v))          {memo='공식 굿즈 전문점';emo='🎁';}
+  else if(/로프트|loft/i.test(v))            {memo='문구·라이프스타일·잡화';emo='📦';}
+  else if(/면세/i.test(v))                   {memo='출국 후 면세 쇼핑·주류·화장품';emo='🛫';}
+  if(emoEl) emoEl.textContent=emo;
+  if(desc) desc.value=memo;
+}</script>
 
 <!-- 리무진 버스 시간표 모달 -->
 <div class="modal-overlay" id="busModal" onclick="if(event.target===this)this.classList.remove('open')">
@@ -6002,33 +6067,439 @@ function openNearby(query){
 <div class="modal-overlay" id="addStoreModal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal">
     <div class="modal-head">
-      <h3>📍 매장 직접 추가</h3>
+      <h3>📍 매장 추가</h3>
       <button class="modal-close" onclick="document.getElementById('addStoreModal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
-      <input type="hidden" id="addStoreCat">
-      <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
         <div>
-          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">매장명 *</div>
-          <input id="addStoreName" class="wallet-input" type="text" placeholder="예) 마쓰모토키요시 도톤보리점" style="width:100%;box-sizing:border-box;">
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:6px;">카테고리</div>
+          <select id="addStoreCat" class="wallet-select" style="width:100%;height:36px;box-sizing:border-box;">
+            <option value="cvs">🏪 편의점·마트</option>
+            <option value="discount">🏷 할인 잡화점</option>
+            <option value="dept">🏬 백화점·쇼핑몰</option>
+            <option value="fashion">👗 패션·뷰티</option>
+            <option value="select">🛍 편집샵</option>
+            <option value="goods">🎁 굿즈</option>
+            <option value="duty">🛫 공항면세</option>
+            <option value="etc">📦 기타</option>
+          </select>
         </div>
         <div>
-          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">지역</div>
-          <input id="addStoreArea" class="wallet-input" type="text" placeholder="예) 도톤보리" style="width:100%;box-sizing:border-box;">
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:6px;">매장명 *</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span id="addStoreEmoji" style="font-size:22px;width:34px;text-align:center;flex-shrink:0;">📍</span>
+            <input id="addStoreName" class="wallet-input" type="text" placeholder="예) 마쓰모토키요시"
+              style="flex:1;min-width:0;box-sizing:border-box;height:36px;"
+              oninput="onStoreNameInput(this.value)">
+          </div>
         </div>
-        <div>
-          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">메모</div>
-          <input id="addStoreDesc" class="wallet-input" type="text" placeholder="예) 드럭스토어 · 화장품 할인" style="width:100%;box-sizing:border-box;">
+        <div id="addStoreMemoWrap" style="display:none;">
+          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:6px;">메모 (자동입력)</div>
+          <input id="addStoreDesc" class="wallet-input" type="text"
+            placeholder="예) 화장품·면세·24시간"
+            style="width:100%;box-sizing:border-box;height:36px;">
         </div>
-        <div>
-          <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:4px;">구글맵 링크 (선택)</div>
-          <input id="addStoreUrl" class="wallet-input" type="text" placeholder="https://maps.google.com/..." style="width:100%;box-sizing:border-box;">
-        </div>
-        <button onclick="saveNewStore()" style="width:100%;padding:13px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;">✓ 추가하기</button>
+        <button onclick="saveNewStore()"
+          style="width:100%;padding:13px;background:linear-gradient(135deg,#FF9A5C,#E8602A);
+          color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer;">
+          ✓ 추가하기
+        </button>
       </div>
     </div>
   </div>
 </div>
+
+
+<!-- 국내 반입 금지 품목 모달 -->
+<div class="modal-overlay" id="customsModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-head">
+      <h3>🚨 국내 반입 금지·주의 품목</h3>
+      <button class="modal-close" onclick="document.getElementById('customsModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:14px 16px 32px;">
+
+      <!-- 탭 -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:14px;">
+        <button class="customs-tab active" onclick="switchCustomsTab(this,0)"
+          style="padding:8px 4px;border-radius:8px;border:1.5px solid var(--red);background:var(--red);color:#fff;font-size:10px;font-weight:700;cursor:pointer;">🚫 반입금지</button>
+        <button class="customs-tab" onclick="switchCustomsTab(this,1)"
+          style="padding:8px 4px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);font-size:10px;font-weight:700;cursor:pointer;">✈ 기내금지</button>
+        <button class="customs-tab" onclick="switchCustomsTab(this,2)"
+          style="padding:8px 4px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);font-size:10px;font-weight:700;cursor:pointer;">📦 위탁가능</button>
+        <button class="customs-tab" onclick="switchCustomsTab(this,3)"
+          style="padding:8px 4px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink2);font-size:10px;font-weight:700;cursor:pointer;">📋 세관신고</button>
+      </div>
+
+      <!-- 패널 0: 한국 반입 자체 금지 -->
+      <div class="customs-panel" id="cp0">
+        <div class="smoke-notice" style="background:#faeeed;border-color:#e8b8b4;color:#7a1a1a;margin-bottom:12px;">
+          ⛔ 기내든 위탁이든 상관없이 <b>한국 입국 시 전량 폐기</b>. 모르고 가져와도 예외 없어요.
+        </div>
+        <div class="timetable-label">① 컵 모양 곤약 젤리</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">이유</span><span class="toss-val warn">질식 사고 위험 · 식품위생법 제7조 제4항 위반</span></div>
+            <div class="toss-row"><span class="toss-label">파우치형</span><span class="toss-val warn">2026년부터 일부 반입 금지 (식약처 확인 필요)</span></div>
+            <div class="toss-row"><span class="toss-label">결론</span><span class="toss-val warn">일본에서 먹고 오세요</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">② 육가공품 전체 🥩</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">이유</span><span class="toss-val warn">ASF(아프리카돼지열병) 방역 · 2026년 검색 강화</span></div>
+            <div class="toss-row"><span class="toss-label">걸리는 것</span><span class="toss-val">이치란 라멘(차슈버전)·편의점 소시지·카레·고기 샌드위치</span></div>
+            <div class="toss-row"><span class="toss-label">주의</span><span class="toss-val warn">공항 편의점 음식도 가방에 남기면 걸림</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">③ 신선 과일·채소 전체 🍎</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">해당</span><span class="toss-val warn">샤인머스캣·딸기·사과·고구마 등 신선 상태 전부</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">④ EVE 진통제 / Bufferin Premium 💊</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">이유</span><span class="toss-val warn">알릴이소프로필아세틸우레아 성분 → 2025년 말부터 공식 반입 금지</span></div>
+            <div class="toss-row"><span class="toss-label">같이 주의</span><span class="toss-val">록소닌 프리미엄·신 세데스·세데스 하이 G (성분 확인 필수)</span></div>
+            <div class="toss-row"><span class="toss-label">대안</span><span class="toss-val free">이부프로펜·아스피린·파나돌(파라세타몰) 단일성분은 3개월치 OK</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">⑤ 양귀비 씨앗 포함 식품</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">해당</span><span class="toss-val warn">에브리씽 베이글 시즈닝 등 포피시드 포함 제품 → 마약류 원료</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">⑥ 짝퉁 제품 (브랜드 모조품)</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">주의</span><span class="toss-val warn">관세청 단속 강화 · 불법이므로 구매 비추천</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">⑦ CBD 제품</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">해당</span><span class="toss-val warn">스킨케어·오일·구미 등 CBD 성분 → 한국서 마약류 분류</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 패널 1: 기내 수하물 금지 -->
+      <div class="customs-panel" id="cp1" style="display:none;">
+        <div class="smoke-notice" style="background:#fff3e0;border-color:#f0c060;color:#7a4000;margin-bottom:12px;">
+          ✈ 보안 검색대에서 버려지거나 위탁으로 다시 부쳐야 해요. 특히 액체류 주의!
+        </div>
+        <div class="timetable-label">① 액체·젤류 (용기당 100ml 초과)</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">해당</span><span class="toss-val warn">편의점 푸딩·젤리·퍼펙트 휩 폼클렌징(120g)·선크림·마스크팩</span></div>
+            <div class="toss-row"><span class="toss-label">해당</span><span class="toss-val warn">잼·스프레드·미소된장 소스·튜브형 양념·우메보시 등 절임류</span></div>
+            <div class="toss-row"><span class="toss-label">해결</span><span class="toss-val free">100ml 이하 용기 → 1인당 1L 투명 지퍼백 1개에 담아서 기내 반입 가능</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">② 날붙이류</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">해당</span><span class="toss-val warn">날 6cm 초과 가위·커터칼·주방용 칼 → 기내 반입 불가</span></div>
+            <div class="toss-row"><span class="toss-label">해결</span><span class="toss-val free">잘 감싸서 위탁 수하물로 부치기</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">③ 보조배터리 (2026년 기준)</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">⚠️ 반대!</span><span class="toss-val warn">위탁이 금지 → 반드시 기내에 직접 들고 타야 함. 캐리어에 넣으면 즉시 압수!</span></div>
+            <div class="toss-row"><span class="toss-label">100Wh 이하</span><span class="toss-val free">기내 소지 가능 (최대 5개) · 10,000mAh≈37Wh</span></div>
+            <div class="toss-row"><span class="toss-label">100~160Wh</span><span class="toss-val warn">항공사 사전 승인 필요</span></div>
+            <div class="toss-row"><span class="toss-label">160Wh 초과</span><span class="toss-val warn">기내·위탁 둘 다 불가</span></div>
+            <div class="toss-row"><span class="toss-label">2026.1.26~</span><span class="toss-val warn">기내 충전·사용 전면 금지. 단순 소지만 허용</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">④ 무선 고데기 (배터리 일체형)</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">주의</span><span class="toss-val warn">배터리 분리 안 되면 기내·위탁 둘 다 거절 가능성 높음</span></div>
+            <div class="toss-row"><span class="toss-label">해결</span><span class="toss-val free">배터리 분리 가능하면 → 배터리는 기내, 본체는 위탁</span></div>
+          </div>
+        </div>
+        <div class="timetable-label">⑤ 드라이플라워·씨앗류</div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">주의</span><span class="toss-val warn">건조 식물류도 식물검역 신고 대상 · 신고 없이 넣으면 안 됨</span></div>
+            <div class="toss-row"><span class="toss-label">씨앗</span><span class="toss-val warn">다이소 씨앗 패키지 → 원칙적 반입 금지 또는 검역증명서 필요</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 패널 2: 기내금지·위탁가능 -->
+      <div class="customs-panel" id="cp2" style="display:none;">
+        <div class="smoke-notice" style="background:#e8f5e9;border-color:#a5d6a7;color:#1a4a1a;margin-bottom:12px;">
+          📦 기내엔 못 들고 타지만 캐리어(위탁)에 넣으면 한국 반입 가능한 것들
+        </div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">날 6cm 초과 칼·가위</span><span class="toss-val free">잘 감싸서 위탁으로 → 뾰족 부분 노출 시 거절될 수 있음</span></div>
+            <div class="toss-row"><span class="toss-label">100ml 초과 액체·젤류</span><span class="toss-val free">화장품·음료·고추장·잼 등 → 캐리어에 넣기</span></div>
+            <div class="toss-row"><span class="toss-label">퍼펙트 휩·고추장·푸딩 등</span><span class="toss-val free">액체류로 분류되는 것 → 위탁으로는 반입 가능</span></div>
+            <div class="toss-row"><span class="toss-label">밀봉 과자·스낵</span><span class="toss-val free">고기 성분 없는 것 한해 기내·위탁 모두 가능 · 성분표 육류 추출물 확인</span></div>
+            <div class="toss-row"><span class="toss-label">드라이플라워</span><span class="toss-val warn">위탁으로 넣고 입국 시 식물검역 신고 후 검사 통과하면 반입 가능</span></div>
+            <div class="toss-row"><span class="toss-label">유선 고데기·드라이기</span><span class="toss-val free">기내·위탁 모두 가능</span></div>
+            <div class="toss-row"><span class="toss-label">멸균 가공 통조림·레토르트</span><span class="toss-val free">밀봉 제품 5kg 이하 반입 가능 · 소고기·양고기 포함 시 검역증명서 필요</span></div>
+            <div class="toss-row"><span class="toss-label">김치 (밀봉 포장)</span><span class="toss-val free">반입 가능 · 기내는 100ml 이하만, 대용량은 위탁으로</span></div>
+          </div>
+        </div>
+        <div class="smoke-notice" style="background:#fff8e1;border-color:#ffe082;color:#5a4000;margin-bottom:0;">
+          💡 짐 싸기 전 체크: 컵 곤약 젤리 → 일본서 먹고 오세요 / EVE 진통제 → 버리고 오세요 / 퍼펙트 휩 100ml 초과 → 캐리어에 / 무선 고데기 → 배터리 분리 확인 / 보조배터리 → 절대 캐리어에 넣으면 안 됨
+        </div>
+      </div>
+
+      <!-- 패널 3: 세관 신고 필요 -->
+      <div class="customs-panel" id="cp3" style="display:none;">
+        <div class="smoke-notice" style="background:#e8eaf6;border-color:#9fa8da;color:#1a237e;margin-bottom:12px;">
+          📋 가져오는 건 자유지만 기준 넘으면 세관 신고 후 세금 납부. 자진신고 시 세액 30% 감경 (한도 20만 원)
+        </div>
+        <div class="toss-card" style="margin-bottom:10px;">
+          <div class="toss-rows">
+            <div class="toss-row"><span class="toss-label">전체 면세 한도</span><span class="toss-val free">$800 (위 항목 제외 나머지 합계)</span></div>
+            <div class="toss-row"><span class="toss-label">주류</span><span class="toss-val">2병 (합산 2L 이하, $400 이하) · 산토리 위스키 2병이면 꽉 참</span></div>
+            <div class="toss-row"><span class="toss-label">담배</span><span class="toss-val">200개비 (1보루) · 전자담배 액상·스틱은 별도 기준</span></div>
+            <div class="toss-row"><span class="toss-label">향수</span><span class="toss-val warn">60ml · 생각보다 적음. 초과하면 신고</span></div>
+            <div class="toss-row"><span class="toss-label">금·귀금속</span><span class="toss-val warn">순도·중량 관계없이 반드시 신고 필수 · 미신고 시 밀수품 취급</span></div>
+            <div class="toss-row"><span class="toss-label">미화 $10,000 초과 현금</span><span class="toss-val warn">현금·수표·채권 포함 · 초과 시 신고 의무</span></div>
+            <div class="toss-row"><span class="toss-label">비타민·영양제</span><span class="toss-val warn">자가사용 6병 이하 면세 · 초과 시 세관 검사 대상</span></div>
+            <div class="toss-row"><span class="toss-label">일반 의약품</span><span class="toss-val warn">6병 이하 또는 3개월 복용량 이내 · 원포장 유지 · 어기면 압수 조사</span></div>
+            <div class="toss-row"><span class="toss-label">향정신성 처방약 (귀국 시)</span><span class="toss-val warn">식약처 사전 취급승인 신청 필요 · 귀국 10일 전 신청 마쳐야 함</span></div>
+          </div>
+        </div>
+        <div class="smoke-notice" style="background:#faeeed;border-color:#e8b8b4;color:#7a1a1a;">
+          ⚠️ 파브론 골드 A·루루 감기약 (일부) - 디히드로코데인 성분 → 소량은 통과되지만 여러 박스 구매는 조사 대상
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function switchCustomsTab(btn, idx){
+  document.querySelectorAll('.customs-tab').forEach(function(t){
+    t.style.background='var(--bg2)'; t.style.color='var(--ink2)'; t.style.borderColor='var(--border)';
+  });
+  btn.style.background='var(--red)'; btn.style.color='#fff'; btn.style.borderColor='var(--red)';
+  document.querySelectorAll('.customs-panel').forEach(function(p,i){ p.style.display=i===idx?'block':'none'; });
+}
+</script>
+
+
+<!-- 여행 준비물 체크리스트 모달 -->
+<div class="modal-overlay" id="checklistModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-head">
+      <h3>✅ 일본여행 준비물 체크리스트</h3>
+      <button class="modal-close" onclick="document.getElementById('checklistModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:14px 16px 32px;">
+
+      <!-- 진행률 바 -->
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-size:11px;font-weight:700;color:var(--ink2);">준비 완료</span>
+          <span id="clProgress" style="font-size:13px;font-weight:800;color:var(--red);">0 / 0</span>
+        </div>
+        <div style="background:var(--bg2);border-radius:10px;height:8px;overflow:hidden;">
+          <div id="clProgressBar" style="height:100%;background:linear-gradient(135deg,#FF9A5C,#E8602A);border-radius:10px;width:0%;transition:width .3s;"></div>
+        </div>
+      </div>
+
+      <!-- 카테고리 탭 -->
+      <div id="clCatBtns" style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:14px;"></div>
+
+      <!-- 리스트 -->
+      <div id="clList" style="display:flex;flex-direction:column;gap:6px;min-height:60px;width:100%;box-sizing:border-box;"></div>
+
+      <!-- 추가 입력 -->
+      <div style="display:flex;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+        <input id="clNewText" class="wallet-input" type="text" placeholder="항목 추가..."
+          style="flex:1;" onkeydown="if(event.key==='Enter')clAddItem()">
+        <button onclick="clAddItem()" class="wallet-add-btn">+ 추가</button>
+      </div>
+      <!-- 완료 항목 숨기기 토글 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+        <button onclick="clClearDone()" style="font-size:10px;color:var(--ink3);background:none;border:none;cursor:pointer;padding:4px 0;">완료 항목 모두 삭제</button>
+        <button onclick="clResetAll()" style="font-size:10px;color:var(--red);background:none;border:none;cursor:pointer;padding:4px 0;">전체 초기화</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ 체크리스트 ══ */
+var CL_CATS = ['개인 필수','세면도구','의류·가방','전자제품','유용템','상비약'];
+var CL_ICONS = ['🗂','🧴','👗','📱','🎒','💊'];
+var CL_DEFAULT = {
+  '개인 필수': ['항공권 E-ticket','여권','여권사본','여권용 사진','환전(엔화)','트래블카드/신용카드','이심/유심/로밍','여행자보험'],
+  '세면도구':  ['칫솔, 치약','샴푸, 린스','클렌징 폼','바디클렌저','샤워볼','면도기','기초화장품 (스킨, 로션)','선크림'],
+  '의류·가방': ['캐리어','파우치백, 정리파우치','의류','속옷, 양말','외출신발, 슬리퍼','선글라스, 모자','휴대용 가방'],
+  '전자제품':  ['스마트폰','카메라','보조배터리','고데기, 에어랩 등','전자제품 충전기 (케이블킷 추천)','멀티어댑터'],
+  '유용템':    ['RFID 차단 여행지갑','엔화 동전 케이스','목베개, 안대','샤워기 필터','바디스트랩 (휴대폰 분실 방지)','미니물티슈','핫팩, 휴대용 전기장판(겨울)'],
+  '상비약':    ['종합 감기약','파스','연고','소염진통제 (두통, 생리통)','1회용 밴드','소독약','지사제','소화제','기타 (개인약품)']
+};
+
+var _clCat = '개인 필수';
+var _clItems = {};
+
+function clLoad(){
+  try{ var s=localStorage.getItem('osaka_checklist'); if(s) _clItems=JSON.parse(s); } catch(e){}
+  // 기본값 채우기
+  CL_CATS.forEach(function(cat){
+    if(!_clItems[cat]){
+      _clItems[cat] = CL_DEFAULT[cat].map(function(t){ return {text:t, done:false}; });
+    }
+  });
+}
+
+function clSave(){
+  try{ localStorage.setItem('osaka_checklist', JSON.stringify(_clItems)); } catch(e){}
+}
+
+function clRenderCats(){
+  var el=document.getElementById('clCatBtns'); if(!el) return;
+  el.innerHTML='';
+  CL_CATS.forEach(function(cat,i){
+    var cnt=(_clItems[cat]||[]).length;
+    var done=(_clItems[cat]||[]).filter(function(x){return x.done;}).length;
+    var isActive=cat===_clCat;
+    var btn=document.createElement('button');
+    btn.style.cssText='padding:6px 4px;border-radius:10px;border:1.5px solid '+(isActive?'#E8602A':'var(--border)')+
+      ';background:'+(isActive?'linear-gradient(135deg,#FF9A5C,#E8602A)':'var(--bg2)')+
+      ';color:'+(isActive?'#fff':'var(--ink2)')+
+      ';font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;'+
+      'flex:1;text-align:center;box-sizing:border-box;';
+    btn.innerHTML=CL_ICONS[i]+' '+cat+' <span style="opacity:.75">('+done+'/'+cnt+')</span>';
+    btn.addEventListener('click',function(){clSwitchCat(cat);});
+    el.appendChild(btn);
+  });
+}function clRenderList(){
+  var el=document.getElementById('clList'); if(!el) return;
+  var items=_clItems[_clCat]||[];
+  el.innerHTML='';
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--ink3);font-size:13px;">항목이 없어요</div>';
+    clUpdateProgress(); return;
+  }
+  items.forEach(function(item,i){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;'+
+      'background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-sm);'+
+      'min-height:48px;width:100%;box-sizing:border-box;'+
+      'opacity:'+(item.done?'.5':'1')+';transition:opacity .2s;';
+    var check=document.createElement('div');
+    check.style.cssText='width:22px;height:22px;border-radius:50%;flex-shrink:0;cursor:pointer;'+
+      'display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;'+
+      '-webkit-tap-highlight-color:transparent;'+
+      'border:2px solid '+(item.done?'var(--ink)':'var(--border)')+';'+
+      'background:'+(item.done?'var(--ink)':'var(--bg2)')+';';
+    check.textContent=item.done?'✓':'';
+    check.addEventListener('click',(function(c,idx){return function(){clToggle(c,idx);}})(_clCat,i));
+    var label=document.createElement('span');
+    label.style.cssText='flex:1;font-size:13px;font-weight:600;color:var(--ink);line-height:1.3;'+(item.done?'text-decoration:line-through;':'');
+    label.textContent=item.text;
+    var del=document.createElement('button');
+    del.style.cssText='border:none;background:none;color:var(--ink3);font-size:14px;cursor:pointer;padding:3px;flex-shrink:0;';
+    del.textContent='✕';
+    del.addEventListener('click',(function(c,idx){return function(){clDelete(c,idx);}})(_clCat,i));
+    row.appendChild(check); row.appendChild(label); row.appendChild(del);
+    el.appendChild(row);
+  });
+  clUpdateProgress();
+}function clUpdateProgress(){
+  var total=0, done=0;
+  CL_CATS.forEach(function(cat){ 
+    (_clItems[cat]||[]).forEach(function(x){ total++; if(x.done) done++; });
+  });
+  var el=document.getElementById('clProgress');
+  var bar=document.getElementById('clProgressBar');
+  if(el) el.textContent=done+' / '+total;
+  if(bar) bar.style.width=(total?Math.round(done/total*100):0)+'%';
+}
+
+function clSwitchCat(cat){
+  _clCat=cat; clRenderCats(); clRenderList();
+}
+
+function clToggle(cat, i){
+  _clItems[cat][i].done = !_clItems[cat][i].done;
+  clSave(); clRenderCats(); clRenderList();
+}
+
+function clDelete(cat, i){
+  _clItems[cat].splice(i,1);
+  clSave(); clRenderCats(); clRenderList();
+}
+
+function clAddItem(){
+  var inp=document.getElementById('clNewText');
+  var text=inp?inp.value.trim():'';
+  if(!text) return;
+  if(!_clItems[_clCat]) _clItems[_clCat]=[];
+  _clItems[_clCat].push({text:text, done:false});
+  clSave(); if(inp) inp.value='';
+  clRenderCats(); clRenderList();
+}
+
+function clClearDone(){
+  CL_CATS.forEach(function(cat){
+    _clItems[cat]=(_clItems[cat]||[]).filter(function(x){return !x.done;});
+  });
+  clSave(); clRenderCats(); clRenderList();
+}
+
+function clResetAll(){
+  if(!confirm('체크리스트를 기본값으로 초기화할까요?')) return;
+  localStorage.removeItem('osaka_checklist');
+  _clItems={};
+  clLoad(); clRenderCats(); clRenderList();
+}
+
+// 모달 열릴 때 초기화
+document.addEventListener('DOMContentLoaded', function(){
+  var overlay = document.getElementById('checklistModal');
+  if(!overlay) return;
+  
+});
+
+// 버튼 클릭 시 로드
+document.querySelector && (function(){
+  var eyebrow = document.querySelector('.header-eyebrow');
+  if(eyebrow){
+    var orig = eyebrow.onclick;
+    eyebrow.onclick = function(){
+      clLoad(); clRenderCats(); clRenderList();
+      document.getElementById('checklistModal').classList.add('open');
+    };
+  }
+})();
+
+// checklistModal open 감지
+var _clModalObserver = new MutationObserver(function(muts){
+  muts.forEach(function(m){
+    if(m.target.id==='checklistModal' && m.target.classList.contains('open')){
+      clLoad(); clRenderCats(); clRenderList();
+    }
+  });
+});
+document.addEventListener('DOMContentLoaded', function(){
+  var m = document.getElementById('checklistModal');
+  if(m) _clModalObserver.observe(m, {attributes:true, attributeFilter:['class']});
+});
+
+function clOpen(){
+  clLoad(); clRenderCats(); clRenderList();
+  document.getElementById('checklistModal').classList.add('open');
+}</script>
 
 </body>
 </html>

@@ -3461,9 +3461,11 @@ var CITY_LAT=34.6937, CITY_LNG=135.5023, CITY_NAME="오사카";
 var WX_CODE={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'🌨',73:'🌨',75:'❄️',80:'🌦',81:'🌧',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
 var WX_DESC={0:'맑음',1:'대체로 맑음',2:'구름 조금',3:'흐림',45:'안개',48:'안개',51:'가벼운 이슬비',53:'이슬비',55:'강한 이슬비',61:'가벼운 비',63:'비',65:'강한 비',71:'가벼운 눈',73:'눈',75:'강한 눈',80:'소나기',81:'강한 소나기',82:'폭우',95:'뇌우',96:'뇌우+우박',99:'뇌우+강한 우박'};
 function fetchWeather() {
-  // start_date/end_date 제거 - forecast_days만 사용 (current 데이터 정상 수신)
-  // 오늘부터 TRIP_DAYS일 예보
-  var days = Math.max(TRIP_DAYS, 4); // 최소 4일
+  // 오늘부터 여행 종료일까지 날수 계산 (최소 4일, 최대 16일)
+  var today = new Date(); today.setHours(0,0,0,0);
+  var tripEnd = new Date(TRIP_END); tripEnd.setHours(0,0,0,0);
+  var daysUntilEnd = Math.ceil((tripEnd - today) / (1000*60*60*24)) + 1;
+  var days = Math.min(16, Math.max(4, daysUntilEnd));
   var url='https://api.open-meteo.com/v1/forecast?latitude='+CITY_LAT+'&longitude='+CITY_LNG+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days='+days;
   var xhr=new XMLHttpRequest(); xhr.open('GET',url,true); xhr.timeout=8000;
   xhr.onload=function(){ if(xhr.status===200){try{applyWeather(JSON.parse(xhr.responseText));return;}catch(e){}} weatherErr(); };
@@ -3493,15 +3495,18 @@ function applyWeather(d) {
     dayDates.push(mm+'.'+dd+' '+DAY_NAMES_SHORT[d.getDay()]);
   }
 
-  // 예보 (여행 일수만큼)
+  // 예보: 여행 날짜에 해당하는 것만 표시
   var fcHtml='';
-  var count = Math.min(daily.weather_code.length, TRIP_DAYS);
-  for(var i=0; i<count; i++){
+  var todayMs = new Date(); todayMs.setHours(0,0,0,0);
+  var tripStartMs = new Date(TRIP_START); tripStartMs.setHours(0,0,0,0);
+  var offsetDays = Math.round((tripStartMs - todayMs)/(1000*60*60*24));
+  var count = Math.min(daily.weather_code.length, offsetDays + TRIP_DAYS);
+  for(var i=offsetDays; i<count; i++){
     var fi=WX_CODE[daily.weather_code[i]]||'🌤';
-    var isToday = (i===0);
-    fcHtml+='<div class="wfc-item'+(isToday?' today':'')+'" onclick="switchDay('+i+')" style="cursor:pointer;">'+
-      '<div class="wfc-day">'+dayLabels[i]+'</div>'+
-      '<div class="wfc-date">'+dayDates[i]+'</div>'+
+    var dayIdx = i - offsetDays;
+    fcHtml+='<div class="wfc-item" onclick="switchDay('+dayIdx+')" style="cursor:pointer;">'+
+      '<div class="wfc-day">'+dayLabels[dayIdx]+'</div>'+
+      '<div class="wfc-date">'+dayDates[dayIdx]+'</div>'+
       '<div class="wfc-icon-wrap"><div class="wfc-icon">'+fi+'</div></div>'+
       '<div class="wfc-desc">'+(WX_DESC[daily.weather_code[i]]||'')+'</div>'+
       '<div class="wfc-temp">'+Math.round(daily.temperature_2m_max[i])+'°/'+Math.round(daily.temperature_2m_min[i])+'°</div>'+
@@ -3510,7 +3515,7 @@ function applyWeather(d) {
   }
 
   document.getElementById('wContent').innerHTML=
-    '<div class="w-forecast-full" style="grid-template-columns:repeat('+count+',1fr)">'+fcHtml+'</div>';
+    '<div class="w-forecast-full" style="grid-template-columns:repeat('+TRIP_DAYS+',1fr)">'+fcHtml+'</div>';
 }
 
 /* ══════════════════════════════════════

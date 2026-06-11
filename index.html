@@ -1251,7 +1251,7 @@ body.editing .edit-hint{display:flex}
 
 
 .store-drag-handle{font-size:16px;color:var(--ink3);cursor:grab;margin-right:4px;flex-shrink:0;}
-.store-custom-item{border:1.5px dashed var(--gold)!important;background:linear-gradient(135deg,#fffbf0,#fff8e8)!important;}
+
 
 
 .store-arrow-btn{
@@ -1293,13 +1293,70 @@ body.editing .edit-hint{display:flex}
 .store-more-items {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 .store-check-btn.checked {
   background: var(--ink) !important;
   border-color: var(--ink) !important;
 }
 
+
+.city-sel-btn {
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:14px 8px;
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
+  cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;
+  width:100%;box-sizing:border-box;min-height:64px;
+}
+.city-sel-btn:active{ opacity:.8; transform:scale(.96); }
+.city-sel-btn.selected {
+  background:linear-gradient(135deg,#FF9A5C,#E8602A) !important;
+  border-color:#E8602A !important;
+  color:#fff !important;
+}
+.city-sel-btn.selected .city-btn-name{ color:#fff !important; }
+.city-sel-btn.selected .city-btn-en{ color:rgba(255,255,255,0.8) !important; }
+.city-sel-btn .city-btn-name{ font-size:13px !important;font-weight:800 !important;color:var(--ink) !important; }
+.city-sel-btn .city-btn-en{ font-size:10px;color:var(--ink3); }
+
+.store-emoji { cursor: grab; }
+.store-emoji:active { cursor: grabbing; }
+.store-drag-ghost { opacity: 0.4; background: var(--bg2) !important; border-radius: var(--r-sm); }
+.store-drag-chosen { box-shadow: 0 4px 16px rgba(0,0,0,0.12); opacity: 0.95; }
+
+@keyframes store-wiggle {
+  0%,100%{ transform:rotate(0deg); }
+  25%{ transform:rotate(-1.5deg); }
+  75%{ transform:rotate(1.5deg); }
+}
+.store-card.delete-mode {
+  animation: store-wiggle 0.3s infinite;
+  border-color: var(--red) !important;
+}
+.store-card.delete-mode .store-del-btn {
+  display: flex !important;
+}
+.store-del-btn {
+  display: none;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  font-size: 10px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.store-card { position: relative; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -3059,6 +3116,8 @@ body.editing .edit-hint{display:flex}
         </div>
         <div class="store-more-items" id="store-more-items-discount" style="display:none;">
           <div class="store-card"><div class="store-check-btn" onclick="toggleStoreCheck(this)" style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--bg2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;-webkit-tap-highlight-color:transparent;transition:all .2s;"></div><div class="store-emoji">💊</div><div class="store-info"><div class="store-name">스기약국</div><div class="store-desc">드럭스토어·화장품·의약품·면세</div></div><button class="store-arrow-btn" onclick="openNearby('スギ薬局')">→</button></div>
+          <div class="store-card"><div class="store-check-btn" onclick="toggleStoreCheck(this)" style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--bg2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;-webkit-tap-highlight-color:transparent;transition:all .2s;"></div><div class="store-emoji">🏷</div><div class="store-info"><div class="store-name">스탠다드 프로덕트</div><div class="store-desc">다이소 자매브랜드 · 고품질 균일가 · 생활잡화</div></div><button class="store-arrow-btn" onclick="openNearby('스탠다드 프로덕트')">→</button></div>
+</div>
         </div>
         <div id="store-custom-discount" style="margin-top:4px;"></div>
       </div>
@@ -3133,6 +3192,8 @@ body.editing .edit-hint{display:flex}
               <div class="store-panel" id="store-cat-duty" style="display:none;">
         <div class="store-cards-wrap" id="store-wrap-duty">
           <div class="store-card"><div class="store-check-btn" onclick="toggleStoreCheck(this)" style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--bg2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;-webkit-tap-highlight-color:transparent;transition:all .2s;"></div><div class="store-emoji">🛫</div><div class="store-info"><div class="store-name">간사이 공항 면세점</div><div class="store-desc">출국 후 면세 쇼핑·주류·화장품·과자</div></div><button class="store-arrow-btn" onclick="openNearby('関西空港 免税店')">→</button></div>
+        <button class="store-more-btn" id="store-more-duty" onclick="toggleStoreMore(this,'duty')" style="display:none;">▼ 더보기</button>
+        <div class="store-more-items" id="store-more-items-duty" style="display:none;flex-direction:column;gap:8px;"></div>
         </div>
         <div id="store-custom-duty" style="margin-top:4px;"></div>
       </div>
@@ -3167,32 +3228,7 @@ body.editing .edit-hint{display:flex}
     <div class="rate-info">
       <div class="rate-label">실시간 엔화 환율</div>
       <div class="rate-value" id="rateVal"><span class="rate-loading">로딩 중...</span></div>
-      <div class="rate-change" id="rateChange"></div>
-    </div>
-  </div>
-  <div class="rate-divider"></div>
-  <div class="rate-right">
-
-    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
-      <span class="rate-updated" id="rateUpdated"></span>
-      <button class="rate-refresh" onclick="fetchRate()">↻ 새로고침</button>
-    </div>
-  </div>
-</div>
-<!-- 환율 계산기 -->
-<div class="rate-convert">
-  <div class="rate-input-wrap">
-    <label>¥</label>
-    <input class="rate-input" id="yenInput" type="number" value="10000" min="0" oninput="calcRate()">
-  </div>
-  <div class="rate-arrow">→</div>
-  <div class="rate-result" id="wonResult">—</div>
-</div>
-
-<p class="stamp">Osaka Trip · 3N4D · 2026</p>
-</div>
-
-<script>
+      <div class="rate-change" id="rateChange"></div><script>
 /* ══ 카드/멤버 관리 ══ */
 var _cards = ['트래블월렛', '토스뱅크', '하나트래블로그'];
 var _cashMembers = ['본인', '동행'];
@@ -4642,37 +4678,11 @@ function showSyncToast(msg){
 
 
 /* ══ 도시 설정 ══ */
-function openCityModal(){
-  // 현재 선택 도시 하이라이트
-  document.querySelectorAll('.city-btn').forEach(function(btn){
-    btn.classList.toggle('selected', btn.getAttribute('data-city') === CITY_NAME);
-  });
-  document.getElementById('cityModal').classList.add('open');
-}
 
-function selectCity(nameKo, nameEn, lat, lng){
-  CITY_LAT  = lat;
-  CITY_LNG  = lng;
-  CITY_NAME = nameKo;
-  applyCity(nameKo, nameEn);
-  document.getElementById('cityModal').classList.remove('open');
-}
 
-function applyCustomCity(){
-  var nameKo = document.getElementById('customCityKo').value.trim();
-  var nameEn = document.getElementById('customCityEn').value.trim() || nameKo;
-  var lat    = parseFloat(document.getElementById('customLat').value);
-  var lng    = parseFloat(document.getElementById('customLng').value);
-  if(!nameKo || isNaN(lat) || isNaN(lng)){
-    alert('도시명과 좌표를 모두 입력해 주세요.');
-    return;
-  }
-  CITY_LAT  = lat;
-  CITY_LNG  = lng;
-  CITY_NAME = nameKo;
-  applyCity(nameKo, nameEn);
-  document.getElementById('cityModal').classList.remove('open');
-}
+
+
+
 
 function applyCity(nameKo, nameEn){
   // 헤더 제목 업데이트
@@ -4694,31 +4704,32 @@ function applyCity(nameKo, nameEn){
 
 
 function switchStoreCat(btn, cat){
-  setTimeout(function(){loadStoreChecks(cat);},50);
   document.querySelectorAll('.store-cat-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
   document.querySelectorAll('.store-panel').forEach(function(p){p.style.display='none';});
   var panel=document.getElementById('store-cat-'+cat);
-  if(panel){panel.style.display='block';}
-  // 더보기 초기화 (모든 카테고리)
+  if(panel) panel.style.display='block';
+
+  // 더보기 초기화
   ['cvs','discount','dept','fashion','select','goods','duty','etc'].forEach(function(c){
     var moreBtn  = document.getElementById('store-more-'+c);
     var moreItems= document.getElementById('store-more-items-'+c);
     var closeBtn = document.getElementById('store-closebtn-'+c);
-    if(moreBtn)  { moreBtn.style.display='block'; moreBtn.textContent='▼ 더보기'; }
-    if(moreItems){ moreItems.style.display='none'; }
-    if(closeBtn) { closeBtn.style.display='none'; }
-  });
-  // 현재 카테고리 더보기 버튼 텍스트 정확히 설정
-  var moreBtn = document.getElementById('store-more-'+cat);
-  if(moreBtn){
-    var items = document.getElementById('store-more-items-'+cat);
-    if(items){
-      var count = items.querySelectorAll('.store-card').length;
-      moreBtn.textContent = '▼ 더보기 (' + count + '개 더)';
+    if(moreItems) moreItems.style.display='none';
+    if(closeBtn)  closeBtn.style.display='none';
+    if(moreBtn){
+      moreBtn.style.display='block';
+      var count = moreItems ? moreItems.querySelectorAll('.store-card').length : 0;
+      moreBtn.textContent = '▼ 더보기' + (count>0 ? ' ('+count+'개 더)' : '');
     }
-  }
-  renderCustomStores(cat);
+  });
+
+  setTimeout(function(){
+    renderCustomStores(cat);
+    loadStoreChecks(cat);
+    loadStoreOrder(cat);
+    if(typeof Sortable!=='undefined') initStoreSortable(cat);
+  },50);
 }
 function toggleStoreMore(btn, cat){
   var moreItems = document.getElementById('store-more-items-'+cat);
@@ -4726,7 +4737,7 @@ function toggleStoreMore(btn, cat){
   if(!moreItems) return;
   var hidden = moreItems.style.display==='none';
   if(hidden){
-    moreItems.style.display='flex'; moreItems.style.flexDirection='column'; moreItems.style.gap='8px';
+    moreItems.style.display='flex'; moreItems.style.flexDirection='column'; moreItems.style.gap='8px'; moreItems.style.marginTop='8px';
     if(btn) btn.style.display='none';
     var cb = document.getElementById('store-closebtn-'+cat);
     if(!cb){
@@ -5033,24 +5044,46 @@ function saveCustomStores(){
 }
 
 function renderCustomStores(cat){
-  loadCustomStores();
-  var arr=_customStores[cat]||[];
-  var wrap=document.getElementById('store-custom-'+cat);
-  if(!wrap) return;
-  var out='';
-  for(var i=0;i<arr.length;i++){
-    var s=arr[i];
-    out+='<div class="store-card store-custom-item">'+
-      '<div class="store-emoji">'+(s.emoji||'📍')+'</div>'+
-      '<div class="store-info"><div class="store-name">'+s.name+'</div>'+
-      (s.desc?'<div class="store-desc">'+s.desc+'</div>':'')+
-      '</div>'+
-      '<div style="display:flex;gap:6px;align-items:center;">'+
-        '<button class="store-arrow-btn" data-name="'+s.name+'" onclick="openNearby(this.dataset.name)">→</button>'+
-        '<button data-cat="'+cat+'" data-i="'+i+'" onclick="deleteCustomStore(this.dataset.cat,parseInt(this.dataset.i))" style="border:none;background:none;color:var(--red);font-size:16px;cursor:pointer;padding:0 4px;">✕</button>'+
-      '</div></div>';
-  }
-  wrap.innerHTML=out;
+  var moreWrap = document.getElementById('store-more-items-'+cat);
+  var mainWrap = document.getElementById('store-wrap-'+cat);
+  if(!moreWrap && !mainWrap) return;
+
+  // 기존 custom 카드 제거
+  var target = moreWrap || mainWrap;
+  target.querySelectorAll('.store-custom-item').forEach(function(c){ c.remove(); });
+
+  var customs = [];
+  try{ customs = JSON.parse(localStorage.getItem('custom_stores_'+cat)||'[]'); }catch(e){}
+  if(!customs.length) return;
+
+  customs.forEach(function(store){
+    var card = document.createElement('div');
+    card.className = 'store-card store-custom-item';
+    var checkBtn = document.createElement('div');
+    checkBtn.className = 'store-check-btn';
+    checkBtn.style.cssText = 'width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--bg2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;-webkit-tap-highlight-color:transparent;transition:all .2s;';
+    checkBtn.addEventListener('click', function(){ toggleStoreCheck(this); });
+    var emoDiv = document.createElement('div');
+    emoDiv.className = 'store-emoji';
+    emoDiv.textContent = store.emoji || '📍';
+    emoDiv.style.cursor = 'grab';
+    var infoDiv = document.createElement('div');
+    infoDiv.className = 'store-info';
+    infoDiv.innerHTML = '<div class="store-name">'+store.name+'</div>'+(store.desc?'<div class="store-desc">'+store.desc+'</div>':'');
+    var arrowBtn = document.createElement('button');
+    arrowBtn.className = 'store-arrow-btn';
+    arrowBtn.textContent = '→';
+    arrowBtn.addEventListener('click', function(){ openNearby(store.name); });
+    card.appendChild(checkBtn);
+    card.appendChild(emoDiv);
+    card.appendChild(infoDiv);
+    card.appendChild(arrowBtn);
+    addLongPressDelete(card);
+    target.appendChild(card);
+  });
+
+  // 더보기 버튼 카운트 업데이트
+  updateMoreBtnCount(cat);
 }
 var _dragSrcCat='', _dragSrcIdx=-1;
 function storeDragStart(e, cat, idx){
@@ -5079,24 +5112,173 @@ function openAddStore(cat){
 }
 
 function saveNewStore(){
-  var catEl=document.getElementById('addStoreCat');
-  var cat=catEl?catEl.value:'cvs';
-  var nameEl=document.getElementById('addStoreName');
-  var name=nameEl?nameEl.value.trim():'';
-  if(!name){if(nameEl) nameEl.focus(); return;}
-  var descEl=document.getElementById('addStoreDesc');
-  var emoEl=document.getElementById('addStoreEmoji');
-  loadCustomStores();
-  if(!_customStores[cat]) _customStores[cat]=[];
-  _customStores[cat].push({
-    name:name,
-    desc:descEl?descEl.value.trim():'',
-    emoji:emoEl?emoEl.textContent:'📍'
-  });
-  saveCustomStores();
+  var catEl = document.getElementById('addStoreCat');
+  var cat = catEl ? catEl.value : 'cvs';
+  var nameEl = document.getElementById('addStoreName');
+  var name = nameEl ? nameEl.value.trim() : '';
+  if(!name){ if(nameEl) nameEl.focus(); return; }
+  var desc  = (document.getElementById('addStoreDesc')  || {}).value || '';
+  var emoji = (document.getElementById('addStoreEmoji') || {}).textContent || '📍';
+
+  // 카드 생성
+  var card = document.createElement('div');
+  card.className = 'store-card store-custom-item';
+
+  var checkBtn = document.createElement('div');
+  checkBtn.className = 'store-check-btn';
+  checkBtn.style.cssText = 'width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--bg2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;-webkit-tap-highlight-color:transparent;transition:all .2s;';
+  checkBtn.addEventListener('click', function(){ toggleStoreCheck(this); });
+
+  var emoDiv = document.createElement('div');
+  emoDiv.className = 'store-emoji';
+  emoDiv.textContent = emoji;
+  emoDiv.style.cursor = 'grab';
+
+  var infoDiv = document.createElement('div');
+  infoDiv.className = 'store-info';
+  infoDiv.innerHTML = '<div class="store-name">'+name+'</div>'+(desc.trim()?'<div class="store-desc">'+desc+'</div>':'');
+
+  var arrowBtn = document.createElement('button');
+  arrowBtn.className = 'store-arrow-btn';
+  arrowBtn.textContent = '→';
+  arrowBtn.addEventListener('click', function(){ openNearby(name); });
+
+  card.appendChild(checkBtn);
+  card.appendChild(emoDiv);
+  card.appendChild(infoDiv);
+  card.appendChild(arrowBtn);
+
+  // moreWrap에 추가 - 없으면 mainWrap에
+  var moreWrap = document.getElementById('store-more-items-'+cat);
+  var mainWrap = document.getElementById('store-wrap-'+cat);
+  var target = moreWrap || mainWrap;
+
+  if(!target){
+    alert('카테고리 오류: '+cat);
+    return;
+  }
+
+  target.appendChild(card);
+  // moreWrap이면 display 조정
+  if(moreWrap){
+    moreWrap.style.display = 'flex';
+    moreWrap.style.flexDirection = 'column';
+    moreWrap.style.gap = '8px';
+    moreWrap.style.marginTop = '8px';
+    var moreBtn = document.getElementById('store-more-'+cat);
+    if(moreBtn) moreBtn.style.display = 'none';
+    // 접기 버튼
+    var closeBtn = document.getElementById('store-closebtn-'+cat);
+    if(!closeBtn){
+      closeBtn = document.createElement('button');
+      closeBtn.id = 'store-closebtn-'+cat;
+      closeBtn.className = 'store-more-btn';
+      closeBtn.style.marginTop = '8px';
+      closeBtn.textContent = '▲ 접기';
+      closeBtn.onclick = function(){ toggleStoreMore(document.getElementById('store-more-'+cat), cat); };
+      moreWrap.parentNode.insertBefore(closeBtn, moreWrap.nextSibling);
+    } else {
+      closeBtn.style.display = 'block';
+    }
+  }
+
+  addLongPressDelete(card);
+  updateMoreBtnCount(cat);
+  saveCustomStoresDirect(cat);
   document.getElementById('addStoreModal').classList.remove('open');
+}
+
+function updateMoreBtnCount(cat){
+  var moreWrap = document.getElementById('store-more-items-'+cat);
+  var moreBtn  = document.getElementById('store-more-'+cat);
+  if(!moreWrap || !moreBtn) return;
+  var cnt = moreWrap.querySelectorAll('.store-card').length;
+  moreBtn.textContent = '▼ 더보기 (' + cnt + '개 더)';
+}
+
+function saveCustomStoresDirect(cat){
+  var moreWrap = document.getElementById('store-more-items-'+cat);
+  var mainWrap = document.getElementById('store-wrap-'+cat);
+  var customs = [];
+  [mainWrap, moreWrap].forEach(function(w){
+    if(!w) return;
+    w.querySelectorAll('.store-custom-item').forEach(function(card){
+      var n=card.querySelector('.store-name');
+      var d=card.querySelector('.store-desc');
+      var e=card.querySelector('.store-emoji');
+      if(n) customs.push({name:n.textContent,desc:d?d.textContent:'',emoji:e?e.textContent:'📍'});
+    });
+  });
+  try{ localStorage.setItem('custom_stores_'+cat, JSON.stringify(customs)); }catch(e){}
+}
+function renderCustomStores(cat){
+  // 기존 custom 카드 제거 후 재생성
+  var moreWrap = document.getElementById('store-more-items-'+cat);
+  var mainWrap = document.getElementById('store-wrap-'+cat);
+  [mainWrap, moreWrap].forEach(function(w){
+    if(!w) return;
+    w.querySelectorAll('.store-custom-item').forEach(function(c){ c.remove(); });
+  });
+  var customs = [];
+  try{ customs = JSON.parse(localStorage.getItem('custom_stores_'+cat)||'[]'); }catch(e){}
+  if(!customs.length) return;
+  var targetWrap = moreWrap || mainWrap;
+  customs.forEach(function(s){
+    var card=document.createElement('div');
+    card.className='store-card store-custom-item';
+    var checkBtn=document.createElement('div');
+    checkBtn.className='store-check-btn';
+    checkBtn.style.cssText='width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--bg2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;-webkit-tap-highlight-color:transparent;transition:all .2s;';
+    checkBtn.addEventListener('click',function(){toggleStoreCheck(this);});
+    var emoDiv=document.createElement('div');
+    emoDiv.className='store-emoji'; emoDiv.textContent=s.emoji||'📍'; emoDiv.style.cursor='grab';
+    var infoDiv=document.createElement('div');
+    infoDiv.className='store-info';
+    infoDiv.innerHTML='<div class="store-name">'+s.name+'</div>'+(s.desc?'<div class="store-desc">'+s.desc+'</div>':'');
+    var arrowBtn=document.createElement('button');
+    arrowBtn.className='store-arrow-btn'; arrowBtn.textContent='→';
+    arrowBtn.addEventListener('click',function(){openNearby(s.name);});
+    var delBtn=document.createElement('button');
+    delBtn.style.cssText='border:none;background:none;color:var(--red);font-size:14px;cursor:pointer;padding:0 4px;flex-shrink:0;';
+    delBtn.textContent='✕';
+    delBtn.addEventListener('click',function(){card.remove();saveCustomStoresDirect(cat);});
+    card.appendChild(checkBtn); card.appendChild(emoDiv); card.appendChild(infoDiv);
+    card.appendChild(arrowBtn); card.appendChild(delBtn);
+    targetWrap.appendChild(card);
+  });
+  // 더보기가 있으면 열기
+  if(moreWrap && moreWrap.style.display==='none' && customs.length){
+    var moreBtn=document.getElementById('store-more-'+cat);
+    if(moreBtn) toggleStoreMore(moreBtn, cat);
+  }
+}
+var _dragSrcCat='', _dragSrcIdx=-1;
+function storeDragStart(e, cat, idx){
+  _dragSrcCat=cat; _dragSrcIdx=idx;
+  e.dataTransfer.effectAllowed='move';
+}
+function storeDrop(e, cat, toIdx){
+  e.preventDefault();
+  if(_dragSrcCat!==cat) return;
+  var arr = _customStores[cat]||[];
+  var item = arr.splice(_dragSrcIdx,1)[0];
+  arr.splice(toIdx,0,item);
+  _customStores[cat]=arr;
+  saveCustomStores();
   renderCustomStores(cat);
 }
+
+function openAddStore(cat){
+  document.getElementById('addStoreCat').value=cat;
+  document.getElementById('addStoreName').value='';
+  document.getElementById('addStoreArea').value='';
+  document.getElementById('addStoreDesc').value='';
+  document.getElementById('addStoreUrl').value='';
+  document.getElementById('addStoreModal').classList.add('open');
+  setTimeout(function(){ document.getElementById('addStoreName').focus(); },200);
+}
+
+
 function deleteCustomStore(cat, idx){
   loadCustomStores();
   (_customStores[cat]||[]).splice(idx,1);
@@ -5134,101 +5316,156 @@ function openAddStoreCurrent(){
       var w=document.getElementById('addStoreMemoWrap');
       var d=document.getElementById('addStoreDesc');
       var e=document.getElementById('addStoreEmoji');
-      if(!val){
-        if(w) w.style.display='none';
-        if(e) e.textContent='📍';
-        return;
-      }
+      if(!val){ if(w) w.style.display='none'; if(e) e.textContent='📍'; return; }
       if(w) w.style.display='block';
-      // 기본 키워드 매칭 먼저
-      var memo='', emo='📍', v=val;
-      if(/세븐|seven/i.test(v))                {memo='ATM·도시락·세금환급·24시간';emo='🏪';}
-      else if(/로손|lawson/i.test(v))          {memo='마치카도 치킨·디저트·24시간';emo='🏪';}
-      else if(/훼밀리|패밀리|family/i.test(v)) {memo='파미치키·면세 가능·24시간';emo='🏪';}
-      else if(/이온몰/i.test(v))               {memo='대형 쇼핑몰·슈퍼·푸드코트';emo='🛒';}
-      else if(/이온|aeon/i.test(v))            {memo='신선식품·도시락·반찬 전문';emo='🛒';}
-      else if(/라이프/i.test(v))               {memo='현지 슈퍼마켓·신선식품';emo='🛒';}
-      else if(/돈키|donki/i.test(v))           {memo='24시간·면세·잡화·식품·코스메';emo='🦆';}
-      else if(/다이소|daiso/i.test(v))          {memo='100엔 균일·생활잡화·여행소품';emo='💴';}
-      else if(/무인양품|muji/i.test(v))         {memo='생활잡화·의류·음식·심플 디자인';emo='⬜';}
-      else if(/마츠모토|마쓰모토/i.test(v))      {memo='드럭스토어·화장품·의약품·면세';emo='💊';}
-      else if(/스기|sugi/i.test(v))            {memo='드럭스토어·화장품·의약품·면세';emo='💊';}
-      else if(/약국|드럭/i.test(v))            {memo='드럭스토어·화장품·의약품';emo='💊';}
-      else if(/다이마루/i.test(v))             {memo='지하식품관·기념품·면세';emo='🏬';}
-      else if(/루쿠아/i.test(v))               {memo='JR역 직결·트렌디 쇼핑몰';emo='🏬';}
-      else if(/한큐/i.test(v))                 {memo='우메다 본점·화장품·패션';emo='🏬';}
-      else if(/유니클로|uniqlo/i.test(v))       {memo='글로벌 기함점·전 라인업·면세';emo='👗';}
-      else if(/자라|zara/i.test(v))            {memo='스페인 패스트패션·남녀아동';emo='👗';}
-      else if(/뉴발란스/i.test(v))             {memo='스니커즈·한국미출시 모델·면세';emo='👟';}
-      else if(/abc/i.test(v))                  {memo='스니커즈·신발 편집샵·면세';emo='👟';}
-      else if(/오니츠카/i.test(v))             {memo='일본 스포츠 브랜드·레트로 감성';emo='🐯';}
-      else if(/빔스|beams/i.test(v))           {memo='일본 대표 편집샵·남녀의류';emo='🛍';}
-      else if(/포켓몬|pokemon/i.test(v))        {memo='공식 굿즈 전문점';emo='🎁';}
-      else if(/로프트|loft/i.test(v))          {memo='문구·라이프스타일·잡화';emo='📦';}
-      else if(/면세/i.test(v))                 {memo='출국 후 면세 쇼핑·주류·화장품';emo='🛫';}
-      else if(/나이키|nike/i.test(v))           {memo='스니커즈·스포츠 의류·면세';emo='👟';}
-      else if(/아디다스|adidas/i.test(v))       {memo='스니커즈·스포츠 의류·면세';emo='👟';}
-      else if(/스타벅스|starbucks/i.test(v))    {memo='커피·음료·MD굿즈';emo='☕';}
-      else if(/맥도날드|mcdonald/i.test(v))     {memo='패스트푸드·24시간';emo='🍔';}
-
-      if(memo){
-        // 키워드 매칭 성공
-        if(e) e.textContent=emo;
-        if(d) d.value=memo;
-      } else {
-        // 키워드 매칭 실패 → AI로 자동생성 (0.8초 디바운스)
-        if(e) e.textContent='⏳';
-        if(d) d.value='입력 중...';
-        clearTimeout(_timer);
-        _timer = setTimeout(function(){
-          storeAIGenerate(val);
-        }, 800);
-      }
+      clearTimeout(_timer);
+      _timer = setTimeout(function(){ matchStore(val); }, 400);
     });
   }
-
   modal.classList.add('open');
-  setTimeout(function(){
-    var n=document.getElementById('addStoreName');
-    if(n) n.focus();
-  },200);
+  setTimeout(function(){ var n=document.getElementById('addStoreName'); if(n) n.focus(); },200);
 }
 
-function storeAIGenerate(storeName){
+function matchStore(val){
   var d=document.getElementById('addStoreDesc');
   var e=document.getElementById('addStoreEmoji');
-  if(d) d.value='🤖 AI 분석 중...';
+  var v=val.toLowerCase();
+  var memo='', emo='📍';
 
-  fetch('https://api.anthropic.com/v1/messages', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:100,
-      messages:[{
-        role:'user',
-        content:'일본 매장 "'+storeName+'"에 맞는 이모지 1개와 한국어 짧은 설명(15자 이내, ·로 구분, 예: 스니커즈·스포츠·면세)을 JSON으로만 답해줘. 형식: {"emoji":"👟","desc":"스니커즈·스포츠·면세"}'
-      }]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    var text = data.content && data.content[0] && data.content[0].text || '';
-    try{
-      var clean = text.replace(/```json|```/g,'').trim();
-      var obj = JSON.parse(clean);
-      if(e && obj.emoji) e.textContent = obj.emoji;
-      if(d && obj.desc)  d.value = obj.desc;
-    } catch(err){
-      if(e) e.textContent='📍';
-      if(d) d.value='';
-    }
-  })
-  .catch(function(){
+  // ── 편의점·마트 ──
+  if(/세븐|seven.eleven|7.11/i.test(v))          {memo='ATM·도시락·세금환급·24시간';emo='🏪';}
+  else if(/로손|lawson/i.test(v))                 {memo='마치카도치킨·디저트·24시간';emo='🏪';}
+  else if(/훼밀리|패밀리|family.mart/i.test(v))   {memo='파미치키·면세가능·24시간';emo='🏪';}
+  else if(/미니스톱|ministop/i.test(v))           {memo='소프트아이스크림·24시간';emo='🏪';}
+  else if(/이온몰|aeon.mall/i.test(v))            {memo='대형쇼핑몰·슈퍼·푸드코트';emo='🛒';}
+  else if(/이온|aeon/i.test(v))                   {memo='신선식품·도시락·반찬전문';emo='🛒';}
+  else if(/라이프|life.supermarket/i.test(v))     {memo='현지슈퍼마켓·신선식품';emo='🛒';}
+  else if(/한큐오아시스|hankyu.oasis/i.test(v))   {memo='고급슈퍼마켓·신선식품';emo='🛒';}
+  else if(/코노미야|konomiya/i.test(v))           {memo='현지슈퍼마켓·저렴한가격';emo='🛒';}
+  else if(/오오케이|ok.마트|ok.super/i.test(v))   {memo='저가슈퍼마켓·생필품';emo='🛒';}
+  else if(/업무슈퍼|업무.슈퍼/i.test(v))          {memo='업무용슈퍼·대용량·저렴';emo='🛒';}
+
+  // ── 드럭스토어 ──
+  else if(/마츠모토|마쓰모토|matsumoto/i.test(v)) {memo='드럭스토어·화장품·의약품·면세';emo='💊';}
+  else if(/스기|sugi/i.test(v))                   {memo='드럭스토어·화장품·의약품·면세';emo='💊';}
+  else if(/코코카라|cocokara/i.test(v))           {memo='드럭스토어·화장품·면세';emo='💊';}
+  else if(/선드럭|sun.drug/i.test(v))             {memo='드럭스토어·화장품·의약품';emo='💊';}
+  else if(/웰시아|welcia/i.test(v))               {memo='드럭스토어·24시간·처방전';emo='💊';}
+  else if(/츠루하|tsuruha/i.test(v))              {memo='드럭스토어·화장품·의약품';emo='💊';}
+  else if(/다이코쿠|daikoku/i.test(v))            {memo='드럭스토어·면세·관광객특화';emo='💊';}
+  else if(/쿠스리노아오키|aoki/i.test(v))         {memo='드럭스토어·화장품·식품';emo='💊';}
+
+  // ── 할인·잡화점 ──
+  else if(/돈키|돈키호테|donki|don.quijote/i.test(v)){memo='24시간·면세·잡화·식품·코스메';emo='🦆';}
+  else if(/메가돈키|mega.donki/i.test(v))         {memo='대형돈키호테·식품·가전·잡화';emo='🦆';}
+  else if(/다이소|daiso/i.test(v))                {memo='100엔균일·생활잡화·여행소품';emo='💴';}
+  else if(/스탠다드.프로덕트|standard.products/i.test(v)){memo='다이소자매·고품질균일가·잡화';emo='🏷';}
+  else if(/쓰리코인즈|3coins|three.coins/i.test(v)){memo='300엔균일·잡화·인테리어';emo='🪙';}
+  else if(/캔두|cando/i.test(v))                  {memo='100엔균일·생활잡화';emo='💴';}
+  else if(/세리아|seria/i.test(v))                {memo='100엔균일·고품질·잡화';emo='💴';}
+  else if(/무인양품|무지|muji/i.test(v))          {memo='생활잡화·의류·음식·심플디자인';emo='⬜';}
+
+  // ── 백화점·쇼핑몰 ──
+  else if(/다이마루|daimaru/i.test(v))            {memo='지하식품관·기념품·면세';emo='🏬';}
+  else if(/루쿠아|lucua/i.test(v))                {memo='JR역직결·트렌디쇼핑몰';emo='🏬';}
+  else if(/한큐백화점|한큐.dept|hankyu/i.test(v)) {memo='우메다본점·화장품·패션·면세';emo='🏬';}
+  else if(/한신|hanshin/i.test(v))               {memo='우메다·식품관·명품·면세';emo='🏬';}
+  else if(/긴테츠|kintetsu/i.test(v))            {memo='아베노·백화점·식품관';emo='🏬';}
+  else if(/타카시마야|다카시마야|takashimaya/i.test(v)){memo='고급백화점·식품관·명품';emo='🏬';}
+  else if(/이세탄|isetan/i.test(v))              {memo='고급백화점·패션·화장품';emo='🏬';}
+  else if(/마루이|marui/i.test(v))               {memo='패션·잡화·애니굿즈';emo='🏬';}
+  else if(/난바파크|namba.parks/i.test(v))        {memo='복합쇼핑몰·레스토랑·잡화';emo='🏬';}
+  else if(/아메리카무라|아메무라|amerikamura/i.test(v)){memo='빈티지·스트릿패션·잡화';emo='🏬';}
+  else if(/신사이바시|shinsaibashi/i.test(v))     {memo='오사카최대상점가·쇼핑';emo='🏬';}
+  else if(/이온스타일|aeon.style/i.test(v))       {memo='패션·잡화·슈퍼복합몰';emo='🏬';}
+
+  // ── 패션·뷰티 ──
+  else if(/유니클로|uniqlo/i.test(v))             {memo='글로벌기함점·전라인업·면세';emo='👗';}
+  else if(/지유|gu/i.test(v))                   {memo='유니클로자매·트렌디·저렴';emo='👗';}
+  else if(/자라|zara/i.test(v))                   {memo='스페인패스트패션·남녀아동';emo='👗';}
+  else if(/에이치앤엠|h&m|h.and.m/i.test(v))     {memo='스웨덴패스트패션·전라인업';emo='👗';}
+  else if(/포에버21|forever.21/i.test(v))         {memo='미국패스트패션·캐주얼';emo='👗';}
+  else if(/갭|gap/i.test(v))                    {memo='미국캐주얼·기본템·면세';emo='👗';}
+  else if(/시마무라|shimamura/i.test(v))          {memo='저가패션·일본로컬브랜드';emo='👗';}
+  else if(/나노유니버스|nano.universe/i.test(v))  {memo='일본트렌디캐주얼·남녀';emo='👗';}
+  else if(/저널스탠다드|journal.standard/i.test(v)){memo='셀렉트숍·트렌디캐주얼';emo='👗';}
+  else if(/투모로우랜드|tomorrowland/i.test(v))   {memo='고급셀렉트숍·수입패션';emo='👗';}
+  else if(/어반리서치|urban.research/i.test(v))   {memo='일본캐주얼·셀렉트숍';emo='👗';}
+
+  // ── 스니커즈·신발 ──
+  else if(/나이키|nike/i.test(v))                 {memo='스포츠·스니커즈·면세';emo='👟';}
+  else if(/아디다스|adidas/i.test(v))             {memo='스포츠·스니커즈·면세';emo='👟';}
+  else if(/뉴발란스|new.balance/i.test(v))        {memo='스니커즈·한국미출시모델·면세';emo='👟';}
+  else if(/abc마트|abc.mart/i.test(v))            {memo='스니커즈신발편집샵·면세';emo='👟';}
+  else if(/오니츠카|onitsuka/i.test(v))           {memo='일본스포츠브랜드·레트로감성';emo='🐯';}
+  else if(/아식스|asics/i.test(v))               {memo='일본스포츠·러닝화·면세';emo='👟';}
+  else if(/리복|reebok/i.test(v))                {memo='스포츠·스니커즈·빈티지';emo='👟';}
+  else if(/컨버스|converse/i.test(v))            {memo='캔버스스니커즈·클래식';emo='👟';}
+  else if(/반스|vans/i.test(v))                  {memo='스케이트스니커즈·캐주얼';emo='👟';}
+  else if(/푸마|puma/i.test(v))                  {memo='스포츠·스니커즈·면세';emo='👟';}
+
+  // ── 편집샵 ──
+  else if(/빔스|beams/i.test(v))                 {memo='일본대표편집샵·남녀의류';emo='🛍';}
+  else if(/쉽스|ships/i.test(v))                 {memo='트래디셔널편집샵·남녀';emo='🛍';}
+  else if(/유나이티드애로우즈|united.arrows/i.test(v)){memo='고급편집샵·수입브랜드';emo='🛍';}
+  else if(/스트라이프|stripe/i.test(v))          {memo='편집샵·캐주얼·잡화';emo='🛍';}
+  else if(/아크네|acne/i.test(v))               {memo='스웨덴디자이너브랜드';emo='🛍';}
+  else if(/꼼데가르송|comme.des/i.test(v))       {memo='일본아방가르드패션';emo='🛍';}
+  else if(/이세이미야케|issey/i.test(v))         {memo='일본디자이너브랜드';emo='🛍';}
+  else if(/요지야마모토|yohji/i.test(v))         {memo='일본아방가르드패션';emo='🛍';}
+
+  // ── 굿즈·캐릭터 ──
+  else if(/포켓몬|pokemon/i.test(v))             {memo='공식굿즈전문점';emo='🎁';}
+  else if(/닌텐도|nintendo/i.test(v))            {memo='게임굿즈·한정판·체험';emo='🎮';}
+  else if(/점프샵|jump.shop/i.test(v))           {memo='소년점프공식굿즈';emo='📚';}
+  else if(/빌리지뱅가드|village.vanguard/i.test(v)){memo='잡화·굿즈·서브컬처';emo='🎁';}
+  else if(/로프트|loft/i.test(v))               {memo='문구·라이프스타일·잡화';emo='📦';}
+  else if(/핸즈|hands|도큐핸즈/i.test(v))       {memo='DIY·문구·잡화·생활용품';emo='🔧';}
+  else if(/애니메이트|animate/i.test(v))         {memo='애니굿즈·만화·게임';emo='🎌';}
+  else if(/토라노아나|toranoana/i.test(v))       {memo='동인·애니굿즈';emo='🎌';}
+  else if(/만다라케|mandarake/i.test(v))         {memo='중고애니·만화·피규어';emo='🎌';}
+  else if(/키디랜드|kiddy.land/i.test(v))        {memo='캐릭터굿즈·완구';emo='🧸';}
+  else if(/디즈니스토어|disney.store/i.test(v))  {memo='디즈니공식굿즈';emo='🏰';}
+  else if(/산리오|sanrio/i.test(v))             {memo='헬로키티·마이멜로디굿즈';emo='🎀';}
+  else if(/스미코구라시|sumikko/i.test(v))       {memo='스미코구라시공식굿즈';emo='🧸';}
+
+  // ── 카페·음식 ──
+  else if(/스타벅스|starbucks/i.test(v))        {memo='커피·음료·일본한정MD';emo='☕';}
+  else if(/도토루|doutor/i.test(v))             {memo='일본체인카페·저렴한커피';emo='☕';}
+  else if(/코메다|komeda/i.test(v))             {memo='나고야발카페·모닝서비스';emo='☕';}
+  else if(/맥도날드|mcdonald/i.test(v))         {memo='패스트푸드·24시간·테리버거';emo='🍔';}
+  else if(/모스버거|mos.burger/i.test(v))        {memo='일본버거체인·라이스버거';emo='🍔';}
+  else if(/롯데리아|lotteria/i.test(v))          {memo='한국계버거체인';emo='🍔';}
+  else if(/이치란|ichiran/i.test(v))            {memo='1인라멘·개인부스·진한돼지뼈';emo='🍜';}
+  else if(/잇푸도|ippudo/i.test(v))             {memo='하카타라멘·본점';emo='🍜';}
+  else if(/도미노|domino/i.test(v))             {memo='피자배달·일본한정메뉴';emo='🍕';}
+  else if(/요시노야|yoshinoya/i.test(v))         {memo='규동체인·저렴한한끼';emo='🍚';}
+  else if(/스키야|sukiya/i.test(v))             {memo='규동·24시간·저렴';emo='🍚';}
+  else if(/마츠야|matsuya/i.test(v))            {memo='규동·정식·저렴한한끼';emo='🍚';}
+
+  // ── 가전·전자 ──
+  else if(/빅카메라|bic.camera/i.test(v))        {memo='가전·카메라·면세·포인트';emo='📷';}
+  else if(/요도바시|yodobashi/i.test(v))         {memo='가전전문·면세·대형매장';emo='📷';}
+  else if(/야마다전기|yamada/i.test(v))          {memo='가전양판점·면세·저렴';emo='📷';}
+  else if(/케이즈덴키|k's.denki/i.test(v))      {memo='가전양판점·면세';emo='📷';}
+  else if(/애플스토어|apple.store/i.test(v))     {memo='애플공식스토어·수리·체험';emo='🍎';}
+
+  // ── 공항면세 ──
+  else if(/면세|duty.free|免税/i.test(v))        {memo='출국후면세쇼핑·주류·화장품';emo='🛫';}
+  else if(/간사이공항|kansai.airport|KIX/i.test(v)){memo='간사이국제공항·면세';emo='✈';}
+  else if(/라오스|laox/i.test(v))               {memo='면세전문점·외국인특화';emo='🛫';}
+
+  if(memo){
+    if(e) e.textContent=emo;
+    if(d) d.value=memo;
+  } else {
+    // 매칭 안 되면 빈 상태로 직접 입력 유도
     if(e) e.textContent='📍';
     if(d) d.value='';
-  });
+  }
 }
+
+
 function openNearby(query){
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
@@ -5407,6 +5644,192 @@ function saveStoreChecks(wrap){
 }
 
 
+
+var CITY_DATA = {
+  japan:    [{n:'오사카',e:'Osaka',lat:34.6937,lng:135.5023},{n:'도쿄',e:'Tokyo',lat:35.6762,lng:139.6503},{n:'교토',e:'Kyoto',lat:35.0116,lng:135.7681},{n:'삿포로',e:'Sapporo',lat:43.0618,lng:141.3545},{n:'후쿠오카',e:'Fukuoka',lat:33.5904,lng:130.4017},{n:'나고야',e:'Nagoya',lat:35.1815,lng:136.9066},{n:'나라',e:'Nara',lat:34.6851,lng:135.8048},{n:'오키나와',e:'Okinawa',lat:26.2124,lng:127.6809}],
+  korea:    [{n:'서울',e:'Seoul',lat:37.5665,lng:126.9780},{n:'부산',e:'Busan',lat:35.1796,lng:129.0756},{n:'제주',e:'Jeju',lat:33.4996,lng:126.5312},{n:'경주',e:'Gyeongju',lat:35.8562,lng:129.2247},{n:'강릉',e:'Gangneung',lat:37.7519,lng:128.8760},{n:'전주',e:'Jeonju',lat:35.8242,lng:127.1480},{n:'인천',e:'Incheon',lat:37.4563,lng:126.7052},{n:'여수',e:'Yeosu',lat:34.7604,lng:127.6622}],
+  taiwan:   [{n:'타이페이',e:'Taipei',lat:25.0330,lng:121.5654},{n:'타이중',e:'Taichung',lat:24.1477,lng:120.6736},{n:'가오슝',e:'Kaohsiung',lat:22.6273,lng:120.3014},{n:'화롄',e:'Hualien',lat:23.9772,lng:121.6044},{n:'타이난',e:'Tainan',lat:22.9998,lng:120.2269},{n:'지룽',e:'Keelung',lat:25.1276,lng:121.7392},{n:'타오위안',e:'Taoyuan',lat:24.9936,lng:121.3010},{n:'난터우',e:'Nantou',lat:23.9136,lng:120.6861}],
+  thailand: [{n:'방콕',e:'Bangkok',lat:13.7563,lng:100.5018},{n:'치앙마이',e:'Chiang Mai',lat:18.7883,lng:98.9853},{n:'푸켓',e:'Phuket',lat:7.8804,lng:98.3923},{n:'파타야',e:'Pattaya',lat:12.9236,lng:100.8825},{n:'사무이',e:'Koh Samui',lat:9.5120,lng:100.0136},{n:'끄라비',e:'Krabi',lat:8.0863,lng:98.9063},{n:'코창',e:'Koh Chang',lat:12.0800,lng:102.3200},{n:'아유타야',e:'Ayutthaya',lat:14.3532,lng:100.5648}],
+  france:   [{n:'파리',e:'Paris',lat:48.8566,lng:2.3522},{n:'니스',e:'Nice',lat:43.7102,lng:7.2620},{n:'리옹',e:'Lyon',lat:45.7640,lng:4.8357},{n:'마르세유',e:'Marseille',lat:43.2965,lng:5.3698},{n:'보르도',e:'Bordeaux',lat:44.8378,lng:-0.5792},{n:'스트라스부르',e:'Strasbourg',lat:48.5734,lng:7.7521},{n:'몽생미셸',e:'Mont-Saint-Michel',lat:48.6361,lng:-1.5115},{n:'샤모니',e:'Chamonix',lat:45.9237,lng:6.8694}],
+  italy:    [{n:'로마',e:'Rome',lat:41.9028,lng:12.4964},{n:'베네치아',e:'Venice',lat:45.4408,lng:12.3155},{n:'피렌체',e:'Florence',lat:43.7696,lng:11.2558},{n:'밀라노',e:'Milan',lat:45.4642,lng:9.1900},{n:'나폴리',e:'Naples',lat:40.8518,lng:14.2681},{n:'아말피',e:'Amalfi',lat:40.6340,lng:14.6027},{n:'친퀘테레',e:'Cinque Terre',lat:44.1461,lng:9.6439},{n:'시칠리아',e:'Sicily',lat:37.5999,lng:14.0154}],
+  usa:      [{n:'뉴욕',e:'New York',lat:40.7128,lng:-74.0060},{n:'로스앤젤레스',e:'Los Angeles',lat:34.0522,lng:-118.2437},{n:'라스베가스',e:'Las Vegas',lat:36.1699,lng:-115.1398},{n:'하와이',e:'Hawaii',lat:21.3069,lng:-157.8583},{n:'샌프란시스코',e:'San Francisco',lat:37.7749,lng:-122.4194},{n:'시카고',e:'Chicago',lat:41.8781,lng:-87.6298},{n:'마이애미',e:'Miami',lat:25.7617,lng:-80.1918},{n:'올랜도',e:'Orlando',lat:28.5383,lng:-81.3792}],
+  canada:   [{n:'밴쿠버',e:'Vancouver',lat:49.2827,lng:-123.1207},{n:'토론토',e:'Toronto',lat:43.6532,lng:-79.3832},{n:'퀘벡',e:'Quebec City',lat:46.8139,lng:-71.2080},{n:'몬트리올',e:'Montreal',lat:45.5017,lng:-73.5673},{n:'밴프',e:'Banff',lat:51.1784,lng:-115.5708},{n:'캘거리',e:'Calgary',lat:51.0447,lng:-114.0719},{n:'오타와',e:'Ottawa',lat:45.4215,lng:-75.6972},{n:'빅토리아',e:'Victoria',lat:48.4284,lng:-123.3656}]
+};
+
+function openCityModal(){
+  showCountries();
+  document.getElementById('cityModal').classList.add('open');
+}
+
+function showCountries(){
+  document.getElementById('cityStep1').style.display='block';
+  document.getElementById('cityStep2').style.display='none';
+  document.getElementById('cityModalTitle').textContent='🗺 여행 국가 선택';
+  document.querySelectorAll('#cityStep1 .city-btn').forEach(function(b){ b.classList.remove('selected'); });
+}
+
+function showCities(country){
+  var cities=CITY_DATA[country]; if(!cities) return;
+  document.querySelectorAll('#cityStep1 .city-sel-btn').forEach(function(b){ b.classList.remove('selected'); });
+  event && event.currentTarget && event.currentTarget.classList.add('selected');
+  document.getElementById('cityStep1').style.display='none';
+  document.getElementById('cityStep2').style.display='block';
+  var names={japan:'🇯🇵 일본',korea:'🇰🇷 한국',taiwan:'🇹🇼 대만',thailand:'🇹🇭 태국',france:'🇫🇷 프랑스',italy:'🇮🇹 이탈리아',usa:'🇺🇸 미국',canada:'🇨🇦 캐나다'};
+  var colors={japan:['#fff5f0','#ffe8dc'],korea:['#f0f5ff','#dce8ff'],taiwan:['#fff0f5','#ffdce8'],thailand:['#fffff0','#fffadc'],france:['#f0f0ff','#dcdcff'],italy:['#fff0f0','#ffdcdc'],usa:['#f0f8ff','#dceeff'],canada:['#fff5f0','#ffe0d8']};
+  var flags={japan:'🇯🇵',korea:'🇰🇷',taiwan:'🇹🇼',thailand:'🇹🇭',france:'🇫🇷',italy:'🇮🇹',usa:'🇺🇸',canada:'🇨🇦'};
+  var c=colors[country]||['#f5f5f5','#ebebeb'];
+  var flag=flags[country]||'';
+  document.getElementById('cityModalTitle').textContent=names[country]||'도시 선택';
+  var grid=document.getElementById('cityGrid');
+  grid.innerHTML='';
+  cities.forEach(function(city){
+    var btn=document.createElement('button');
+    btn.className='city-sel-btn';
+    btn.style.cssText='background:linear-gradient(135deg,'+c[0]+','+c[1]+');position:relative;overflow:hidden;';
+    btn.innerHTML=
+      '<span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">'+flag+'</span>'+
+      '<div class="city-btn-name">'+city.n+'</div>'+
+      '<div class="city-btn-en">'+city.e+'</div>';
+    btn.addEventListener('click', function(){
+      grid.querySelectorAll('.city-sel-btn').forEach(function(b){ b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      setTimeout(function(){ selectCity(city.n, city.e, city.lat, city.lng); }, 200);
+    });
+    grid.appendChild(btn);
+  });
+}
+function selectCity(nameKo, nameEn, lat, lng){
+  CITY_LAT=lat; CITY_LNG=lng; CITY_NAME=nameKo;
+  applyCity(nameKo, nameEn);
+  document.getElementById('cityModal').classList.remove('open');
+}
+/* ── 매장 드래그 순서 ── */
+var _sortables = {};
+
+function initStoreSortable(cat) {
+  var wraps = [
+    document.getElementById('store-wrap-'+cat),
+    document.getElementById('store-more-items-'+cat)
+  ];
+  wraps.forEach(function(wrap) {
+    if(!wrap || wrap._sortable) return;
+    wrap._sortable = true;
+    new Sortable(wrap, {
+      animation: 150,
+      handle: '.store-emoji',
+      ghostClass: 'store-drag-ghost',
+      chosenClass: 'store-drag-chosen',
+      onEnd: function() {
+        saveStoreOrder(cat);
+      }
+    });
+  });
+}
+
+function saveStoreOrder(cat) {
+  var wraps = [
+    {el: document.getElementById('store-wrap-'+cat), key: 'so_main_'+cat},
+    {el: document.getElementById('store-more-items-'+cat), key: 'so_more_'+cat}
+  ];
+  wraps.forEach(function(w) {
+    if(!w.el) return;
+    var order = Array.from(w.el.querySelectorAll('.store-card')).map(function(c) {
+      var n = c.querySelector('.store-name');
+      return n ? n.textContent.trim() : '';
+    }).filter(Boolean);
+    try { localStorage.setItem(w.key, JSON.stringify(order)); } catch(e) {}
+  });
+}
+
+function loadStoreOrder(cat) {
+  var wraps = [
+    {el: document.getElementById('store-wrap-'+cat), key: 'so_main_'+cat},
+    {el: document.getElementById('store-more-items-'+cat), key: 'so_more_'+cat}
+  ];
+  wraps.forEach(function(w) {
+    if(!w.el) return;
+    var order = [];
+    try { order = JSON.parse(localStorage.getItem(w.key)||'[]'); } catch(e) {}
+    if(!order.length) return;
+    var cards = Array.from(w.el.querySelectorAll('.store-card'));
+    order.forEach(function(name) {
+      var card = cards.find(function(c) {
+        var n = c.querySelector('.store-name');
+        return n && n.textContent.trim() === name;
+      });
+      if(card) w.el.appendChild(card);
+    });
+  });
+}
+
+var _deleteMode = false;
+var _longPressTimer = null;
+
+function enableDeleteMode(card){
+  _deleteMode = true;
+  card.classList.add('delete-mode');
+}
+
+function disableAllDeleteMode(){
+  _deleteMode = false;
+  document.querySelectorAll('.store-card.delete-mode').forEach(function(c){
+    c.classList.remove('delete-mode');
+  });
+}
+
+function addLongPressDelete(card){
+  // 기존 del btn 있으면 skip
+  if(card.querySelector('.store-del-btn')) return;
+  // 삭제 버튼 추가 (숨김 상태)
+  var delBtn = document.createElement('button');
+  delBtn.className = 'store-del-btn';
+  delBtn.textContent = '✕';
+  delBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    card.remove();
+    disableAllDeleteMode();
+  });
+  card.appendChild(delBtn);
+
+  // 길게 누르기 이벤트
+  card.addEventListener('touchstart', function(e){
+    _longPressTimer = setTimeout(function(){
+      enableDeleteMode(card);
+    }, 600);
+  }, {passive:true});
+  card.addEventListener('touchend', function(){ clearTimeout(_longPressTimer); });
+  card.addEventListener('touchmove', function(){ clearTimeout(_longPressTimer); });
+  card.addEventListener('mousedown', function(){
+    _longPressTimer = setTimeout(function(){ enableDeleteMode(card); }, 600);
+  });
+  card.addEventListener('mouseup', function(){ clearTimeout(_longPressTimer); });
+}
+
+// 화면 다른 곳 터치하면 삭제모드 해제
+document.addEventListener('click', function(e){
+  if(_deleteMode && !e.target.closest('.store-card')){ disableAllDeleteMode(); }
+});
+
+function loadStoreOrder(cat){
+  var wraps = [
+    {el: document.getElementById('store-wrap-'+cat), key: 'so_main_'+cat},
+    {el: document.getElementById('store-more-items-'+cat), key: 'so_more_'+cat}
+  ];
+  wraps.forEach(function(w) {
+    if(!w.el) return;
+    var order = [];
+    try { order = JSON.parse(localStorage.getItem(w.key)||'[]'); } catch(e) {}
+    if(!order.length) return;
+    var cards = Array.from(w.el.querySelectorAll('.store-card'));
+    order.forEach(function(name) {
+      var card = cards.find(function(c) {
+        var n = c.querySelector('.store-name');
+        return n && n.textContent.trim() === name;
+      });
+      if(card) w.el.appendChild(card);
+    });
+  });
+}
 </script>
 
 <!-- 리무진 버스 시간표 모달 -->
@@ -6188,77 +6611,66 @@ function saveStoreChecks(wrap){
 
 <!-- 도시 설정 모달 -->
 <div class="modal-overlay" id="cityModal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:400px;">
+  <div class="modal" style="max-width:420px;">
     <div class="modal-head">
-      <h3>🗺 여행 도시 설정</h3>
+      <h3 id="cityModalTitle">🗺 여행 국가 선택</h3>
       <button class="modal-close" onclick="document.getElementById('cityModal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
 
-      <div class="timetable-label">도시 선택</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-        <button class="city-btn" onclick="selectCity('오사카','Osaka',34.6937,135.5023)" data-city="오사카">
-          <div class="city-btn-name">오사카</div>
-          <div class="city-btn-en">Osaka</div>
-        </button>
-        <button class="city-btn" onclick="selectCity('도쿄','Tokyo',35.6762,139.6503)" data-city="도쿄">
-          <div class="city-btn-name">도쿄</div>
-          <div class="city-btn-en">Tokyo</div>
-        </button>
-        <button class="city-btn" onclick="selectCity('교토','Kyoto',35.0116,135.7681)" data-city="교토">
-          <div class="city-btn-name">교토</div>
-          <div class="city-btn-en">Kyoto</div>
-        </button>
-        <button class="city-btn" onclick="selectCity('삿포로','Sapporo',43.0618,141.3545)" data-city="삿포로">
-          <div class="city-btn-name">삿포로</div>
-          <div class="city-btn-en">Sapporo</div>
-        </button>
-        <button class="city-btn" onclick="selectCity('후쿠오카','Fukuoka',33.5904,130.4017)" data-city="후쿠오카">
-          <div class="city-btn-name">후쿠오카</div>
-          <div class="city-btn-en">Fukuoka</div>
-        </button>
-        <button class="city-btn" onclick="selectCity('나고야','Nagoya',35.1815,136.9066)" data-city="나고야">
-          <div class="city-btn-name">나고야</div>
-          <div class="city-btn-en">Nagoya</div>
-        </button>
-        <button class="city-btn" onclick="selectCity('나라','Nara',34.6851,135.8048)" data-city="나라">
-          <div class="city-btn-name">나라</div>
-          <div class="city-btn-en">Nara</div>
-        </button>
-        <button class="city-btn" onclick="selectCity('고베','Kobe',34.6901,135.1956)" data-city="고베">
-          <div class="city-btn-name">고베</div>
-          <div class="city-btn-en">Kobe</div>
-        </button>
+      <!-- 국가 선택 화면 -->
+      <div id="cityStep1">
+
+        <div class="timetable-label">🌏 아시아</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
+          <button class="city-sel-btn" onclick="showCities('japan')" style="background:linear-gradient(135deg,#fff5f0,#ffe8dc);position:relative;overflow:hidden;">
+            <span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">🇯🇵</span>
+            <div class="city-btn-name">일본</div><div class="city-btn-en">Japan</div>
+          </button>
+          <button class="city-sel-btn" onclick="showCities('korea')" style="background:linear-gradient(135deg,#f0f5ff,#dce8ff);position:relative;overflow:hidden;">
+            <span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">🇰🇷</span>
+            <div class="city-btn-name">한국</div><div class="city-btn-en">Korea</div>
+          </button>
+          <button class="city-sel-btn" onclick="showCities('taiwan')" style="background:linear-gradient(135deg,#fff0f5,#ffdce8);position:relative;overflow:hidden;">
+            <span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">🇹🇼</span>
+            <div class="city-btn-name">대만</div><div class="city-btn-en">Taiwan</div>
+          </button>
+          <button class="city-sel-btn" onclick="showCities('thailand')" style="background:linear-gradient(135deg,#fffff0,#fffadc);position:relative;overflow:hidden;">
+            <span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">🇹🇭</span>
+            <div class="city-btn-name">태국</div><div class="city-btn-en">Thailand</div>
+          </button>
+        </div>
+        <div class="timetable-label">🌍 유럽</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
+          <button class="city-sel-btn" onclick="showCities('france')" style="background:linear-gradient(135deg,#f0f0ff,#dcdcff);position:relative;overflow:hidden;">
+            <span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">🇫🇷</span>
+            <div class="city-btn-name">프랑스</div><div class="city-btn-en">France</div>
+          </button>
+          <button class="city-sel-btn" onclick="showCities('italy')" style="background:linear-gradient(135deg,#fff0f0,#ffdcdc);position:relative;overflow:hidden;">
+            <span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">🇮🇹</span>
+            <div class="city-btn-name">이탈리아</div><div class="city-btn-en">Italy</div>
+          </button>
+        </div>
+        <div class="timetable-label">🌎 북미</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+          <button class="city-sel-btn" onclick="showCities('usa')" style="background:linear-gradient(135deg,#f0f8ff,#dceeff);position:relative;overflow:hidden;">
+            <span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">🇺🇸</span>
+            <div class="city-btn-name">미국</div><div class="city-btn-en">USA</div>
+          </button>
+          <button class="city-sel-btn" onclick="showCities('canada')" style="background:linear-gradient(135deg,#fff5f0,#ffe0d8);position:relative;overflow:hidden;">
+            <span style="position:absolute;right:-4px;bottom:-6px;font-size:42px;opacity:0.18;pointer-events:none;line-height:1;">🇨🇦</span>
+            <div class="city-btn-name">캐나다</div><div class="city-btn-en">Canada</div>
+          </button>
+        </div>
       </div>
 
-      <div class="timetable-label">직접 입력</div>
-      <div style="display:flex;flex-direction:column;gap:8px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
-          <div>
-            <div style="font-size:9px;letter-spacing:1.5px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:5px;">도시명 (한국어)</div>
-            <input id="customCityKo" class="wallet-input" type="text" placeholder="예: 오키나와" style="width:100%;"/>
-          </div>
-          <div>
-            <div style="font-size:9px;letter-spacing:1.5px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:5px;">도시명 (영문)</div>
-            <input id="customCityEn" class="wallet-input" type="text" placeholder="예: Okinawa" style="width:100%;"/>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
-          <div>
-            <div style="font-size:9px;letter-spacing:1.5px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:5px;">위도 (Latitude)</div>
-            <input id="customLat" class="wallet-input" type="number" step="0.0001" placeholder="예: 26.2124" style="width:100%;"/>
-          </div>
-          <div>
-            <div style="font-size:9px;letter-spacing:1.5px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:5px;">경도 (Longitude)</div>
-            <input id="customLng" class="wallet-input" type="number" step="0.0001" placeholder="예: 127.6809" style="width:100%;"/>
-          </div>
-        </div>
-        <button onclick="applyCustomCity()" style="background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);padding:11px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;width:100%;">✓ 적용하기</button>
-      </div>
+      <div style="font-size:11px;color:var(--ink3);background:var(--bg2);border-radius:var(--r-sm);padding:12px;margin-top:14px;text-align:center;width:100%;box-sizing:border-box;">도시 변경 시 날씨 정보가 해당 지역으로 업데이트돼요.<br>일정은 직접 수정이 필요해요.</div>
 
-      <p style="font-size:10px;color:var(--ink3);margin-top:10px;line-height:1.7;text-align:center;">
-        도시 변경 시 날씨 정보가 해당 지역으로 업데이트돼요.<br>일정은 직접 수정이 필요해요.
-      </p>
+      <!-- 도시 선택 화면 -->
+      <div id="cityStep2" style="display:none;">
+        <button onclick="showCountries()" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;padding:0;margin-bottom:14px;-webkit-tap-highlight-color:transparent;">← 국가 선택으로</button>
+        <div id="cityGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;"></div>
+      </div>
 
     </div>
   </div>

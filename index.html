@@ -2801,6 +2801,8 @@ body.editing .edit-hint{display:flex}
   </div>
 </div>
 
+
+
 <div class="tl"><div class="tl-bar"></div>
   <div class="ev">
     <div class="ev-time"><span class="ev-time-val" id="et45" data-coord="34.7060177,135.4982377" data-time="17:00" onclick="openTimePicker('et45')">17:00</span><div class="ev-dot hl"></div></div>
@@ -2824,6 +2826,33 @@ body.editing .edit-hint{display:flex}
       </ul></div>
     </div>
   </div>
+
+
+</div><!-- /tl split -->
+
+<!-- 이동: 간사이공항 → 김포공항 -->
+<div class="rc">
+  <div class="rc-left">
+    <div class="rc-head"><span class="rc-mode">✈ 아시아나 OZ112</span><span class="rc-dur">소요시간 : 1시간 55분</span></div>
+    <div class="rc-path">
+      <div class="rc-node"><div class="rc-nd" style="background:#1a7ab8"></div><div><div class="rc-nn">간사이 국제공항</div><div class="rc-ns">20:30 출발</div></div></div>
+      <div class="rc-dash"></div>
+      <div class="rc-node"><div class="rc-nd" style="background:#3a8fd4"></div><div><div class="rc-nn">김포국제공항</div><div class="rc-ns">22:25 도착 (한국 시각)</div></div></div>
+    </div>
+    <div class="rc-minimap"><canvas id="map4_flight" style="width:100%;height:72px;"></canvas></div>
+    <div class="rc-foot">
+      <div><div class="rc-fare-main">항공</div><div class="rc-fare-sub">아시아나 OZ112</div></div>
+      <a class="rc-btn" href="https://www.google.com/maps/dir/34.4320,135.2366/37.5583,126.7906" target="_blank">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>이동경로 (지도앱)
+      </a>
+    </div>
+  </div>
+  <div class="rc-thumb" style="background:linear-gradient(150deg,#1565C0,#42A5F5);">
+    <div class="rc-thumb-inner"><div class="rc-thumb-emoji">🛬</div><div class="rc-thumb-name">김포<br>국제공항</div><div class="rc-thumb-en">GMP Airport</div></div>
+  </div>
+</div>
+
+<div class="tl"><div class="tl-bar"></div>
   <div class="ev">
     <div class="ev-time"><span class="ev-time-val" id="et47" data-coord="34.4320,135.2366" data-time="20:30" onclick="openTimePicker('et47')">20:30</span><div class="ev-dot hl"></div></div>
     <div class="ev-body">
@@ -2836,7 +2865,13 @@ body.editing .edit-hint{display:flex}
       <div class="bus-timetable-btn" onclick="document.getElementById('asiana-modal').classList.add('open')" style="color:var(--blue);background:#EBF4FF;border-color:#90CAF9;">✈ 탑승 규정 보기</div>
     </div>
   </div>
+
 </div>
+
+
+
+
+
 
 <!-- 이동 4: 김포공항 → 집 -->
 <div class="rc">
@@ -3418,6 +3453,7 @@ function drawAllMaps() {
   drawMap('map4_1',[[34.7076,135.5009],[34.7012,135.4979]], ['#e8944a','#f0b87c'], '#F4F1EC', '#e8944a88');
   drawMap('map4_2',[[34.7028,135.4985],[34.7028,135.4992]], ['#27ae60','#2ecc71'], '#F4F1EC', '#27ae6088');
   drawMap('map4_3',[[34.7060177,135.4982377],[34.4320,135.2366]], ['#c0392b','#e74c3c'], '#F4F1EC', '#c0392b88');
+  drawMap('map4_flight',[[34.4320,135.2366],[37.5583,126.7906]],['#1a7ab8','#3a8fd4'],'#F4F1EC','#1a7ab888');
   drawMap('map4_4',[[37.5583,126.7906],[37.4969,126.8496]], ['#3a8fd4','#28a060'], '#F4F1EC', '#3a8fd488');
 }
 

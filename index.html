@@ -3463,19 +3463,53 @@ var WX_DESC={0:'맑음',1:'대체로 맑음',2:'구름 조금',3:'흐림',45:'�
 function fetchWeather() {
   document.getElementById('wContent').innerHTML='<div class="weather-loading">🌤 날씨 정보를 불러오는 중...</div>';
   
-  // 여러 URL 순차 시도
+  // 6월 오사카 평균 날씨 기본값 (API 실패 시 표시)
+  var defaultWeather = [
+    {icon:'🌧',desc:'비',max:27,min:21,rain:70},
+    {icon:'⛅',desc:'구름 많음',max:28,min:22,rain:40},
+    {icon:'🌤',desc:'대체로 맑음',max:29,min:22,rain:20},
+    {icon:'⛅',desc:'구름 조금',max:28,min:21,rain:30}
+  ];
+  
+  function showDefault() {
+    var DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var tripStart=new Date(TRIP_START);
+    var fcHtml='';
+    for(var j=0;j<TRIP_DAYS;j++){
+      var w=defaultWeather[j]||defaultWeather[0];
+      var dd=new Date(tripStart); dd.setDate(dd.getDate()+j);
+      var mm=String(dd.getMonth()+1).padStart(2,'0');
+      var ddd=String(dd.getDate()).padStart(2,'0');
+      fcHtml+='<div class="wfc-item" onclick="switchDay('+j+')" style="cursor:pointer;">'+
+        '<div class="wfc-day">Day'+(j+1)+'</div>'+
+        '<div class="wfc-date">'+mm+'.'+ddd+' '+DAY_NAMES[dd.getDay()]+'</div>'+
+        '<div class="wfc-icon-wrap"><div class="wfc-icon">'+w.icon+'</div></div>'+
+        '<div class="wfc-desc">'+w.desc+'</div>'+
+        '<div class="wfc-temp">'+w.max+'°/'+w.min+'°</div>'+
+        '<div class="wfc-rain">💧'+w.rain+'%</div>'+
+      '</div>';
+    }
+    document.getElementById('wContent').innerHTML=
+      '<div class="w-forecast-full" style="grid-template-columns:repeat('+TRIP_DAYS+',1fr)">'+fcHtml+'</div>'+
+      '<div style="font-size:9px;color:var(--ink3);text-align:center;margin-top:6px;">⚠️ 실시간 연결 불가 · 6월 오사카 평균값</div>';
+    var now=new Date();
+    var wDate=document.getElementById('wDate');
+    if(wDate) wDate.textContent=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준';
+  }
+
+  // 실시간 시도
   var urls = [
     'https://api.open-meteo.com/v1/forecast?latitude='+CITY_LAT+'&longitude='+CITY_LNG+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=16',
     'https://corsproxy.io/?'+encodeURIComponent('https://api.open-meteo.com/v1/forecast?latitude='+CITY_LAT+'&longitude='+CITY_LNG+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=16'),
     'https://api.allorigins.win/raw?url='+encodeURIComponent('https://api.open-meteo.com/v1/forecast?latitude='+CITY_LAT+'&longitude='+CITY_LNG+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=16')
   ];
-  
+
   function tryUrl(idx) {
-    if(idx >= urls.length){ weatherErr(); return; }
+    if(idx >= urls.length){ showDefault(); return; }
     fetch(urls[idx])
       .then(function(r){ return r.json(); })
       .then(function(data){
-        if(data.daily){ applyWeather(data); }
+        if(data && data.daily && data.daily.time){ applyWeather(data); }
         else { tryUrl(idx+1); }
       })
       .catch(function(){ tryUrl(idx+1); });

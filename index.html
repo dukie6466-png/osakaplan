@@ -3461,56 +3461,56 @@ var CITY_LAT=34.6937, CITY_LNG=135.5023, CITY_NAME="오사카";
 var WX_CODE={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'🌨',73:'🌨',75:'❄️',80:'🌦',81:'🌧',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
 var WX_DESC={0:'맑음',1:'대체로 맑음',2:'구름 조금',3:'흐림',45:'안개',48:'안개',51:'가벼운 이슬비',53:'이슬비',55:'강한 이슬비',61:'가벼운 비',63:'비',65:'강한 비',71:'가벼운 눈',73:'눈',75:'강한 눈',80:'소나기',81:'강한 소나기',82:'폭우',95:'뇌우',96:'뇌우+우박',99:'뇌우+강한 우박'};
 function fetchWeather() {
-  // start_date/end_date 제거 - forecast_days만 사용 (current 데이터 정상 수신)
-  // 오늘부터 TRIP_DAYS일 예보
-  var days = Math.max(TRIP_DAYS, 4); // 최소 4일
-  var url='https://api.open-meteo.com/v1/forecast?latitude='+CITY_LAT+'&longitude='+CITY_LNG+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days='+days;
-  var xhr=new XMLHttpRequest(); xhr.open('GET',url,true); xhr.timeout=8000;
-  xhr.onload=function(){ if(xhr.status===200){try{applyWeather(JSON.parse(xhr.responseText));return;}catch(e){}} weatherErr(); };
-  xhr.onerror=xhr.ontimeout=weatherErr; xhr.send();
+  document.getElementById('wContent').innerHTML='<div class="weather-loading">🌤 날씨 정보를 불러오는 중...</div>';
+  var url='https://api.open-meteo.com/v1/forecast'+
+    '?latitude='+CITY_LAT+'&longitude='+CITY_LNG+
+    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'+
+    '&timezone=Asia%2FTokyo&forecast_days=16';
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(data){ applyWeather(data); })
+    .catch(function(){ weatherErr(); });
 }
 function weatherErr(){ document.getElementById('wContent').innerHTML='<div class="weather-error">날씨 정보를 불러올 수 없습니다.</div>'; }
 function applyWeather(d) {
-  var c=d.current, daily=d.daily;
-  var code=c.weather_code, icon=WX_CODE[code]||'🌤', desc=WX_DESC[code]||'날씨 정보';
-  var temp=Math.round(c.temperature_2m), feels=Math.round(c.apparent_temperature);
-  var humid=c.relative_humidity_2m, wind=Math.round(c.wind_speed_10m);
-  var now=new Date();
-  var wdesc2 = WX_DESC[c.weather_code]||'';
-  document.getElementById('wDate').textContent=
-    String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준  '+
-    Math.round(c.temperature_2m)+'°C '+wdesc2;
+  var daily=d.daily;
+  if(!daily||!daily.time||!daily.time.length){ weatherErr(); return; }
 
-  // 여행 날짜 기준 라벨 + 날짜
-  var DAY_NAMES_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var tripStart = new Date(TRIP_START);
-  var dayLabels = [], dayDates = [];
-  for(var i=0; i<TRIP_DAYS; i++){
-    dayLabels.push('Day'+(i+1));
-    var d = new Date(tripStart); d.setDate(d.getDate()+i);
-    var mm = String(d.getMonth()+1).padStart(2,'0');
-    var dd = String(d.getDate()).padStart(2,'0');
-    dayDates.push(mm+'.'+dd+' '+DAY_NAMES_SHORT[d.getDay()]);
+  // TRIP_START 날짜의 인덱스 찾기
+  var startIdx=-1;
+  for(var i=0;i<daily.time.length;i++){
+    if(daily.time[i]===TRIP_START){ startIdx=i; break; }
+  }
+  if(startIdx<0){
+    // 못 찾으면 0번부터 표시
+    startIdx=0;
   }
 
-  // 예보 (여행 일수만큼)
+  var DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var tripStart=new Date(TRIP_START);
   var fcHtml='';
-  var count = Math.min(daily.weather_code.length, TRIP_DAYS);
-  for(var i=0; i<count; i++){
-    var fi=WX_CODE[daily.weather_code[i]]||'🌤';
-    var isToday = (i===0);
-    fcHtml+='<div class="wfc-item'+(isToday?' today':'')+'" onclick="switchDay('+i+')" style="cursor:pointer;">'+
-      '<div class="wfc-day">'+dayLabels[i]+'</div>'+
-      '<div class="wfc-date">'+dayDates[i]+'</div>'+
+  for(var j=0;j<TRIP_DAYS;j++){
+    var idx=startIdx+j;
+    if(idx>=daily.time.length) break;
+    var fi=WX_CODE[daily.weather_code[idx]]||'🌤';
+    var dd=new Date(tripStart); dd.setDate(dd.getDate()+j);
+    var mm=String(dd.getMonth()+1).padStart(2,'0');
+    var ddd=String(dd.getDate()).padStart(2,'0');
+    fcHtml+='<div class="wfc-item" onclick="switchDay('+j+')" style="cursor:pointer;">'+
+      '<div class="wfc-day">Day'+(j+1)+'</div>'+
+      '<div class="wfc-date">'+mm+'.'+ddd+' '+DAY_NAMES[dd.getDay()]+'</div>'+
       '<div class="wfc-icon-wrap"><div class="wfc-icon">'+fi+'</div></div>'+
-      '<div class="wfc-desc">'+(WX_DESC[daily.weather_code[i]]||'')+'</div>'+
-      '<div class="wfc-temp">'+Math.round(daily.temperature_2m_max[i])+'°/'+Math.round(daily.temperature_2m_min[i])+'°</div>'+
-      '<div class="wfc-rain">💧'+daily.precipitation_probability_max[i]+'%</div>'+
+      '<div class="wfc-desc">'+(WX_DESC[daily.weather_code[idx]]||'')+'</div>'+
+      '<div class="wfc-temp">'+Math.round(daily.temperature_2m_max[idx])+'°/'+Math.round(daily.temperature_2m_min[idx])+'°</div>'+
+      '<div class="wfc-rain">💧'+daily.precipitation_probability_max[idx]+'%</div>'+
     '</div>';
   }
-
   document.getElementById('wContent').innerHTML=
-    '<div class="w-forecast-full" style="grid-template-columns:repeat('+count+',1fr)">'+fcHtml+'</div>';
+    '<div class="w-forecast-full" style="grid-template-columns:repeat('+TRIP_DAYS+',1fr)">'+fcHtml+'</div>';
+
+  var now=new Date();
+  var wDate=document.getElementById('wDate');
+  if(wDate) wDate.textContent=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준';
 }
 
 /* ══════════════════════════════════════
@@ -4147,13 +4147,20 @@ function updateDatePreview() {
   var e = document.getElementById('dateEnd').value;
   if (!s || !e) return;
   var sd = new Date(s), ed = new Date(e);
-  var sm = String(sd.getMonth()+1).padStart(2,'0');
+  var sm  = String(sd.getMonth()+1).padStart(2,'0');
   var sd2 = String(sd.getDate()).padStart(2,'0');
-  var ed2 = String(ed.getDate()).padStart(2,'0');
   var em2 = String(ed.getMonth()+1).padStart(2,'0');
+  var ed2 = String(ed.getDate()).padStart(2,'0');
   var nights = Math.round((ed-sd)/(1000*60*60*24));
-  var txt = sd.getFullYear() + '.' + sm + '.' + sd2 + '~' + em2 + '.' + ed2 + ' (' + nights + '박' + (nights+1) + '일)';
-  document.getElementById('datePreview').textContent = txt;
+  // 미리보기 텍스트
+  var txt = sd.getFullYear()+'.'+sm+'.'+sd2+'~'+em2+'.'+ed2+' ('+nights+'박'+(nights+1)+'일)';
+  var prev = document.getElementById('datePreview');
+  if(prev) prev.textContent = txt;
+  // 날짜 표시 박스 업데이트
+  var dsd = document.getElementById('dateStartDisplay');
+  var ded = document.getElementById('dateEndDisplay');
+  if(dsd) dsd.textContent = sd.getFullYear()+'.'+sm+'.'+sd2;
+  if(ded) ded.textContent = ed.getFullYear()+'.'+em2+'.'+ed2;
 }
 
 function applyDate() {

@@ -3462,30 +3462,34 @@ var WX_CODE={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦
 var WX_DESC={0:'맑음',1:'대체로 맑음',2:'구름 조금',3:'흐림',45:'안개',48:'안개',51:'가벼운 이슬비',53:'이슬비',55:'강한 이슬비',61:'가벼운 비',63:'비',65:'강한 비',71:'가벼운 눈',73:'눈',75:'강한 눈',80:'소나기',81:'강한 소나기',82:'폭우',95:'뇌우',96:'뇌우+우박',99:'뇌우+강한 우박'};
 function fetchWeather() {
   document.getElementById('wContent').innerHTML='<div class="weather-loading">🌤 날씨 정보를 불러오는 중...</div>';
-  var url='https://api.open-meteo.com/v1/forecast'+
-    '?latitude='+CITY_LAT+'&longitude='+CITY_LNG+
-    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'+
-    '&timezone=Asia%2FTokyo&forecast_days=16';
-  fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(data){ applyWeather(data); })
-    .catch(function(){ weatherErr(); });
+  
+  // 여러 URL 순차 시도
+  var urls = [
+    'https://api.open-meteo.com/v1/forecast?latitude='+CITY_LAT+'&longitude='+CITY_LNG+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=16',
+    'https://corsproxy.io/?'+encodeURIComponent('https://api.open-meteo.com/v1/forecast?latitude='+CITY_LAT+'&longitude='+CITY_LNG+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=16'),
+    'https://api.allorigins.win/raw?url='+encodeURIComponent('https://api.open-meteo.com/v1/forecast?latitude='+CITY_LAT+'&longitude='+CITY_LNG+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=16')
+  ];
+  
+  function tryUrl(idx) {
+    if(idx >= urls.length){ weatherErr(); return; }
+    fetch(urls[idx])
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(data.daily){ applyWeather(data); }
+        else { tryUrl(idx+1); }
+      })
+      .catch(function(){ tryUrl(idx+1); });
+  }
+  tryUrl(0);
 }
 function weatherErr(){ document.getElementById('wContent').innerHTML='<div class="weather-error">날씨 정보를 불러올 수 없습니다.</div>'; }
 function applyWeather(d) {
-  var daily=d.daily;
+  var daily = d.daily;
   if(!daily||!daily.time||!daily.time.length){ weatherErr(); return; }
-
-  // TRIP_START 날짜의 인덱스 찾기
-  var startIdx=-1;
+  var startIdx=0;
   for(var i=0;i<daily.time.length;i++){
     if(daily.time[i]===TRIP_START){ startIdx=i; break; }
   }
-  if(startIdx<0){
-    // 못 찾으면 0번부터 표시
-    startIdx=0;
-  }
-
   var DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var tripStart=new Date(TRIP_START);
   var fcHtml='';
@@ -3507,7 +3511,6 @@ function applyWeather(d) {
   }
   document.getElementById('wContent').innerHTML=
     '<div class="w-forecast-full" style="grid-template-columns:repeat('+TRIP_DAYS+',1fr)">'+fcHtml+'</div>';
-
   var now=new Date();
   var wDate=document.getElementById('wDate');
   if(wDate) wDate.textContent=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+' 기준';

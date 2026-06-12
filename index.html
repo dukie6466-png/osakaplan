@@ -3212,7 +3212,29 @@ function renderCardList(){
   }).join('');
 }
 
-function renameCard(idx,newName){ newName=newName.trim(); if(!newName) return; _cards[idx]=newName; saveCards(); }
+function renameCard(idx,newName){
+  newName=newName.trim(); if(!newName) return;
+  var old=_cards[idx];
+  _cards[idx]=newName; saveCards();
+  if(old!==newName){
+    loadWallet();
+    _walletItems.forEach(function(i){
+      if(i.wallet==='card'){
+        if(i.member===old) i.member=newName;
+        if(i.payer===old) i.payer=newName;
+      }
+    });
+    saveWallet();
+    _shopItems.forEach(function(it){
+      if(it.pay && it.pay.indexOf('card:'+old)===0){
+        it.pay = 'card:'+newName+it.pay.slice(('card:'+old).length);
+      }
+    });
+    saveShop();
+    if(typeof updateBalances==='function') updateBalances();
+    if(typeof renderShop==='function') renderShop();
+  }
+}
 function addCard(){
   var inp=document.getElementById('newCardName');
   var name=inp?inp.value.trim():'';
@@ -3243,8 +3265,45 @@ function renderMemberLists(){
   }).join('');
 }
 
-function renameCashMember(idx,n){ n=n.trim(); if(!n) return; _cashMembers[idx]=n; saveCards(); }
-function renameICMember(idx,n){ n=n.trim(); if(!n) return; _icMembers[idx]=n; saveCards(); }
+function renameCashMember(idx,n){
+  n=n.trim(); if(!n) return;
+  var old=_cashMembers[idx];
+  _cashMembers[idx]=n; saveCards();
+  if(old!==n){
+    loadWallet();
+    _walletItems.forEach(function(i){
+      if(i.wallet==='cash' && i.member===old) i.member=n;
+      if(i.payer===old) i.payer=n;
+    });
+    saveWallet();
+    _shopItems.forEach(function(it){
+      if(it.pay==='cash:'+old) it.pay='cash:'+n;
+      if(it.payer===old) it.payer=n;
+    });
+    saveShop();
+    if(typeof updateBalances==='function') updateBalances();
+    if(typeof renderShop==='function') renderShop();
+  }
+}
+function renameICMember(idx,n){
+  n=n.trim(); if(!n) return;
+  var old=_icMembers[idx];
+  _icMembers[idx]=n; saveCards();
+  if(old!==n){
+    loadWallet();
+    _walletItems.forEach(function(i){
+      if(i.wallet==='ic' && i.member===old) i.member=n;
+      if(i.payer===old) i.payer=n;
+    });
+    saveWallet();
+    _shopItems.forEach(function(it){
+      if(it.pay==='ic:'+old) it.pay='ic:'+n;
+    });
+    saveShop();
+    if(typeof updateBalances==='function') updateBalances();
+    if(typeof renderShop==='function') renderShop();
+  }
+}
 function addCashMember(){ var inp=document.getElementById('newCashName'); var name=inp?inp.value.trim():''; if(!name) return; _cashMembers.push(name); saveCards(); renderMemberLists(); if(inp) inp.value=''; }
 function addICMember(){ var inp=document.getElementById('newICName'); var name=inp?inp.value.trim():''; if(!name) return; _icMembers.push(name); saveCards(); renderMemberLists(); if(inp) inp.value=''; }
 function deleteCashMember(idx){ _cashMembers.splice(idx,1); saveCards(); renderMemberLists(); }

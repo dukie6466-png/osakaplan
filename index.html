@@ -1367,13 +1367,15 @@ body.editing .edit-hint{display:flex}
 
 .ev{position:relative;}
 .ev-memo-btn{
-  position:absolute; top:-2px; right:0;
-  width:24px;height:24px;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;
   background:none; border:none;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px; cursor:pointer; z-index:5;
+  font-size:12px; cursor:pointer; z-index:5;
   -webkit-tap-highlight-color:transparent;
   opacity:0.55;
+  vertical-align:top;
+  margin-left:2px;
+  transform:translateY(-3px);
 }
 .ev-memo-btn.has-memo{ opacity:1; }
 .ev-memo-btn .ev-memo-dot{
@@ -1382,7 +1384,6 @@ body.editing .edit-hint{display:flex}
   border:1.5px solid var(--surface);
 }
 .ev-memo-btn.has-memo .ev-memo-dot{ display:block; }
-.ev-body{ padding-right:30px; }
 #memoCanvas{
   width:100%; height:200px; border-radius:var(--r-sm);
   border:1.5px solid var(--border); background:#fff;
@@ -5649,15 +5650,15 @@ function initEvMemos(){
     var timeEl = ev.querySelector('.ev-time-val');
     var id = timeEl ? timeEl.id : null;
     if(!id) return;
-    var btn = document.createElement('div');
+    var btn = document.createElement('span');
     btn.className = 'ev-memo-btn';
     btn.dataset.memoId = id;
-    btn.innerHTML = '📝<span class="ev-memo-dot"></span>';
+    btn.innerHTML = '📝';
     btn.addEventListener('click', function(e){
       e.stopPropagation();
       openMemoModal(id);
     });
-    ev.appendChild(btn);
+    timeEl.insertAdjacentElement('afterend', btn);
     refreshMemoBtn(id);
   });
 }

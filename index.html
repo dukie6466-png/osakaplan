@@ -5394,6 +5394,7 @@ function loadStoreChecks(cat){
   if(!panel) return;
   var mainWrap = panel.querySelector('.store-cards-wrap');
   if(!mainWrap) return;
+  var moreWrap = document.getElementById('store-more-items-'+cat);
 
   var key = 'sc_store-cat-'+cat;
   var checked = [];
@@ -5418,9 +5419,21 @@ function loadStoreChecks(cat){
         btn.style.background='var(--ink)';
         btn.style.borderColor='var(--ink)';
       }
-      mainWrap.appendChild(card);
+      (moreWrap || mainWrap).appendChild(card);
     }
   });
+
+  // mainWrap 미체크 카드가 3개가 되도록 재배치
+  if(moreWrap){
+    var mu = Array.from(mainWrap.querySelectorAll('.store-card:not(.store-checked)'));
+    while(mu.length > 3){ moreWrap.insertBefore(mu.pop(), moreWrap.firstChild); }
+    while(mu.length < 3){
+      var mf = moreWrap.querySelector('.store-card:not(.store-checked)');
+      if(!mf) break;
+      mainWrap.appendChild(mf);
+      mu.push(mf);
+    }
+  }
 }
 
 function saveStoreChecks(wrap){
@@ -5507,10 +5520,12 @@ function initStoreSortable(cat) {
     new Sortable(wrap, {
       animation: 150,
       handle: '.store-emoji',
+      group: 'store-'+cat,
       ghostClass: 'store-drag-ghost',
       chosenClass: 'store-drag-chosen',
       onEnd: function() {
         saveStoreOrder(cat);
+        updateMoreBtnCount(cat);
       }
     });
   });

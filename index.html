@@ -1330,8 +1330,6 @@ body.editing .edit-hint{display:flex}
   75%{ transform:rotate(1.5deg); }
 }
 
-.store-card.delete-mode 
-
 .store-card { position: relative; }
 
 @keyframes store-wiggle {
@@ -1342,6 +1340,9 @@ body.editing .edit-hint{display:flex}
 .store-card.delete-mode {
   animation: store-wiggle 0.35s infinite;
   border-color: var(--red) !important;
+}
+.store-card.delete-mode .store-del-btn {
+  display: flex;
 }
 .store-del-btn {
   display: none;
@@ -1361,8 +1362,6 @@ body.editing .edit-hint{display:flex}
   z-index: 999;
   pointer-events: auto;
 }
-.store-card.delete-mode 
-
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
@@ -5556,23 +5555,27 @@ var _longPressTimer = null;
 function enableDeleteMode(card){
   _deleteMode = true;
   card.classList.add('delete-mode');
+  var btn = card.querySelector('.store-del-btn');
+  if(btn) btn.style.display = 'flex';
 }
 
 function disableAllDeleteMode(){
   _deleteMode = false;
   document.querySelectorAll('.store-card.delete-mode').forEach(function(c){
     c.classList.remove('delete-mode');
+    var btn = c.querySelector('.store-del-btn');
+    if(btn) btn.style.display = 'none';
   });
 }
 
 function addLongPressDelete(card){
   if(card._lp) return;
   card._lp = true;
-  // 기존 del btn 제거 후 새로 추가
   card.querySelectorAll('.store-del-btn').forEach(function(b){ b.remove(); });
   var btn = document.createElement('button');
   btn.className = 'store-del-btn';
   btn.innerHTML = '&times;';
+  btn.style.display = 'none';
   btn.addEventListener('click', function(e){
     e.stopPropagation();
     e.preventDefault();
@@ -5581,7 +5584,6 @@ function addLongPressDelete(card){
   });
   card.style.position = 'relative';
   card.appendChild(btn);
-  // 길게 누르기
   var t = null;
   function start(){ t = setTimeout(function(){ enableDeleteMode(card); }, 600); }
   function cancel(){ clearTimeout(t); }

@@ -1364,6 +1364,29 @@ body.editing .edit-hint{display:flex}
   pointer-events: auto;
 }
 
+
+.ev{position:relative;}
+.ev-memo-btn{
+  position:absolute; top:-2px; right:0;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--bg2); border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px; cursor:pointer; z-index:5;
+  -webkit-tap-highlight-color:transparent;
+}
+.ev-memo-btn.has-memo{ background:#FFF3CD; border-color:#E8C547; }
+.ev-memo-btn .ev-memo-dot{
+  position:absolute; top:-3px; right:-3px; width:9px;height:9px;
+  border-radius:50%; background:var(--red); display:none;
+  border:1.5px solid var(--surface);
+}
+.ev-memo-btn.has-memo .ev-memo-dot{ display:block; }
+.ev-body{ padding-right:30px; }
+#memoCanvas{
+  width:100%; height:200px; border-radius:var(--r-sm);
+  border:1.5px solid var(--border); background:#fff;
+  touch-action:none; display:block;
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 </head>
@@ -4017,7 +4040,7 @@ window.addEventListener('scroll',function(){
    초기화
 ══════════════════════════════════════ */
 window.addEventListener('load',function(){
-  drawAllMaps(); fetchRate(); fetchWeather();
+  drawAllMaps(); fetchRate(); fetchWeather(); initEvMemos();
   setTimeout(function(){ highlightWeatherDay(0); }, 1000);
 });
 window.addEventListener('resize', drawAllMaps);
@@ -5614,6 +5637,126 @@ document.addEventListener('click', function(e){
 
 
 
+
+/* ══ 일정 메모(포스트잇) ══ */
+var _memoCurrentId = null;
+var _memoCanvas = null, _memoCtx = null, _memoDrawing = false, _memoLastX = 0, _memoLastY = 0;
+
+function initEvMemos(){
+  document.querySelectorAll('.ev').forEach(function(ev){
+    if(ev.querySelector('.ev-memo-btn')) return;
+    var timeEl = ev.querySelector('.ev-time-val');
+    var id = timeEl ? timeEl.id : null;
+    if(!id) return;
+    var btn = document.createElement('div');
+    btn.className = 'ev-memo-btn';
+    btn.dataset.memoId = id;
+    btn.innerHTML = '📝<span class="ev-memo-dot"></span>';
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      openMemoModal(id);
+    });
+    ev.appendChild(btn);
+    refreshMemoBtn(id);
+  });
+}
+
+function refreshMemoBtn(id){
+  var btn = document.querySelector('.ev-memo-btn[data-memo-id="'+id+'"]');
+  if(!btn) return;
+  var text = '';
+  var draw = '';
+  try{ text = localStorage.getItem('memo_text_'+id) || ''; }catch(e){}
+  try{ draw = localStorage.getItem('memo_draw_'+id) || ''; }catch(e){}
+  var has = text.trim().length > 0 || (draw && draw !== _memoBlankDataURL);
+  btn.classList.toggle('has-memo', !!has);
+}
+
+function setupMemoCanvas(){
+  _memoCanvas = document.getElementById('memoCanvas');
+  _memoCtx = _memoCanvas.getContext('2d');
+  var rect = _memoCanvas.getBoundingClientRect();
+  _memoCanvas.width = Math.round(rect.width);
+  _memoCanvas.height = Math.round(rect.height);
+  _memoCtx.lineCap = 'round';
+  _memoCtx.lineJoin = 'round';
+  _memoCtx.lineWidth = 2.5;
+  _memoCtx.strokeStyle = '#3a3633';
+
+  if(!_memoCanvas._bound){
+    _memoCanvas._bound = true;
+    _memoCanvas.addEventListener('pointerdown', function(e){
+      _memoDrawing = true;
+      _memoLastX = e.offsetX; _memoLastY = e.offsetY;
+      _memoCanvas.setPointerCapture && _memoCanvas.setPointerCapture(e.pointerId);
+    });
+    _memoCanvas.addEventListener('pointermove', function(e){
+      if(!_memoDrawing) return;
+      _memoCtx.beginPath();
+      _memoCtx.moveTo(_memoLastX, _memoLastY);
+      _memoCtx.lineTo(e.offsetX, e.offsetY);
+      _memoCtx.stroke();
+      _memoLastX = e.offsetX; _memoLastY = e.offsetY;
+      e.preventDefault();
+    });
+    ['pointerup','pointerleave','pointercancel'].forEach(function(ev){
+      _memoCanvas.addEventListener(ev, function(){ _memoDrawing = false; });
+    });
+  }
+}
+
+var _memoBlankDataURL = '';
+
+function openMemoModal(id){
+  _memoCurrentId = id;
+  var modal = document.getElementById('memoModal');
+  if(!modal) return;
+  modal.classList.add('open');
+
+  setTimeout(function(){
+    setupMemoCanvas();
+    if(!_memoBlankDataURL){ _memoBlankDataURL = _memoCanvas.toDataURL(); }
+
+    var text = '';
+    try{ text = localStorage.getItem('memo_text_'+id) || ''; }catch(e){}
+    var textEl = document.getElementById('memoText');
+    if(textEl) textEl.value = text;
+
+    var draw = '';
+    try{ draw = localStorage.getItem('memo_draw_'+id) || ''; }catch(e){}
+    if(draw){
+      var img = new Image();
+      img.onload = function(){
+        _memoCtx.clearRect(0,0,_memoCanvas.width,_memoCanvas.height);
+        _memoCtx.drawImage(img, 0, 0, _memoCanvas.width, _memoCanvas.height);
+      };
+      img.src = draw;
+    }
+  }, 100);
+}
+
+function closeMemoModal(){
+  var modal = document.getElementById('memoModal');
+  if(modal) modal.classList.remove('open');
+  _memoCurrentId = null;
+}
+
+function clearMemoCanvas(){
+  if(_memoCtx) _memoCtx.clearRect(0,0,_memoCanvas.width,_memoCanvas.height);
+}
+
+function saveMemo(){
+  if(!_memoCurrentId) return;
+  try{
+    var text = (document.getElementById('memoText')||{}).value || '';
+    localStorage.setItem('memo_text_'+_memoCurrentId, text);
+    if(_memoCanvas){
+      localStorage.setItem('memo_draw_'+_memoCurrentId, _memoCanvas.toDataURL());
+    }
+  }catch(e){}
+  refreshMemoBtn(_memoCurrentId);
+  closeMemoModal();
+}
 </script>
 <!-- 리무진 버스 시간표 모달 -->
 <div class="modal-overlay" id="busModal" onclick="if(event.target===this)this.classList.remove('open')">
@@ -6898,5 +7041,25 @@ function clOpen(){
   clLoad(); clRenderCats(); clRenderList();
   document.getElementById('checklistModal').classList.add('open');
 }</script>
+
+<!-- 일정 메모(포스트잇) 모달 -->
+<div class="modal-overlay" id="memoModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span>📝 메모</span>
+      <span class="modal-close" onclick="closeMemoModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <textarea id="memoText" placeholder="메모를 입력하세요 (예: 예약번호, 챙길 것 등)" style="width:100%;min-height:80px;box-sizing:border-box;padding:10px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);font-family:inherit;resize:vertical;background:var(--bg2);color:var(--ink);"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0 6px;">
+        <span style="font-size:var(--f2xs);color:var(--ink3);">✏️ 손글씨 메모 (펜슬·터치 가능)</span>
+        <button onclick="clearMemoCanvas()" style="border:1.5px solid var(--border);background:var(--bg2);border-radius:8px;padding:4px 10px;font-size:var(--f2xs);color:var(--ink3);cursor:pointer;">지우기</button>
+      </div>
+      <canvas id="memoCanvas"></canvas>
+      <button onclick="saveMemo()" style="width:100%;margin-top:14px;padding:13px;background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer;">✓ 저장</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

@@ -811,6 +811,12 @@ body.editing .edit-hint{display:flex}
   animation: store-wiggle 0.35s infinite;
   border-color: var(--red) !important;
 }
+.shop-drag-handle{
+  flex-shrink:0; width:18px; text-align:center;
+  font-size:15px; color:var(--ink3); opacity:0.5;
+  cursor:grab; touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+}
 .shop-item.delete-mode .store-del-btn{
   display: flex;
 }
@@ -1109,6 +1115,33 @@ body.editing .edit-hint{display:flex}
 
 /* ── 지갑 탭/잔액 ── */
 .w-balance-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.w-person-summary{
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:7px; margin-bottom:12px;
+}
+.w-person-card{
+  background:var(--bg2); border:1.5px solid var(--border);
+  border-radius:var(--r-sm); padding:10px 10px;
+}
+.w-person-card-name{
+  font-size:13px; font-weight:800; color:var(--ink);
+  margin-bottom:6px; padding-bottom:5px;
+  border-bottom:1.5px solid var(--border);
+}
+.w-person-line{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:11px; color:var(--ink3); font-weight:600;
+  padding:2px 0;
+}
+.w-person-line b{
+  font-family:'Playfair Display',serif; font-size:12px; color:var(--ink); font-weight:700;
+}
+.w-person-line.total{
+  margin-top:4px; padding-top:5px;
+  border-top:1.5px solid var(--border);
+}
+.w-person-line.total span{ font-size:11px; font-weight:800; color:var(--gold); }
+.w-person-line.total b{ font-size:14px; font-weight:800; color:var(--gold); }
 .w-bal-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 8px;text-align:center}
 .w-bal-card.cash{border-top:3px solid #1565C0}
 .w-bal-card.card{border-top:3px solid var(--gold)}
@@ -1116,12 +1149,23 @@ body.editing .edit-hint{display:flex}
 .w-bal-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);font-weight:700;margin-bottom:5px}
 .w-bal-val{font-size:13px;color:var(--ink);line-height:1.4;display:flex;flex-direction:column;gap:0;width:100%;}
 .w-bal-krw{font-size:9px;color:var(--ink3);margin-top:3px;text-align:right;width:100%;}
-.w-tabs{display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px}
+.w-tabs{
+  display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px;
+  position:sticky; top:0; z-index:20;
+  background:var(--surface);
+  margin-left:-16px; margin-right:-16px; margin-top:-14px;
+  padding:14px 16px 8px;
+  border-radius:0;
+  border-left:none; border-right:none; border-top:none;
+}
 .w-tab{flex:1;padding:9px 4px;border:none;background:var(--bg2);font-size:10px;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap;height:36px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;}
+.w-tab:first-child{border-radius:var(--r-sm) 0 0 var(--r-sm);}
+.w-tab:last-child{border-radius:0 var(--r-sm) var(--r-sm) 0;}
 .w-tab:not(:last-child){border-right:1px solid var(--border)}
 .w-tab.active{background:linear-gradient(135deg,#FF9A5C,#E8602A);color:#fff}
 /* 쇼핑 결제수단 */
 .shop-pay-sel{font-size:10px;padding:2px 5px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--ink2);outline:none}
+.shop-payer-sel{font-size:10px;padding:2px 5px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--ink2);outline:none}
 
 .w-subtotal{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);font-size:var(--fsm);margin-bottom:8px}
 .wfc-item.today,.wfc-item.wfc-active{
@@ -3121,6 +3165,15 @@ function refreshCardSelect(){
   }).join('');
 }
 
+function refreshCardMemberSelect(){
+  var sel = document.getElementById('wCardMember');
+  if(!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = _cashMembers.map(function(m){
+    return '<option value="'+m+'"'+(m===cur?' selected':'')+'>👤 '+m+'</option>';
+  }).join('');
+}
+
 function refreshCashSelect(){
   var sel = document.getElementById('wCashMember');
   if(!sel) return;
@@ -3812,6 +3865,7 @@ function renderShop(){
 
   function makeItem(item){
     return '<div class="shop-item'+(item.done?' done':'')+'" id="si'+item.id+'">'+
+      '<span class="shop-drag-handle">⠿</span>'+
       '<div class="shop-item-check" onclick="toggleItem('+item.id+')">'+(item.done?'✓':'')+' </div>'+
       '<div class="shop-item-body">'+
         '<input class="shop-item-name" value="'+escH(item.name)+'" onchange="updateName('+item.id+',this.value)" placeholder="상품명">'+
@@ -3830,6 +3884,11 @@ function renderShop(){
               return o;
             })(item.pay)+
           '</select>'+
+          ((item.pay||'').indexOf('card:')===0 ?
+            '<select class="shop-payer-sel" onchange="updateShopPayer('+item.id+',this.value)">'+
+              _cashMembers.map(function(m){ return '<option value="'+m+'"'+(item.payer===m?' selected':'')+'>👤 '+m+'</option>'; }).join('')+
+            '</select>'
+          : '')+
         '</div>'+
       '</div>'+
       '<span class="shop-memo-icon" id="simemo'+item.id+'" onclick="event.stopPropagation();openMemoModal(\'simemo'+item.id+'\')">📝</span>'+
@@ -3861,7 +3920,7 @@ function initShopSortable(){
   list._sortable = true;
   new Sortable(list, {
     animation: 150,
-    handle: '.shop-item-check',
+    handle: '.shop-drag-handle',
     draggable: '.shop-item',
     ghostClass: 'store-drag-ghost',
     chosenClass: 'store-drag-chosen',
@@ -3901,7 +3960,13 @@ function toggleItem(id){
 }
 function updateName(id,v){ var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.name=v;saveShop();} }
 function updateCat(id,v){ var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.cat=v;saveShop();renderShop();} }
-function updatePrice(id,v){ var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.price=parseInt(v)||0;saveShop();updateTotal();} }
+function updatePrice(id,v){
+  var i=_shopItems.find(function(x){return x.id===id;});
+  if(i){
+    i.price=parseInt(v)||0; saveShop(); updateTotal();
+    if(i.done) syncShopToWallet(i, true);
+  }
+}
 function deleteItem(id){
   // 지갑에서도 연동 항목 삭제
   loadWallet();
@@ -4414,10 +4479,20 @@ function addWalletItem() {
   else if(_walletTab===1 && cardSel) member = cardSel.value;
   else if(_walletTab===2 && icSel) member = icSel.value.replace('ic:','');
 
+  // payer(인원) 정보 저장 - 현금/IC는 member와 동일, 카드는 별도 선택
+  var payer = '';
+  if(_walletTab===0) payer = member;
+  else if(_walletTab===2) payer = member;
+  else if(_walletTab===1){
+    var cardMemberSel = document.getElementById('wCardMember');
+    payer = cardMemberSel ? cardMemberSel.value : '';
+  }
+
   _walletItems.push({
     id: Date.now(),
     wallet: W_TAB_MAP[_walletTab],
     member: member,
+    payer: payer,
     type: subType,
     cat: cat,
     desc: desc,
@@ -4442,6 +4517,46 @@ function addWalletItem() {
 function deleteWalletItem(id) {
   _walletItems = _walletItems.filter(function(i){ return i.id!==id; });
   saveWallet(); renderWallet(); updateBalances();
+}
+
+function renderPersonSummary(){
+  var el = document.getElementById('wPersonSummary');
+  if(!el) return;
+  loadCards();
+  var people = (_cashMembers||[]).slice();
+  var cards = (_cards||[]).slice();
+
+  function sumExp(wallet, person, cardName){
+    return _walletItems.filter(function(i){
+      if(i.wallet!==wallet || i.type!=='expense') return false;
+      if(wallet==='card'){
+        return i.payer===person && i.member===cardName;
+      }
+      return i.member===person || i.payer===person;
+    }).reduce(function(s,i){ return s+i.amount; },0);
+  }
+
+  el.style.gridTemplateColumns = 'repeat('+people.length+',1fr)';
+
+  el.innerHTML = people.map(function(p){
+    var cash = sumExp('cash', p);
+    var ic   = sumExp('ic', p);
+    var cardVals = cards.map(function(c){
+      var has = _walletItems.some(function(i){ return i.wallet==='card' && i.member===c && i.payer===p; });
+      return has ? {name:c, val:sumExp('card', p, c)} : null;
+    }).filter(Boolean);
+    var cardTotal = cardVals.reduce(function(s,v){ return s+v.val; },0);
+    var total = cash+ic+cardTotal;
+    return '<div class="w-person-card">'+
+      '<div class="w-person-card-name">'+p+'</div>'+
+      '<div class="w-person-line"><span>💴 현금</span><b>¥'+cash.toLocaleString()+'</b></div>'+
+      cardVals.map(function(v){
+        return '<div class="w-person-line"><span>💳 '+v.name+'</span><b>¥'+v.val.toLocaleString()+'</b></div>';
+      }).join('')+
+      '<div class="w-person-line"><span>🚇 교통IC</span><b>¥'+ic.toLocaleString()+'</b></div>'+
+      '<div class="w-person-line total"><span>총지출</span><b>¥'+total.toLocaleString()+'</b></div>'+
+    '</div>';
+  }).join('');
 }
 
 function updateBalances() {
@@ -4516,6 +4631,9 @@ function updateBalances() {
     icEl.innerHTML = icLines.join('') + icTotalLine;
     if(icKrwEl) icKrwEl.textContent = _rateKRW>0 ? '≈ ₩'+Math.round(icTotal*_rateKRW).toLocaleString() : '';
   }
+
+
+  renderPersonSummary();
 }
 function renderWallet() {
   var list = document.getElementById('walletList'); if(!list) return;
@@ -4576,32 +4694,51 @@ function renderWallet() {
 /* 쇼핑 체크 시 지갑 연동 - 결제수단 반영 */
 function syncShopToWallet(item, checked){
   loadWallet();
+  _walletItems = _walletItems.filter(function(i){ return i.shopId !== item.id; });
+  var wName = '';
   if(checked && item.price>0){
     var pay = item.pay || 'cash:본인';
     var parts = pay.split(':');
     var wKey = parts[0]; // cash, card, ic
-    var who  = parts[1] || '';
-    var wName = who ? (wKey==='card'?'💳 '+who : wKey==='ic'?'⚡ '+who+' IC':'💴 '+who+' 현금') : (wKey==='card'?'💳 카드':wKey==='ic'?'⚡ IC':'💴 현금');
+    var who, cardName, payer;
+    if(wKey==='card'){
+      cardName = parts[1] || '카드';
+      payer = item.payer || '';
+      who = cardName;
+      wName = '💳 '+cardName+(payer?' ('+payer+')':'');
+    } else {
+      who = parts[1] || '';
+      payer = who;
+      wName = who ? (wKey==='ic'?'⚡ '+who+' IC':'💴 '+who+' 현금') : (wKey==='ic'?'⚡ IC':'💴 현금');
+    }
     _walletItems.push({
       id: Date.now(), wallet: wKey, type:'expense', cat:'쇼핑',
-      member: who,
+      member: who, payer: payer,
       desc: (item.name||'구매 항목') + ' ('+wName+')', amount: item.price, shopId: item.id,
       date: new Date().toLocaleDateString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})
     });
-    saveWallet();
-    updateBalances();
-    if(typeof renderWallet === 'function') renderWallet();
-    showSyncToast(wName+' 지출 기록됨');
-  } else if(!checked){
-    _walletItems = _walletItems.filter(function(i){ return i.shopId !== item.id; });
-    saveWallet();
-    updateBalances();
-    if(typeof renderWallet === 'function') renderWallet();
   }
+  saveWallet();
+  updateBalances();
+  if(typeof renderWallet === 'function') renderWallet();
+  if(checked && item.price>0) showSyncToast(wName+' 지출 기록됨');
 }
 
 function updatePay(id, val){
-  var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.pay=val; saveShop();}
+  var i=_shopItems.find(function(x){return x.id===id;});
+  if(i){
+    i.pay=val; saveShop();
+    if(i.done) syncShopToWallet(i, true);
+    renderShop();
+  }
+}
+
+function updateShopPayer(id, val){
+  var i=_shopItems.find(function(x){return x.id===id;});
+  if(i){
+    i.payer=val; saveShop();
+    if(i.done) syncShopToWallet(i, true);
+  }
 }
 
 function showSyncToast(msg){
@@ -4748,7 +4885,7 @@ function updateWalletForm(idx){
   if(cashRow){ cashRow.style.display=(idx===0)?'flex':'none'; if(idx===0){loadCards();refreshCashSelect();} }
   // 카드
   var cardRow = document.getElementById('wCardRow');
-  if(cardRow){ cardRow.style.display=(idx===1)?'flex':'none'; if(idx===1){loadCards();refreshCardSelect();} }
+  if(cardRow){ cardRow.style.display=(idx===1)?'flex':'none'; if(idx===1){loadCards();refreshCardSelect();refreshCardMemberSelect();} }
   // IC
   var icRow = document.getElementById('wICRow');
   if(icRow){ icRow.style.display=(idx===2)?'flex':'none'; if(idx===2){loadCards();refreshICSelect();} }
@@ -4759,6 +4896,10 @@ function updateWalletForm(idx){
   // 구매목록 연동지출 박스: 사전예매 탭에서만 숨김
   var syncBox = document.querySelector('.wallet-sync-box');
   if(syncBox) syncBox.style.display = (idx===3) ? 'none' : '';
+
+  // 잔액현황/지출내역: 사전예매 탭에서만 숨김
+  var balSection = document.getElementById('wBalanceSection');
+  if(balSection) balSection.style.display = (idx===3) ? 'none' : '';
 
   // 화폐 선택: 사전예매만 표시, 기본값 원화
   var curSel   = document.getElementById('wCurrency');
@@ -6491,24 +6632,6 @@ function saveMemo(){
 <button class="modal-close" onclick="document.getElementById('walletModal').classList.remove('open')">✕</button>
 </div>
 <div class="modal-body">
-<!-- 상단 잔액 요약 3칸 -->
-<div class="w-balance-grid">
-<div class="w-bal-card cash">
-<div class="w-bal-label">💴 현금 잔액</div>
-<div class="w-bal-val" id="wBalCash">¥0</div>
-<div class="w-bal-krw" id="wBalCashKrw"></div>
-</div>
-<div class="w-bal-card card">
-<div class="w-bal-label">💳 카드 잔액</div>
-<div class="w-bal-val" id="wBalCard">¥0</div>
-<div class="w-bal-krw" id="wBalCardKrw"></div>
-</div>
-<div class="w-bal-card ic">
-<div class="w-bal-label">🚇 교통IC 잔액</div>
-<div class="w-bal-val" id="wBalIC">¥0</div>
-<div class="w-bal-krw" id="wBalICKrw"></div>
-</div>
-</div>
 <!-- 탭 -->
 <div class="w-tabs">
 <button class="w-tab active" id="wTab0" onclick="switchWalletTab(0)">💴 현금</button>
@@ -6529,7 +6652,8 @@ function saveMemo(){
 </div>
 <!-- 카드 선택 (카드 탭) -->
 <div class="wallet-form-row" id="wCardRow" style="display:none;">
-<select class="wallet-select" id="wCardName"></select>
+<select class="wallet-select" id="wCardName" style="flex:1;"></select>
+<select class="wallet-select" id="wCardMember" style="flex:0 0 92px;"></select>
 </div>
 <!-- IC 멤버 선택 (IC 탭) -->
 <div class="wallet-form-row" id="wICRow" style="display:none;">
@@ -6555,6 +6679,30 @@ function saveMemo(){
 <!-- 숨겨진 필드 -->
 <input id="wSubType" type="hidden" value="income"/>
 <input id="wCat" type="hidden" value="환전"/>
+</div>
+<div id="wBalanceSection">
+<!-- 잔액현황 -->
+<div class="timetable-label" style="margin-top:14px;">잔액현황</div>
+<div class="w-balance-grid">
+<div class="w-bal-card cash">
+<div class="w-bal-label">💴 현금 잔액</div>
+<div class="w-bal-val" id="wBalCash">¥0</div>
+<div class="w-bal-krw" id="wBalCashKrw"></div>
+</div>
+<div class="w-bal-card card">
+<div class="w-bal-label">💳 카드 잔액</div>
+<div class="w-bal-val" id="wBalCard">¥0</div>
+<div class="w-bal-krw" id="wBalCardKrw"></div>
+</div>
+<div class="w-bal-card ic">
+<div class="w-bal-label">🚇 교통IC 잔액</div>
+<div class="w-bal-val" id="wBalIC">¥0</div>
+<div class="w-bal-krw" id="wBalICKrw"></div>
+</div>
+</div>
+<!-- 지출내역 (인원별) -->
+<div class="timetable-label">지출내역</div>
+<div class="w-person-summary" id="wPersonSummary"></div>
 </div>
 <!-- 구매목록 연동 -->
 <div class="wallet-sync-box">

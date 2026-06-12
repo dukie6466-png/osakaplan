@@ -805,6 +805,24 @@ body.editing .edit-hint{display:flex}
   background:var(--surface);border:1.5px solid var(--border);
   border-radius:var(--r-sm);padding:12px 13px;
   transition:opacity .2s;animation:up .3s ease both;
+  position:relative;
+}
+.shop-item.delete-mode{
+  animation: store-wiggle 0.35s infinite;
+  border-color: var(--red) !important;
+}
+.shop-item.delete-mode .store-del-btn{
+  display: flex;
+}
+.shop-memo-icon{
+  position:absolute; top:8px; right:10px;
+  font-size:13px; cursor:pointer; opacity:0.25; z-index:5;
+  -webkit-tap-highlight-color:transparent;
+  transition: opacity .15s, transform .15s;
+}
+.shop-memo-icon.has-memo{
+  opacity:1;
+  transform: scale(1.15);
 }
 .shop-item.done{opacity:.36}
 .shop-item.done .shop-item-name{text-decoration:line-through}
@@ -3791,7 +3809,7 @@ function renderShop(){
           '</select>'+
         '</div>'+
       '</div>'+
-      '<button class="shop-item-del" onclick="deleteItem('+item.id+')">✕</button>'+
+      '<span class="shop-memo-icon" id="simemo'+item.id+'" onclick="event.stopPropagation();openMemoModal(\'simemo'+item.id+'\')">📝</span>'+
     '</div>';
   }
 
@@ -3805,6 +3823,11 @@ function renderShop(){
   }
 
   list.innerHTML = html;
+  showItems.forEach(function(item){
+    var el = document.getElementById('si'+item.id);
+    if(el) addShakeDelete(el, function(){ deleteItem(item.id); });
+    refreshMemoBtn('simemo'+item.id);
+  });
   updateTotal();
 }
 
@@ -5625,6 +5648,33 @@ function addLongPressDelete(card){
   card.addEventListener('mousedown', start);
   card.addEventListener('mouseup', cancel);
   card.addEventListener('mouseleave', cancel);
+}
+
+function addShakeDelete(el, onDelete){
+  if(el._lp) return;
+  el._lp = true;
+  if(!el.querySelector('.store-del-btn')){
+    var btn = document.createElement('button');
+    btn.className = 'store-del-btn';
+    btn.innerHTML = '&times;';
+    btn.style.display = 'none';
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      disableAllDeleteMode();
+      onDelete();
+    });
+    el.appendChild(btn);
+  }
+  var t = null;
+  function start(){ t = setTimeout(function(){ enableDeleteMode(el); }, 600); }
+  function cancel(){ clearTimeout(t); }
+  el.addEventListener('touchstart', start, {passive:true});
+  el.addEventListener('touchend', cancel);
+  el.addEventListener('touchmove', cancel);
+  el.addEventListener('mousedown', start);
+  el.addEventListener('mouseup', cancel);
+  el.addEventListener('mouseleave', cancel);
 }
 
 // 화면 다른 곳 터치하면 삭제모드 해제

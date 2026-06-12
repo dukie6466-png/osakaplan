@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<title>오사카 여행 (3박4일)</title>
+<title>오사카여행 (3박4일)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,700;1,400&amp;display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════════
@@ -5563,8 +5563,11 @@ function addLongPressDelete(card){
   btn.addEventListener('click', function(e){
     e.stopPropagation();
     e.preventDefault();
+    var panel = card.closest('.store-panel');
+    var cat = panel ? panel.id.replace('store-cat-','') : null;
     card.remove();
     disableAllDeleteMode();
+    if(cat){ saveCustomStoresDirect(cat); updateMoreBtnCount(cat); }
   });
   card.style.position = 'relative';
   card.appendChild(btn);

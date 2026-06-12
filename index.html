@@ -1366,18 +1366,20 @@ body.editing .edit-hint{display:flex}
 
 
 .ev{position:relative;}
-.ev-memo-btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;
-  background:none; border:none;
-  font-size:12px; cursor:pointer; z-index:5;
-  -webkit-tap-highlight-color:transparent;
-  opacity:0.55;
-  vertical-align:top;
-  margin-left:2px;
-  transform:translateY(-3px);
+.ev-time-val.has-memo{
+  color: var(--red);
+  font-size: 15px;
+  position: relative;
 }
-.ev-memo-btn.has-memo{ opacity:1; }
+.ev-time-val.has-memo::after{
+  content: '✓';
+  position: absolute;
+  right: -7px;
+  top: -2px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--red);
+}
 .ev-memo-btn .ev-memo-dot{
   position:absolute; top:-3px; right:-3px; width:9px;height:9px;
   border-radius:50%; background:var(--red); display:none;
@@ -3523,7 +3525,7 @@ function buildWheel(el,items,selected,onChange){
 }
 function updateDisplay(){ document.getElementById('tpDisplay').textContent=String(_tpHour).padStart(2,'0')+':'+String(_tpMin).padStart(2,'0'); }
 function openTimePicker(id){
-  if(!document.body.classList.contains('editing')) return;
+  if(!document.body.classList.contains('editing')){ openMemoModal(id); return; }
   _tpTarget=document.getElementById(id);
   var parts=_tpTarget.dataset.time.split(':');
   _tpHour=parseInt(parts[0]); _tpMin=parseInt(parts[1]);
@@ -5645,33 +5647,20 @@ var _memoCurrentId = null;
 var _memoCanvas = null, _memoCtx = null, _memoDrawing = false, _memoLastX = 0, _memoLastY = 0;
 
 function initEvMemos(){
-  document.querySelectorAll('.ev').forEach(function(ev){
-    if(ev.querySelector('.ev-memo-btn')) return;
-    var timeEl = ev.querySelector('.ev-time-val');
-    var id = timeEl ? timeEl.id : null;
-    if(!id) return;
-    var btn = document.createElement('span');
-    btn.className = 'ev-memo-btn';
-    btn.dataset.memoId = id;
-    btn.innerHTML = '📝';
-    btn.addEventListener('click', function(e){
-      e.stopPropagation();
-      openMemoModal(id);
-    });
-    timeEl.insertAdjacentElement('afterend', btn);
-    refreshMemoBtn(id);
+  document.querySelectorAll('.ev-time-val').forEach(function(timeEl){
+    refreshMemoBtn(timeEl.id);
   });
 }
 
 function refreshMemoBtn(id){
-  var btn = document.querySelector('.ev-memo-btn[data-memo-id="'+id+'"]');
-  if(!btn) return;
+  var el = document.getElementById(id);
+  if(!el) return;
   var text = '';
   var draw = '';
   try{ text = localStorage.getItem('memo_text_'+id) || ''; }catch(e){}
   try{ draw = localStorage.getItem('memo_draw_'+id) || ''; }catch(e){}
   var has = text.trim().length > 0 || (draw && draw !== _memoBlankDataURL);
-  btn.classList.toggle('has-memo', !!has);
+  el.classList.toggle('has-memo', !!has);
 }
 
 function setupMemoCanvas(){

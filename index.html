@@ -3309,8 +3309,28 @@ function tryRate2() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET','https://api.frankfurter.app/latest?from=JPY&to=KRW',true);
   xhr.timeout = 6000;
-  xhr.onload = function(){ if(xhr.status===200){try{applyRate(JSON.parse(xhr.responseText).rates.KRW);return;}catch(e){}} document.getElementById('rateVal').innerHTML='<span class="rate-loading">연결 실패 ↻</span>'; };
-  xhr.onerror = xhr.ontimeout = function(){ document.getElementById('rateVal').innerHTML='<span class="rate-loading">연결 실패 ↻</span>'; };
+  xhr.onload = function(){ if(xhr.status===200){try{applyRate(JSON.parse(xhr.responseText).rates.KRW);return;}catch(e){}} tryRate3(); };
+  xhr.onerror = xhr.ontimeout = tryRate3;
+  xhr.send();
+}
+
+function tryRate3() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET','https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/jpy.json',true);
+  xhr.timeout = 6000;
+  xhr.onload = function(){
+    if(xhr.status===200){
+      try{
+        var data = JSON.parse(xhr.responseText);
+        var krw = data.jpy && data.jpy.krw;
+        if(krw){ applyRate(krw); return; }
+      }catch(e){}
+    }
+    document.getElementById('rateVal').innerHTML='<span class="rate-loading">연결 실패 ↻</span>';
+  };
+  xhr.onerror = xhr.ontimeout = function(){
+    document.getElementById('rateVal').innerHTML='<span class="rate-loading">연결 실패 ↻</span>';
+  };
   xhr.send();
 }
 function applyRate(krw) {
@@ -5017,47 +5037,7 @@ function saveCustomStoresDirect(cat){
   });
   try{ localStorage.setItem('custom_stores_'+cat, JSON.stringify(customs)); }catch(e){}
 }
-function renderCustomStores(cat){
-  // 기존 custom 카드 제거 후 재생성
-  var moreWrap = document.getElementById('store-more-items-'+cat);
-  var mainWrap = document.getElementById('store-wrap-'+cat);
-  [mainWrap, moreWrap].forEach(function(w){
-    if(!w) return;
-    w.querySelectorAll('.store-custom-item').forEach(function(c){ c.remove(); });
-  });
-  var customs = [];
-  try{ customs = JSON.parse(localStorage.getItem('custom_stores_'+cat)||'[]'); }catch(e){}
-  if(!customs.length) return;
-  var targetWrap = moreWrap || mainWrap;
-  customs.forEach(function(s){
-    var card=document.createElement('div');
-    card.className='store-card store-custom-item';
-    var checkBtn=document.createElement('div');
-    checkBtn.className='store-check-btn';
-    checkBtn.style.cssText='width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--bg2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;-webkit-tap-highlight-color:transparent;transition:all .2s;';
-    checkBtn.addEventListener('click',function(){toggleStoreCheck(this);});
-    var emoDiv=document.createElement('div');
-    emoDiv.className='store-emoji'; emoDiv.textContent=s.emoji||'📍'; emoDiv.style.cursor='grab';
-    var infoDiv=document.createElement('div');
-    infoDiv.className='store-info';
-    infoDiv.innerHTML='<div class="store-name">'+s.name+'</div>'+(s.desc?'<div class="store-desc">'+s.desc+'</div>':'');
-    var arrowBtn=document.createElement('button');
-    arrowBtn.className='store-arrow-btn'; arrowBtn.textContent='→';
-    arrowBtn.addEventListener('click',function(){openNearby(s.name);});
-    var delBtn=document.createElement('button');
-    delBtn.style.cssText='border:none;background:none;color:var(--red);font-size:14px;cursor:pointer;padding:0 4px;flex-shrink:0;';
-    delBtn.textContent='✕';
-    delBtn.addEventListener('click',function(){card.remove();saveCustomStoresDirect(cat);});
-    card.appendChild(checkBtn); card.appendChild(emoDiv); card.appendChild(infoDiv);
-    card.appendChild(arrowBtn); card.appendChild(delBtn);
-    targetWrap.appendChild(card);
-  });
-  // 더보기가 있으면 열기
-  if(moreWrap && moreWrap.style.display==='none' && customs.length){
-    var moreBtn=document.getElementById('store-more-'+cat);
-    if(moreBtn) toggleStoreMore(moreBtn, cat);
-  }
-}
+
 var _dragSrcCat='', _dragSrcIdx=-1;
 function storeDragStart(e, cat, idx){
   _dragSrcCat=cat; _dragSrcIdx=idx;
@@ -5600,26 +5580,7 @@ document.addEventListener('click', function(e){
   if(_deleteMode && !e.target.closest('.store-card')){ disableAllDeleteMode(); }
 });
 
-function loadStoreOrder(cat){
-  var wraps = [
-    {el: document.getElementById('store-wrap-'+cat), key: 'so_main_'+cat},
-    {el: document.getElementById('store-more-items-'+cat), key: 'so_more_'+cat}
-  ];
-  wraps.forEach(function(w) {
-    if(!w.el) return;
-    var order = [];
-    try { order = JSON.parse(localStorage.getItem(w.key)||'[]'); } catch(e) {}
-    if(!order.length) return;
-    var cards = Array.from(w.el.querySelectorAll('.store-card'));
-    order.forEach(function(name) {
-      var card = cards.find(function(c) {
-        var n = c.querySelector('.store-name');
-        return n && n.textContent.trim() === name;
-      });
-      if(card) w.el.appendChild(card);
-    });
-  });
-}
+
 
 
 

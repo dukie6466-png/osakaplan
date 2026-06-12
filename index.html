@@ -3518,6 +3518,22 @@ function toggleEdit2() {
   document.querySelectorAll('.ev-title,.ev-cat,.ev-desc p,.ev-desc li').forEach(function(el){ el.contentEditable=on?'true':'false'; });
 }
 
+function toggleEdit3() {
+  var body=document.body, btn=document.getElementById('editBtn3');
+  var on=body.classList.toggle('editing');
+  btn.textContent=on?'✅ 편집 완료':'✏️ 일정 편집';
+  btn.classList.toggle('on',on);
+  document.querySelectorAll('.ev-title,.ev-cat,.ev-desc p,.ev-desc li').forEach(function(el){ el.contentEditable=on?'true':'false'; });
+}
+
+function toggleEdit4() {
+  var body=document.body, btn=document.getElementById('editBtn4');
+  var on=body.classList.toggle('editing');
+  btn.textContent=on?'✅ 편집 완료':'✏️ 일정 편집';
+  btn.classList.toggle('on',on);
+  document.querySelectorAll('.ev-title,.ev-cat,.ev-desc p,.ev-desc li').forEach(function(el){ el.contentEditable=on?'true':'false'; });
+}
+
 /* ══════════════════════════════════════
    타임피커
 ══════════════════════════════════════ */

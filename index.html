@@ -3341,8 +3341,11 @@ function applyRate(krw) {
   calcRate();
 }
 function calcRate() {
-  var yen = parseFloat(document.getElementById('yenInput').value)||0;
-  if (_rateKRW>0) document.getElementById('wonResult').textContent = '₩'+Math.round(yen*_rateKRW).toLocaleString();
+  var yenEl = document.getElementById('yenInput');
+  var wonEl = document.getElementById('wonResult');
+  if(!yenEl || !wonEl) return;
+  var yen = parseFloat(yenEl.value)||0;
+  if (_rateKRW>0) wonEl.textContent = '₩'+Math.round(yen*_rateKRW).toLocaleString();
 }
 
 /* ══════════════════════════════════════

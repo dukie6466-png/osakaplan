@@ -808,7 +808,7 @@ body.editing .edit-hint{display:flex}
   position:relative;
 }
 .shop-item.delete-mode{
-  animation: store-wiggle 0.35s infinite;
+  animation: store-wiggle 0.7s infinite;
   border-color: var(--red) !important;
 }
 .shop-drag-handle{
@@ -1110,7 +1110,7 @@ body.editing .edit-hint{display:flex}
   border-radius:var(--r-sm); padding:10px 14px; margin-bottom:10px;
 }
 .wallet-sync-label{ font-size:var(--fsm); font-weight:700; color:var(--gold); }
-.wallet-sync-val{line-height:1.4;text-align:right; font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--gold); }
+.wallet-sync-val{line-height:1.4;text-align:right; font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--red); }
 
 
 /* ── 지갑 탭/잔액 ── */
@@ -1130,18 +1130,18 @@ body.editing .edit-hint{display:flex}
 }
 .w-person-line{
   display:flex; justify-content:space-between; align-items:center;
-  font-size:11px; color:var(--ink3); font-weight:600;
+  font-size:10px; color:var(--ink3); font-weight:600;
   padding:2px 0;
 }
 .w-person-line b{
-  font-family:'Playfair Display',serif; font-size:12px; color:var(--ink); font-weight:700;
+  font-family:'Playfair Display',serif; font-size:13px; color:var(--ink); font-weight:700;
 }
 .w-person-line.total{
   margin-top:4px; padding-top:5px;
   border-top:1.5px solid var(--border);
 }
-.w-person-line.total span{ font-size:11px; font-weight:800; color:var(--gold); }
-.w-person-line.total b{ font-size:14px; font-weight:800; color:var(--gold); }
+.w-person-line.total span{ font-size:10px; font-weight:800; color:var(--red); }
+.w-person-line.total b{ font-size:14px; font-weight:800; color:var(--red); }
 .w-bal-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 8px;text-align:center}
 .w-bal-card.cash{border-top:3px solid #1565C0}
 .w-bal-card.card{border-top:3px solid var(--gold)}
@@ -1408,7 +1408,7 @@ body.editing .edit-hint{display:flex}
   75%{ transform:rotate(2deg); }
 }
 .store-card.delete-mode {
-  animation: store-wiggle 0.35s infinite;
+  animation: store-wiggle 0.7s infinite;
   border-color: var(--red) !important;
 }
 .store-card.delete-mode .store-del-btn {
@@ -3130,6 +3130,7 @@ body.editing .edit-hint{display:flex}
 <script>
 /* ══ 카드/멤버 관리 ══ */
 var _cards = ['트래블월렛', '토스뱅크', '하나트래블로그'];
+var _cardOwners = {};
 var _cashMembers = ['본인', '동행'];
 var _icMembers   = ['본인', '동행'];
 
@@ -3141,6 +3142,8 @@ function loadCards(){
     if(sc) _cashMembers = JSON.parse(sc);
     var si = localStorage.getItem('osaka_ic_members');
     if(si) _icMembers = JSON.parse(si);
+    var so = localStorage.getItem('osaka_card_owners');
+    if(so) _cardOwners = JSON.parse(so);
   } catch(e){}
 }
 
@@ -3149,6 +3152,7 @@ function saveCards(){
     localStorage.setItem('osaka_cards', JSON.stringify(_cards));
     localStorage.setItem('osaka_cash_members', JSON.stringify(_cashMembers));
     localStorage.setItem('osaka_ic_members', JSON.stringify(_icMembers));
+    localStorage.setItem('osaka_card_owners', JSON.stringify(_cardOwners));
   } catch(e){}
   refreshCardSelect();
   refreshCashSelect();
@@ -3206,16 +3210,35 @@ function renderCardList(){
     return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);">'+
       '<span style="font-size:18px;flex-shrink:0;">💳</span>'+
       '<input class="card-edit-input" value="'+c+'" onchange="renameCard('+i+',this.value)" style="flex:1;border:none;background:transparent;font-size:14px;font-weight:700;color:var(--ink);outline:none;padding:4px 0;"/>'+
-      '<span style="font-size:9px;color:var(--ink3);flex-shrink:0;margin-right:4px;">✏️</span>'+
+      '<select onchange="setCardOwner(\''+c+'\',this.value)" style="font-size:10px;padding:3px 5px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink2);outline:none;flex-shrink:0;">'+
+        '<option value="">👤 사용자?</option>'+
+        _cashMembers.map(function(m){ return '<option value="'+m+'"'+(_cardOwners[c]===m?' selected':'')+'>👤 '+m+'</option>'; }).join('')+
+      '</select>'+
       '<button onclick="deleteCard('+i+')" style="border:none;background:none;color:var(--ink3);font-size:14px;cursor:pointer;padding:3px;flex-shrink:0;">✕</button>'+
     '</div>';
   }).join('');
 }
 
+function setCardOwner(cardName, val){
+  if(val) _cardOwners[cardName] = val;
+  else delete _cardOwners[cardName];
+  saveCards();
+  // 이미 체크된 항목들 재동기화 (구버전 'card:이름:인원' 형식도 정리)
+  _shopItems.forEach(function(it){
+    if(it.pay && it.pay.indexOf('card:'+cardName)===0){
+      it.pay = 'card:'+cardName;
+      if(it.done) syncShopToWallet(it, true);
+    }
+  });
+  saveShop();
+}
+
 function renameCard(idx,newName){
   newName=newName.trim(); if(!newName) return;
   var old=_cards[idx];
-  _cards[idx]=newName; saveCards();
+  _cards[idx]=newName;
+  if(_cardOwners[old]!==undefined){ _cardOwners[newName]=_cardOwners[old]; delete _cardOwners[old]; }
+  saveCards();
   if(old!==newName){
     loadWallet();
     _walletItems.forEach(function(i){
@@ -3242,7 +3265,7 @@ function addCard(){
   _cards.push(name); saveCards(); renderCardList();
   if(inp) inp.value='';
 }
-function deleteCard(idx){ _cards.splice(idx,1); saveCards(); renderCardList(); }
+function deleteCard(idx){ var c=_cards[idx]; delete _cardOwners[c]; _cards.splice(idx,1); saveCards(); renderCardList(); }
 
 function renderMemberLists(){
   var cashList=document.getElementById('cashMemberList');
@@ -3900,6 +3923,16 @@ function initShop(){
     // 기존 DEFAULT_ITEMS 샘플 데이터 제거 (id 1~16)
     _shopItems=saved.filter(function(i){ return i.id > 100; });
     if(_shopItems.length===0) _shopItems=[];
+    // '본인' 기본값이 현재 멤버 목록에 없으면 첫번째 멤버로 보정
+    loadCards();
+    var firstCash = _cashMembers[0]||'본인';
+    var firstIC = _icMembers[0]||'본인';
+    _shopItems.forEach(function(it){
+      var changed=false;
+      if(it.pay==='cash:본인' && _cashMembers.indexOf('본인')===-1){ it.pay='cash:'+firstCash; changed=true; }
+      if(it.pay==='ic:본인' && _icMembers.indexOf('본인')===-1){ it.pay='ic:'+firstIC; changed=true; }
+      if(changed && it.done) syncShopToWallet(it, true);
+    });
     localStorage.setItem('osaka_shop', JSON.stringify(_shopItems));
   }
   catch(e){ _shopItems=[]; }
@@ -3932,7 +3965,7 @@ function renderShop(){
           '<select class="shop-item-cat" onchange="updateCat('+item.id+',this.value)">'+
             Object.keys(CAT_LABELS).map(function(k){return '<option value="'+k+'"'+(item.cat===k?' selected':'')+'>'+CAT_LABELS[k]+'</option>';}).join('')+
           '</select>'+
-          '<span class="shop-item-price-wrap"><input class="shop-item-price" type="number" value="'+(item.price||'')+'" placeholder="가격" onchange="updatePrice('+item.id+',this.value)"></span>'+
+          '<span class="shop-item-price-wrap"><input class="shop-item-price" type="text" inputmode="numeric" value="'+(item.price?item.price.toLocaleString():'')+'" placeholder="가격" oninput="this.value=this.value.replace(/[^0-9]/g,\'\').replace(/\\B(?=(\\d{3})+(?!\\d))/g,\',\')" onchange="updatePrice('+item.id+',this.value)"></span>'+
           '<select class="shop-pay-sel" onchange="updatePay('+item.id+',this.value)">'+
             (function(sel){
               loadCards();
@@ -3943,11 +3976,6 @@ function renderShop(){
               return o;
             })(item.pay)+
           '</select>'+
-          ((item.pay||'').indexOf('card:')===0 ?
-            '<select class="shop-payer-sel" onchange="updateShopPayer('+item.id+',this.value)">'+
-              _cashMembers.map(function(m){ return '<option value="'+m+'"'+(item.payer===m?' selected':'')+'>👤 '+m+'</option>'; }).join('')+
-            '</select>'
-          : '')+
         '</div>'+
       '</div>'+
       '<span class="shop-memo-icon" id="simemo'+item.id+'" onclick="event.stopPropagation();openMemoModal(\'simemo'+item.id+'\')">📝</span>'+
@@ -4022,7 +4050,7 @@ function updateCat(id,v){ var i=_shopItems.find(function(x){return x.id===id;});
 function updatePrice(id,v){
   var i=_shopItems.find(function(x){return x.id===id;});
   if(i){
-    i.price=parseInt(v)||0; saveShop(); updateTotal();
+    i.price=parseInt((v||'').toString().replace(/,/g,''))||0; saveShop(); updateTotal();
     if(i.done) syncShopToWallet(i, true);
   }
 }
@@ -4042,7 +4070,8 @@ function addShopItem(){
   var nid=Date.now();
   // 현재 선택된 카테고리로 새 항목 추가
   var currentCat = _shopCat==='all' ? 'etc' : _shopCat;
-  _shopItems.unshift({id:nid,name:'',cat:currentCat,price:0,pay:'cash:본인',done:false});
+  loadCards();
+  _shopItems.unshift({id:nid,name:'',cat:currentCat,price:0,pay:'cash:'+(_cashMembers[0]||'본인'),done:false});
   saveShop();
   _shopShowAll=true;
   _shopCat='all';
@@ -4080,7 +4109,7 @@ function updateTotal(){
   if(wShop){
     loadWallet();
     var wSpent=_walletItems.filter(function(w){return w.cat==='쇼핑';}).reduce(function(s,w){return s+(w.amount||0);},0);
-    wShop.innerHTML='¥'+wSpent.toLocaleString()+((_rateKRW>0)?('<br><span style="font-size:10px;color:var(--ink3);">≈ ₩'+Math.round(wSpent*_rateKRW).toLocaleString()+'</span>'):'');
+    wShop.innerHTML='-¥'+wSpent.toLocaleString()+((_rateKRW>0)?('<br><span style="font-size:10px;color:var(--ink3);">≈ ₩'+Math.round(wSpent*_rateKRW).toLocaleString()+'</span>'):'');
   }
 }
 
@@ -4597,6 +4626,8 @@ function renderPersonSummary(){
 
   el.style.gridTemplateColumns = 'repeat('+people.length+',1fr)';
 
+  function fmt(v){ return (v>0?'-':'')+'¥'+v.toLocaleString(); }
+
   el.innerHTML = people.map(function(p){
     var cash = sumExp('cash', p);
     var ic   = sumExp('ic', p);
@@ -4608,12 +4639,12 @@ function renderPersonSummary(){
     var total = cash+ic+cardTotal;
     return '<div class="w-person-card">'+
       '<div class="w-person-card-name">'+p+'</div>'+
-      '<div class="w-person-line"><span>💴 현금</span><b>¥'+cash.toLocaleString()+'</b></div>'+
+      '<div class="w-person-line"><span>💴 현금</span><b>'+fmt(cash)+'</b></div>'+
       cardVals.map(function(v){
-        return '<div class="w-person-line"><span>💳 '+v.name+'</span><b>¥'+v.val.toLocaleString()+'</b></div>';
+        return '<div class="w-person-line"><span>💳 '+v.name+'</span><b>'+fmt(v.val)+'</b></div>';
       }).join('')+
-      '<div class="w-person-line"><span>🚇 교통IC</span><b>¥'+ic.toLocaleString()+'</b></div>'+
-      '<div class="w-person-line total"><span>총지출</span><b>¥'+total.toLocaleString()+'</b></div>'+
+      '<div class="w-person-line"><span>🚇 교통IC</span><b>'+fmt(ic)+'</b></div>'+
+      '<div class="w-person-line total"><span>총지출</span><b>'+fmt(total)+'</b></div>'+
     '</div>';
   }).join('');
 }
@@ -4662,7 +4693,7 @@ function updateBalances() {
     });
     var cardTotalLine = '<div style="border-top:1.5px solid var(--border);margin-top:4px;padding-top:4px;display:flex;justify-content:space-between;">'+
       '<span style="font-size:10px;color:var(--gold);font-weight:700;">합계</span>'+
-      '<b style="font-size:14px;font-weight:800;color:var(--gold);">¥'+cardTotal.toLocaleString()+'</b>'+
+      '<b style="font-size:14px;font-weight:800;color:var(--blue);">¥'+cardTotal.toLocaleString()+'</b>'+
     '</div>';
     cardEl.innerHTML = cardLines.join('') + cardTotalLine;
     if(cardKrwEl) cardKrwEl.textContent = _rateKRW>0 ? '≈ ₩'+Math.round(cardTotal*_rateKRW).toLocaleString() : '';
@@ -4685,7 +4716,7 @@ function updateBalances() {
     });
     var icTotalLine = '<div style="border-top:1.5px solid var(--border);margin-top:4px;padding-top:4px;display:flex;justify-content:space-between;">'+
       '<span style="font-size:10px;color:var(--gold);font-weight:700;">합계</span>'+
-      '<b style="font-size:14px;font-weight:800;color:#2E7D32;">¥'+icTotal.toLocaleString()+'</b>'+
+      '<b style="font-size:14px;font-weight:800;color:var(--blue);">¥'+icTotal.toLocaleString()+'</b>'+
     '</div>';
     icEl.innerHTML = icLines.join('') + icTotalLine;
     if(icKrwEl) icKrwEl.textContent = _rateKRW>0 ? '≈ ₩'+Math.round(icTotal*_rateKRW).toLocaleString() : '';
@@ -4746,7 +4777,7 @@ function renderWallet() {
   var wShop = document.getElementById('walletShopTotal');
   if(wShop){
     var shopTotal = _walletItems.filter(function(w){ return w.cat==='쇼핑'; }).reduce(function(s,w){ return s+w.amount; },0);
-    wShop.innerHTML = '¥'+shopTotal.toLocaleString()+(_rateKRW?'<br><span style="font-size:10px;color:var(--ink3);">≈ ₩'+Math.round(shopTotal*_rateKRW).toLocaleString()+'</span>':'');
+    wShop.innerHTML = '-¥'+shopTotal.toLocaleString()+(_rateKRW?'<br><span style="font-size:10px;color:var(--ink3);">≈ ₩'+Math.round(shopTotal*_rateKRW).toLocaleString()+'</span>':'');
   }
 }
 
@@ -4762,7 +4793,7 @@ function syncShopToWallet(item, checked){
     var who, cardName, payer;
     if(wKey==='card'){
       cardName = parts[1] || '카드';
-      payer = item.payer || '';
+      payer = _cardOwners[cardName] || _cashMembers[0] || '';
       who = cardName;
       wName = '💳 '+cardName+(payer?' ('+payer+')':'');
     } else {

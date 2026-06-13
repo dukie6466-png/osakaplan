@@ -3966,7 +3966,7 @@ function renderShop(){
           '<select class="shop-item-cat" onchange="updateCat('+item.id+',this.value)">'+
             Object.keys(CAT_LABELS).map(function(k){return '<option value="'+k+'"'+(item.cat===k?' selected':'')+'>'+CAT_LABELS[k]+'</option>';}).join('')+
           '</select>'+
-          '<span class="shop-item-price-wrap"><input class="shop-item-price" type="text" inputmode="numeric" value="'+(item.price?item.price.toLocaleString():'')+'" placeholder="가격" oninput="this.value=this.value.replace(/[^0-9]/g,\'\').replace(/\\B(?=(\\d{3})+(?!\\d))/g,\',\')" onchange="updatePrice('+item.id+',this.value)"></span>'+
+          '<span class="shop-item-price-wrap"><input class="shop-item-price" type="text" inputmode="numeric" value="'+(item.price?item.price.toLocaleString():'')+'" placeholder="가격" oninput="formatPriceInput(this)" onchange="updatePrice('+item.id+',this.value)"></span>'+
           '<select class="shop-pay-sel" onchange="updatePay('+item.id+',this.value)">'+
             (function(sel){
               loadCards();
@@ -4048,6 +4048,10 @@ function toggleItem(id){
 }
 function updateName(id,v){ var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.name=v;saveShop();} }
 function updateCat(id,v){ var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.cat=v;saveShop();renderShop();} }
+function formatPriceInput(el){
+  var v = el.value.replace(/[^0-9]/g,'');
+  el.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
 function updatePrice(id,v){
   var i=_shopItems.find(function(x){return x.id===id;});
   if(i){

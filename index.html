@@ -3543,6 +3543,7 @@ function calcRate() {
    날씨
 ══════════════════════════════════════ */
 var CITY_LAT=34.6937, CITY_LNG=135.5023, CITY_NAME="오사카";
+var _currentCountry='japan';
 var WX_CODE={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'🌨',73:'🌨',75:'❄️',80:'🌦',81:'🌧',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
 var WX_DESC={0:'맑음',1:'대체로 맑음',2:'구름 조금',3:'흐림',45:'안개',48:'안개',51:'가벼운 이슬비',53:'이슬비',55:'강한 이슬비',61:'가벼운 비',63:'비',65:'강한 비',71:'가벼운 눈',73:'눈',75:'강한 눈',80:'소나기',81:'강한 소나기',82:'폭우',95:'뇌우',96:'뇌우+우박',99:'뇌우+강한 우박'};
 function fetchWeather() {
@@ -5804,7 +5805,11 @@ var CITY_DATA = {
 };
 
 function openCityModal(){
-  showCountries();
+  if(_currentCountry && CITY_DATA[_currentCountry]){
+    showCities(_currentCountry);
+  } else {
+    showCountries();
+  }
   document.getElementById('cityModal').classList.add('open');
 }
 
@@ -5817,8 +5822,9 @@ function showCountries(){
 
 function showCities(country){
   var cities=CITY_DATA[country]; if(!cities) return;
+  _currentCountry = country;
   document.querySelectorAll('#cityStep1 .city-sel-btn').forEach(function(b){ b.classList.remove('selected'); });
-  event && event.currentTarget && event.currentTarget.classList.add('selected');
+  if(typeof event!=='undefined' && event && event.currentTarget) event.currentTarget.classList.add('selected');
   document.getElementById('cityStep1').style.display='none';
   document.getElementById('cityStep2').style.display='block';
   var names={japan:'🇯🇵 일본',korea:'🇰🇷 한국',taiwan:'🇹🇼 대만',thailand:'🇹🇭 태국',france:'🇫🇷 프랑스',italy:'🇮🇹 이탈리아',usa:'🇺🇸 미국',canada:'🇨🇦 캐나다'};
@@ -5842,6 +5848,7 @@ function showCities(country){
       btn.classList.add('selected');
       setTimeout(function(){ selectCity(city.n, city.e, city.lat, city.lng); }, 200);
     });
+    if(city.n===CITY_NAME) btn.classList.add('selected');
     grid.appendChild(btn);
   });
 }

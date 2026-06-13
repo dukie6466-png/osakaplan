@@ -3983,12 +3983,12 @@ function renderShop(){
       '<span class="shop-drag-handle">⠿</span>'+
       '<div class="shop-item-check" onclick="toggleItem('+item.id+')">'+(item.done?'✓':'')+' </div>'+
       '<div class="shop-item-body">'+
-        '<input class="shop-item-name" value="'+escH(item.name)+'" onchange="updateName('+item.id+',this.value)" placeholder="상품명">'+
+        '<input class="shop-item-name" value="'+escH(item.name)+'" onchange="updateName('+item.id+',this.value)" placeholder="상품명" readonly onclick="this.removeAttribute(\'readonly\');this.focus();" onblur="this.setAttribute(\'readonly\',\'readonly\')" onselectstart="return false" oncontextmenu="return false">'+
         '<div class="shop-item-meta">'+
           '<select class="shop-item-cat" onchange="updateCat('+item.id+',this.value)">'+
             Object.keys(CAT_LABELS).map(function(k){return '<option value="'+k+'"'+(item.cat===k?' selected':'')+'>'+CAT_LABELS[k]+'</option>';}).join('')+
           '</select>'+
-          '<span class="shop-item-price-wrap"><input class="shop-item-price" type="text" inputmode="numeric" value="'+(item.price?item.price.toLocaleString():'')+'" placeholder="가격" oninput="formatPriceInput(this)" onchange="updatePrice('+item.id+',this.value)"></span>'+
+          '<span class="shop-item-price-wrap"><input class="shop-item-price" type="text" inputmode="numeric" value="'+(item.price?item.price.toLocaleString():'')+'" placeholder="가격" oninput="formatPriceInput(this)" onchange="updatePrice('+item.id+',this.value)" readonly onclick="this.removeAttribute(\'readonly\');this.focus();" onblur="this.setAttribute(\'readonly\',\'readonly\')" onselectstart="return false" oncontextmenu="return false"></span>'+
           '<select class="shop-pay-sel" onchange="updatePay('+item.id+',this.value)">'+
             (function(sel){
               loadCards();
@@ -4117,7 +4117,7 @@ function addShopItem(){
   var allBtn = document.querySelector('.shop-cat[onclick*="all"]');
   if(allBtn) allBtn.classList.add('active');
   renderShop();
-  setTimeout(function(){ var el=document.querySelector('#si'+nid+' .shop-item-name'); if(el){ el.focus(); el.scrollIntoView({behavior:'smooth', block:'center'}); } },150);
+  setTimeout(function(){ var el=document.querySelector('#si'+nid+' .shop-item-name'); if(el){ el.removeAttribute('readonly'); el.focus(); el.scrollIntoView({behavior:'smooth', block:'center'}); } },150);
 }
 function clearChecked(){ _shopItems=_shopItems.filter(function(i){return !i.done;}); saveShop();renderShop(); }
 function switchShopCat(btn,cat){
@@ -5971,7 +5971,13 @@ function addPressDelete(el, overlayClass, onDelete){
   el.appendChild(overlay);
   el._delOverlay = overlay;
   var t = null;
-  function start(){ t = setTimeout(function(){ enableDeleteMode(el); }, 600); }
+  function start(){
+    if(window.getSelection){ var sel=window.getSelection(); if(sel) sel.removeAllRanges(); }
+    t = setTimeout(function(){
+      if(window.getSelection){ var sel2=window.getSelection(); if(sel2) sel2.removeAllRanges(); }
+      enableDeleteMode(el);
+    }, 600);
+  }
   function cancel(){ clearTimeout(t); }
   el.addEventListener('touchstart', start, {passive:true});
   el.addEventListener('touchend', cancel);

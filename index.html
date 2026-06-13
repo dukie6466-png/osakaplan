@@ -4041,13 +4041,23 @@ function initShopSortable(){
 function toggleItem(id){
   var i=_shopItems.find(function(x){return x.id===id;});
   if(!i) return;
+  syncPriceInput(id);
   i.done=!i.done;
   saveShop();
   syncShopToWallet(i, i.done);
   renderShop();
 }
 function updateName(id,v){ var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.name=v;saveShop();} }
-function updateCat(id,v){ var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.cat=v;saveShop();renderShop();} }
+function updateCat(id,v){ syncPriceInput(id); var i=_shopItems.find(function(x){return x.id===id;}); if(i){i.cat=v;saveShop();renderShop();} }
+function syncPriceInput(id){
+  var el = document.getElementById('si'+id);
+  if(!el) return;
+  var inp = el.querySelector('.shop-item-price');
+  if(!inp) return;
+  var i = _shopItems.find(function(x){return x.id===id;});
+  if(!i) return;
+  i.price = parseInt((inp.value||'').toString().replace(/,/g,''))||0;
+}
 function formatPriceInput(el){
   var v = el.value.replace(/[^0-9]/g,'');
   el.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -4820,6 +4830,7 @@ function syncShopToWallet(item, checked){
 }
 
 function updatePay(id, val){
+  syncPriceInput(id);
   var i=_shopItems.find(function(x){return x.id===id;});
   if(i){
     i.pay=val; saveShop();

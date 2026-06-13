@@ -807,7 +807,28 @@ body.editing .edit-hint{display:flex}
   transition:opacity .2s;animation:up .3s ease both;
   position:relative;
 }
-.shop-item.delete-mode{
+.shop-item
+.shop-item, .store-card{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.del-overlay{
+  position:absolute !important; inset:0 !important;
+  display:none; align-items:center !important; justify-content:center !important;
+  text-align:center !important;
+  z-index:50;
+  -webkit-tap-highlight-color:transparent;
+}
+.del-overlay.strong, .del-overlay.light{ background:rgba(192,57,43,0.32); }
+.shop-item.delete-mode, .store-card.delete-mode{ opacity:1 !important; }
+.del-badge{
+  background:var(--surface); color:#B91C1C;
+  font-size:13px; font-weight:900;
+  padding:5px 14px; border-radius:999px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.12);
+}
+.delete-mode{
   animation: store-wiggle 1.1s infinite;
   border-color: var(--red) !important;
 }
@@ -5920,65 +5941,34 @@ var _longPressTimer = null;
 function enableDeleteMode(card){
   _deleteMode = true;
   card.classList.add('delete-mode');
-  var btn = card.querySelector('.store-del-btn');
-  if(btn) btn.style.display = 'flex';
+  if(card._delOverlay) card._delOverlay.style.display = 'flex';
 }
 
 function disableAllDeleteMode(){
   _deleteMode = false;
-  document.querySelectorAll('.store-card.delete-mode').forEach(function(c){
+  document.querySelectorAll('.delete-mode').forEach(function(c){
     c.classList.remove('delete-mode');
-    var btn = c.querySelector('.store-del-btn');
-    if(btn) btn.style.display = 'none';
+    if(c._delOverlay) c._delOverlay.style.display = 'none';
   });
 }
 
-function addLongPressDelete(card){
-  if(card._lp) return;
-  card._lp = true;
-  card.querySelectorAll('.store-del-btn').forEach(function(b){ b.remove(); });
-  var btn = document.createElement('button');
-  btn.className = 'store-del-btn';
-  btn.innerHTML = '&times;';
-  btn.style.display = 'none';
-  btn.addEventListener('click', function(e){
-    e.stopPropagation();
-    e.preventDefault();
-    var panel = card.closest('.store-panel');
-    var cat = panel ? panel.id.replace('store-cat-','') : null;
-    card.remove();
-    disableAllDeleteMode();
-    if(cat){ saveCustomStoresDirect(cat); updateMoreBtnCount(cat); }
-  });
-  card.style.position = 'relative';
-  card.appendChild(btn);
-  var t = null;
-  function start(){ t = setTimeout(function(){ enableDeleteMode(card); }, 600); }
-  function cancel(){ clearTimeout(t); }
-  card.addEventListener('touchstart', start, {passive:true});
-  card.addEventListener('touchend', cancel);
-  card.addEventListener('touchmove', cancel);
-  card.addEventListener('mousedown', start);
-  card.addEventListener('mouseup', cancel);
-  card.addEventListener('mouseleave', cancel);
-}
-
-function addShakeDelete(el, onDelete){
+function addPressDelete(el, overlayClass, onDelete){
   if(el._lp) return;
   el._lp = true;
-  if(!el.querySelector('.store-del-btn')){
-    var btn = document.createElement('button');
-    btn.className = 'store-del-btn';
-    btn.innerHTML = '&times;';
-    btn.style.display = 'none';
-    btn.addEventListener('click', function(e){
-      e.stopPropagation();
-      e.preventDefault();
-      disableAllDeleteMode();
-      onDelete();
-    });
-    el.appendChild(btn);
-  }
+  el.style.position = 'relative';
+  if(el._delOverlay) el._delOverlay.remove();
+  var overlay = document.createElement('div');
+  overlay.className = 'del-overlay ' + overlayClass;
+  overlay.innerHTML = '<span class="del-badge">✕ 삭제</span>';
+  overlay.style.display = 'none';
+  overlay.addEventListener('click', function(e){
+    e.stopPropagation();
+    e.preventDefault();
+    disableAllDeleteMode();
+    onDelete();
+  });
+  el.appendChild(overlay);
+  el._delOverlay = overlay;
   var t = null;
   function start(){ t = setTimeout(function(){ enableDeleteMode(el); }, 600); }
   function cancel(){ clearTimeout(t); }
@@ -5988,6 +5978,24 @@ function addShakeDelete(el, onDelete){
   el.addEventListener('mousedown', start);
   el.addEventListener('mouseup', cancel);
   el.addEventListener('mouseleave', cancel);
+}
+
+function addLongPressDelete(card){
+  addPressDelete(card, 'light', function(){
+    var panel = card.closest('.store-panel');
+    var cat = panel ? panel.id.replace('store-cat-','') : null;
+    card.remove();
+    if(cat){ saveCustomStoresDirect(cat); updateMoreBtnCount(cat); }
+  });
+}
+
+/* ══ 스와이프 삭제 (구매목록/매장찾기 공용) ══ */
+
+
+
+
+function addShakeDelete(el, onDelete){
+  addPressDelete(el, 'light', onDelete);
 }
 
 // 화면 다른 곳 터치하면 삭제모드 해제
